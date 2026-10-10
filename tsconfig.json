@@ -2,6 +2,15 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "types": ["node", "react"]
-  }
+    "types": [
+      "node",
+      "react"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "design",
+    "src/features/group/model.test.ts",
+    "vite.config.ts"
+  ]
 }

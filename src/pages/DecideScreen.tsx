@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { useDining } from '../features/DiningProvider'
 import { Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { theme } from '../styles/theme'
@@ -16,13 +17,11 @@ import Cellular from '../../public/assets/navigation/cellular.svg'
 
 type Props = { onSolo: () => void; onGroup: () => void; onHistory: () => void; onRestaurant: (id: string) => void }
 // Local demo history. The first two cards preserve the Version3 examples.
-const recent = [
-  { id: 'oishii-ramen', name: 'Oishii Ramen', cuisine: 'Japanese', distance: '0.4 mi', image: require('../assets/decide/62333.png'), imageWidth: '103.53%' as const, imageLeft: '-1.77%' as const },
-  { id: 'bella-trattoria', name: 'Bella Trattoria', cuisine: 'Italian', distance: '1.1 mi', image: require('../assets/decide/38e36.png'), imageWidth: '106.13%' as const, imageLeft: '-3.06%' as const },
+const restaurantPhotos: Record<string, number> = { oishii: require('../../public/assets/figma/06631.png'), pasta: require('../../public/assets/figma/cec1d.png'), taqueria: require('../../public/assets/figma/73440.png') };
+const sampleRecent = [
+  { id: 'oishii', name: 'Oishii Ramen & Izakaya', cuisine: 'Japanese', distance: '0.4 mi', image: require('../assets/decide/62333.png'), imageWidth: '103.53%' as const, imageLeft: '-1.77%' as const },
+  { id: 'pasta', name: 'Pasta Fresca Handcrafted', cuisine: 'Italian', distance: '1.1 mi', image: require('../assets/decide/38e36.png'), imageWidth: '106.13%' as const, imageLeft: '-3.06%' as const },
 ]
-// Additional demo entries reuse the existing photos until real history is connected.
-const demoNames = ['Noodle House', 'Pizza Corner', 'Ramen Garden', 'Pasta Kitchen', 'Izakaya Table', 'Trattoria Roma', 'Miso Bowl', 'Basil & Tomato', 'Tokyo Noodles', 'Little Italy']
-recent.push(...demoNames.map((name, index) => ({ ...recent[index % 2], id: 'demo-restaurant-' + (index + 3), name, distance: ((index + 2) / 10).toFixed(1) + ' mi' })))
 function Choice({group=false,onPress}: {group?:boolean;onPress:()=>void}) {
   const Badge = group ? GroupBadge : SoloBadge
   const Illustration = group ? GroupPeople : SoloPerson
@@ -38,17 +37,19 @@ function Choice({group=false,onPress}: {group?:boolean;onPress:()=>void}) {
   </View>
 }
 export function DecideScreen({onSolo,onGroup,onHistory,onRestaurant}:Props) {
+  const dining = useDining();
+  const recent = dining.history.length ? dining.history.map(r => ({ ...sampleRecent[r.id === 'pasta' ? 1 : 0], image: restaurantPhotos[r.id], id: r.id, name: r.name, cuisine: r.cuisine, distance: `${r.distanceMiles} mi` })) : sampleRecent;
   const tray = useRef<ScrollView>(null)
   const offset = useRef(0)
   const drag = useRef<{ startX: number; startOffset: number } | null>(null)
   const suppressClickUntil = useRef(0)
-  return <SafeAreaView edges={['top','left','right']} style={styles.safe}>
-    {Platform.OS==='web' && <View style={styles.status} accessibilityElementsHidden><Text style={styles.time}>9:41</Text><View style={styles.statusIcons}><Cellular width={18} height={12}/><Wifi width={16} height={12}/><Battery width={27} height={13}/></View></View>}
+  return <View style={styles.safe}>
+
     <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <View style={styles.hook}><Text style={styles.title}>What are we eating{'\n'}today?</Text><Text style={styles.subtitle}>No debates, no endless scrolling. Just good food.</Text></View>
       <View style={styles.choices}><Choice onPress={onSolo}/><Choice group onPress={onGroup}/></View>
       <View style={styles.recent}>
-        <View style={styles.recentHeader}><View style={styles.recentLabel}><History/><Text style={styles.recentTitle}>Recent Chomps</Text></View><Pressable accessibilityRole="link" hitSlop={8} onPress={onHistory}><Text style={styles.seeAll}>See all ({recent.length})</Text></Pressable></View>
+        <View style={styles.recentHeader}><View style={styles.recentLabel}><History/><Text style={styles.recentTitle}>{dining.history.length ? 'Recent Chomps' : 'Sample Chomps'}</Text></View><Pressable accessibilityRole="link" hitSlop={8} onPress={onHistory}><Text style={styles.seeAll}>View history ({dining.history.length})</Text></Pressable></View>
         <ScrollView ref={tray} horizontal nestedScrollEnabled directionalLockEnabled showsHorizontalScrollIndicator={false}
           snapToInterval={202} decelerationRate="fast" scrollEventThrottle={16}
           onScroll={event => { offset.current = event.nativeEvent.contentOffset.x }}
@@ -63,9 +64,9 @@ export function DecideScreen({onSolo,onGroup,onHistory,onRestaurant}:Props) {
         </ScrollView>
       </View>
     </ScrollView>
-  </SafeAreaView>
+  </View>
 }
 const styles=StyleSheet.create({
   safe:{flex:1,backgroundColor:theme.colors.background},status:{height:47},time:{position:'absolute',left:50,top:12,fontSize:17,lineHeight:22,fontWeight:'600',color:'#181818'},statusIcons:{position:'absolute',right:32,top:17,flexDirection:'row',alignItems:'center',gap:5},
-  content:{paddingTop:5,paddingHorizontal:20,paddingBottom:140,minHeight:971},hook:{marginLeft:8,marginRight:-8},title:{fontFamily:theme.fonts.extrabold,fontSize:32,lineHeight:32,letterSpacing:-.8,color:theme.colors.ink},subtitle:{fontFamily:theme.fonts.medium,fontSize:14,lineHeight:19.25,color:theme.colors.ink,marginTop:5},choices:{marginTop:15.75,gap:24.5},choice:{height:214.5,padding:24,borderRadius:24,backgroundColor:theme.colors.surface,boxShadow:'0px 8px 24px -4px rgba(62,45,18,0.08)'},groupCard:{backgroundColor:'#f4e6d9'},copy:{paddingTop:3},badge:{alignSelf:'flex-start',flexDirection:'row',alignItems:'center',gap:4,paddingHorizontal:10,paddingVertical:2,borderRadius:999,backgroundColor:theme.colors.primary},badgeText:{fontFamily:theme.fonts.bold,fontSize:11,lineHeight:14,letterSpacing:.33,color:theme.colors.onPrimary},groupBadge:{backgroundColor:'#ffdad2'},groupBadgeText:{color:'#84240d'},choiceTitle:{fontFamily:theme.fonts.bold,fontSize:24,lineHeight:32,letterSpacing:-.6,color:theme.colors.ink,marginTop:8},description:{fontFamily:theme.fonts.medium,fontSize:14,lineHeight:22.75,color:theme.colors.muted,marginTop:4},groupDescription:{color:theme.colors.ink},illustration:{position:'absolute',right:25,top:42.6,width:71,height:70.1728},groupIllustration:{right:30,top:39.7},cta:{position:'absolute',left:24,right:24,top:158,height:38,borderRadius:999,backgroundColor:theme.colors.primary,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,boxShadow:'0px 8px 24px -4px rgba(62,45,18,0.12)'},groupCta:{top:153,backgroundColor:'#a53b22'},ctaText:{fontFamily:theme.fonts.bold,fontSize:15,lineHeight:20,letterSpacing:.15,color:theme.colors.onPrimary},groupCtaText:{color:'white'},pressed:{opacity:.75},recent:{marginTop:24.5,gap:8},recentHeader:{paddingHorizontal:4,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},recentLabel:{flexDirection:'row',alignItems:'center',gap:6},recentTitle:{fontFamily:theme.fonts.semibold,fontSize:18,lineHeight:26,color:theme.colors.ink},seeAll:{fontFamily:theme.fonts.bold,fontSize:11,lineHeight:14,letterSpacing:.33,color:theme.colors.primary},trayViewport:{marginHorizontal:-4,height:218},tray:{gap:12,paddingBottom:8,paddingRight:4},restaurant:{width:190,height:210,padding:12,gap:8,borderRadius:16,backgroundColor:'white',boxShadow:'0px 4px 16px -2px rgba(62,45,18,0.06)'},photo:{height:96,width:'100%',borderRadius:48,overflow:'hidden',backgroundColor:theme.colors.soft},image:{position:'absolute',top:0,height:'100%'},restaurantName:{fontFamily:theme.fonts.semibold,fontSize:18,lineHeight:26,color:'#211a13'},meta:{fontFamily:theme.fonts.bold,fontSize:11,lineHeight:14,letterSpacing:.33,color:theme.colors.muted},again:{marginTop:4,backgroundColor:theme.colors.soft,borderRadius:999,paddingVertical:6,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:4},againText:{fontFamily:theme.fonts.semibold,fontSize:13,lineHeight:18,color:'#211a13'},
+  content:{paddingTop:5,paddingHorizontal:20,paddingBottom:24},hook:{marginLeft:8,marginRight:-8},title:{fontFamily:theme.fonts.extrabold,fontSize:32,lineHeight:32,letterSpacing:-.8,color:theme.colors.ink},subtitle:{fontFamily:theme.fonts.medium,fontSize:14,lineHeight:19.25,color:theme.colors.ink,marginTop:5},choices:{marginTop:15.75,gap:24.5},choice:{height:214.5,padding:24,borderRadius:24,backgroundColor:theme.colors.surface,boxShadow:'0px 8px 24px -4px rgba(62,45,18,0.08)'},groupCard:{backgroundColor:'#f4e6d9'},copy:{paddingTop:3},badge:{alignSelf:'flex-start',flexDirection:'row',alignItems:'center',gap:4,paddingHorizontal:10,paddingVertical:2,borderRadius:999,backgroundColor:theme.colors.primary},badgeText:{fontFamily:theme.fonts.bold,fontSize:11,lineHeight:14,letterSpacing:.33,color:theme.colors.onPrimary},groupBadge:{backgroundColor:'#ffdad2'},groupBadgeText:{color:'#84240d'},choiceTitle:{fontFamily:theme.fonts.bold,fontSize:24,lineHeight:32,letterSpacing:-.6,color:theme.colors.ink,marginTop:8},description:{fontFamily:theme.fonts.medium,fontSize:14,lineHeight:22.75,color:theme.colors.muted,marginTop:4},groupDescription:{color:theme.colors.ink},illustration:{position:'absolute',right:25,top:42.6,width:71,height:70.1728},groupIllustration:{right:30,top:39.7},cta:{position:'absolute',left:24,right:24,top:158,height:38,borderRadius:999,backgroundColor:theme.colors.primary,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8,boxShadow:'0px 8px 24px -4px rgba(62,45,18,0.12)'},groupCta:{top:153,backgroundColor:'#a53b22'},ctaText:{fontFamily:theme.fonts.bold,fontSize:15,lineHeight:20,letterSpacing:.15,color:theme.colors.onPrimary},groupCtaText:{color:'white'},pressed:{opacity:.75},recent:{marginTop:24.5,gap:8},recentHeader:{paddingHorizontal:4,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},recentLabel:{flexDirection:'row',alignItems:'center',gap:6},recentTitle:{fontFamily:theme.fonts.semibold,fontSize:18,lineHeight:26,color:theme.colors.ink},seeAll:{fontFamily:theme.fonts.bold,fontSize:11,lineHeight:14,letterSpacing:.33,color:theme.colors.primary},trayViewport:{marginHorizontal:-4,height:218},tray:{gap:12,paddingBottom:8,paddingRight:4},restaurant:{width:190,height:210,padding:12,gap:8,borderRadius:16,backgroundColor:'white',boxShadow:'0px 4px 16px -2px rgba(62,45,18,0.06)'},photo:{height:96,width:'100%',borderRadius:48,overflow:'hidden',backgroundColor:theme.colors.soft},image:{position:'absolute',top:0,height:'100%'},restaurantName:{fontFamily:theme.fonts.semibold,fontSize:18,lineHeight:26,color:'#211a13'},meta:{fontFamily:theme.fonts.bold,fontSize:11,lineHeight:14,letterSpacing:.33,color:theme.colors.muted},again:{marginTop:4,backgroundColor:theme.colors.soft,borderRadius:999,paddingVertical:6,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:4},againText:{fontFamily:theme.fonts.semibold,fontSize:13,lineHeight:18,color:'#211a13'},
 })

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Pressable, TextInput, View } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { BackHandler, Pressable, TextInput, View } from 'react-native';
 import { Asset, Back, Button, Card, Dialog, Message, ScreenLayout, T } from '../components/ui';
 import { colors as c, fonts } from '../theme/tokens';
 import { addUnique, validateBudget, validatePreferences } from '../lib/validation';
@@ -16,23 +17,26 @@ function Chip({ label, selected, remove, danger, onPress }: { label: string; sel
     {danger ? <Asset name="45a32.svg" /> : selected ? <Asset name="39b6c.svg" /> : null}<T style={{ fontFamily: fonts.medium, fontSize: 12, lineHeight: 16, color: danger || selected ? c.white : c.ink }}>{label}</T>{remove && <Asset name={danger ? '10014.svg' : 'baf22.svg'} />}
   </Pressable>;
 }
-export function PreferencesScreen({ edit, navigate }: { edit?: boolean; navigate: (screen: Screen) => void }) {
+export function PreferencesScreen({ edit, navigate, occasion }: { edit?: boolean; navigate: (screen: Screen) => void; occasion?: { initial: Preferences; onSave: (value: Preferences) => void; onBack: () => void } }) {
   const account = useAccount();
-  const [draft, setDraft] = useState<Preferences>(() => ({ ...account.preferences }));
+  const [draft, setDraft] = useState<Preferences>(() => ({ ...(occasion?.initial ?? account.preferences) }));
   const [min, setMin] = useState(String(draft.budgetMin)), [max, setMax] = useState(String(draft.budgetMax));
   const [error, setError] = useState<string | null>(null), [busy, setBusy] = useState(false), [discard, setDiscard] = useState(false);
-  const dirty = JSON.stringify(draft) !== JSON.stringify(account.preferences) || min !== String(account.preferences.budgetMin) || max !== String(account.preferences.budgetMax);
+  const initial = occasion?.initial ?? account.preferences;
+  const dirty = JSON.stringify(draft) !== JSON.stringify(initial) || min !== String(initial.budgetMin) || max !== String(initial.budgetMax);
   const update = (key: 'cuisines' | 'dislikedFoods' | 'dietaryHabits' | 'allergens', value: string, toggle = false) => setDraft(prev => ({ ...prev, [key]: toggle && prev[key].includes(value) ? prev[key].filter(v => v !== value) : addUnique(prev[key], value) }));
   const remove = (key: 'dislikedFoods' | 'allergens', value: string) => setDraft(prev => ({ ...prev, [key]: prev[key].filter(v => v !== value) }));
-  const goBack = () => { if (edit) navigate('Profile'); else { void account.signOut().then(() => navigate('SignIn')).catch(e => setError(errorMessage(e))); } };
+  const goBack = () => { if (occasion) occasion.onBack(); else if (edit) navigate('Profile'); else { void account.signOut().then(() => navigate('SignIn')).catch(e => setError(errorMessage(e))); } };
+  const focused = useIsFocused();
+  useEffect(() => { if (!focused) return; const sub = BackHandler.addEventListener('hardwareBackPress', () => { if (busy) return true; if (dirty) setDiscard(true); else goBack(); return true; }); return () => sub.remove(); }, [focused, dirty, busy, goBack]);
   async function save() {
     const invalid = validateBudget(min, max); if (invalid) { setError(invalid); return; }
     setBusy(true); setError(null);
-    try { const next = { ...draft, budgetMin: Number(min), budgetMax: Number(max) }; validatePreferences(next); await account.savePreferences(next); navigate(edit ? 'Profile' : 'Decide'); } catch (e) { setError(errorMessage(e)); } finally { setBusy(false); }
+    try { const next = { ...draft, budgetMin: Number(min), budgetMax: Number(max) }; validatePreferences(next); if (occasion) occasion.onSave(next); else { await account.savePreferences(next); navigate(edit ? 'Profile' : 'Decide'); } } catch (e) { setError(errorMessage(e)); } finally { setBusy(false); }
   }
   const wrap = { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: 8, paddingTop: 4 };
   return <ScreenLayout contentStyle={{ paddingBottom: 28 }}>
-    <View style={{ paddingHorizontal: 27, paddingTop: edit ? 0 : 12, marginBottom: 20 }}><Back compact onPress={() => dirty ? setDiscard(true) : goBack()} /><T accessibilityRole="header" style={{ fontFamily: fonts.extra, fontSize: edit ? 24 : 32, lineHeight: 40, letterSpacing: -0.64 }}>{edit ? 'Edit preferences' : 'Let Chomp get to\nknow your taste'}</T><T style={{ fontSize: 14, lineHeight: 20, marginTop: 4 }}>{edit ? 'These saved preferences serve as your defaults. You can still modify them for individual dining occasions in Decide without altering your profile.' : "We’ll remember what you love (and what you avoid) so deciding is effortless."}</T></View>
+    <View style={{ paddingHorizontal: 27, paddingTop: edit ? 0 : 12, marginBottom: 20 }}><Back compact onPress={() => dirty ? setDiscard(true) : goBack()} /><T accessibilityRole="header" style={{ fontFamily: fonts.extra, fontSize: edit ? 24 : 32, lineHeight: 40, letterSpacing: -0.64 }}>{occasion ? 'Preferences for this meal' : edit ? 'Edit preferences' : 'Let Chomp get to\nknow your taste'}</T><T style={{ fontSize: 14, lineHeight: 20, marginTop: 4 }}>{occasion ? 'Use your saved defaults or adjust them for this occasion. Your Profile stays unchanged.' : edit ? 'These saved preferences serve as your defaults. You can still modify them for individual dining occasions in Decide without altering your profile.' : "We’ll remember what you love (and what you avoid) so deciding is effortless."}</T></View>
     <View style={{ paddingHorizontal: 16, gap: 21 }}>
       <Card style={{ minHeight: 245 }}><View><T style={{ fontFamily: fonts.semibold, fontSize: 16, lineHeight: 24 }}>Favorite Cuisines</T><T style={{ fontSize: 12, lineHeight: 16 }}>Tap to pick dishes you regularly crave</T></View><View style={wrap}>{[...cuisineOptions, ...draft.cuisines.filter(v => !cuisineOptions.includes(v))].map(label => <Chip key={label} label={label} selected={draft.cuisines.includes(label)} onPress={() => update('cuisines', label, true)} />)}</View><AddRow placeholder="Add custom favorite cuisines" onAdd={value => update('cuisines', value)} /></Card>
       <Card style={{ minHeight: 156 }}><T style={{ fontFamily: fonts.semibold, fontSize: 16, lineHeight: 24 }}>Disliked Foods</T><View style={wrap}>{draft.dislikedFoods.map(label => <Chip key={label} label={label} remove onPress={() => remove('dislikedFoods', label)} />)}{!draft.dislikedFoods.length && <T style={{ fontSize: 12, color: c.muted }}>No disliked foods added</T>}</View><AddRow placeholder="Add custom disliked food (e.g. Mushrooms)" onAdd={value => update('dislikedFoods', value)} /></Card>
@@ -42,7 +46,7 @@ export function PreferencesScreen({ edit, navigate }: { edit?: boolean; navigate
       <Card><View><T style={{ fontSize: 16, fontFamily: fonts.semibold, lineHeight: 24 }}>Preferred Travel Radius</T><T style={{ fontSize: 12, lineHeight: 16 }}>Maximum radius from your location</T></View><View accessibilityRole="radiogroup" style={{ gap: 8, paddingTop: 4 }}>{[1, 3, 5, 10, null].map(value => <Pressable key={String(value)} accessibilityRole="radio" accessibilityLabel={value === null ? 'No preference' : `Within ${value} mi`} accessibilityState={{ checked: draft.travelMiles === value }} aria-checked={draft.travelMiles === value} onPress={() => setDraft(prev => ({ ...prev, travelMiles: value }))} style={{ backgroundColor: draft.travelMiles === value ? c.selectedYellow : c.paleYellow, borderRadius: 12, padding: 12, minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 12 }}><Asset name={value === null ? 'dbf21.svg' : '15713.svg'} /><T style={{ flex: 1, fontFamily: draft.travelMiles === value ? fonts.semibold : fonts.medium }}>{value === null ? 'No preference' : `Within ${value} mi`}</T><View style={{ width: 16, height: 16, borderRadius: 8, borderColor: '#767676', borderWidth: 1, backgroundColor: c.white, alignItems: 'center', justifyContent: 'center' }}>{draft.travelMiles === value && <View style={{ width: 9, height: 9, borderRadius: 5, backgroundColor: '#767676' }} />}</View></Pressable>)}</View></Card>
     </View>
     {!edit && <T style={{ fontSize: 10, textAlign: 'center', marginTop: 30 }}>You can change these anytime in Profile!</T>}
-    <View style={{ marginHorizontal: 20, marginTop: edit ? 40 : 54 }}><Message text={error} /><Button title={edit ? 'Save Changes' : "Save My Preferences & Let’s Decide"} icon={edit ? undefined : '5b9fe.svg'} busy={busy} onPress={save} /></View>
+    <View style={{ marginHorizontal: 20, marginTop: edit ? 40 : 54 }}><Message text={error} /><Button title={occasion ? 'Continue with these preferences' : edit ? 'Save Changes' : "Save My Preferences & Let’s Decide"} icon={edit ? undefined : '5b9fe.svg'} busy={busy} onPress={save} /></View>
     <Dialog visible={discard} title="Discard your changes?" onClose={() => setDiscard(false)}><T style={{ marginBottom: 20 }}>Your unsaved preferences will be lost.</T><Button title="Keep editing" onPress={() => setDiscard(false)} /><Button title="Discard changes" style={{ backgroundColor: c.beige, marginTop: 12 }} onPress={goBack} /></Dialog>
   </ScreenLayout>;
 }

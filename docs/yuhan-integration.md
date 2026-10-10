@@ -1,3 +1,5 @@
+> 整合更新：本文记录原分支交接。当前应用结构、运行方式和限制以根目录 README.md 为准。
+
 # Yuhan: recommendations and group decisions
 
 Implemented on `feature-yuhan-recommendations`, using React, TypeScript, Vite, and ordinary CSS. The demo harness is temporary integration scaffolding because `develop` had only a README when work began.

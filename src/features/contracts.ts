@@ -1,5 +1,6 @@
 /** Integration contract owned by Yuhan's recommendation/group modules. */
 export interface Preferences {
+  dislikedFoods?: string[];
   cuisines: string[];
   restrictions: string[];
   budget: [number, number];

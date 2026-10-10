@@ -41,7 +41,7 @@ export function BottomNavigation({ state, descriptors, navigation, insets }: Bot
   return <View testID={`navbar-${active.toLowerCase()}`} onLayout={event => {
     const nextWidth = event.nativeEvent.layout.width
     if (nextWidth > 0) setWidth(nextWidth)
-  }} style={[styles.bar, { height: 130 * scale + insets.bottom }, (active === 'Decide' || active === 'Split') && { position: 'absolute', left: 0, top: Platform.OS === 'web' ? Math.max(0, Math.min(714 * scale, viewportHeight - 130 * scale)) : undefined, bottom: Platform.OS === 'web' ? undefined : 0 }]}>
+  }} style={[styles.bar, { height: 130 * scale + insets.bottom }]}>
     <View pointerEvents="none" style={[styles.safeArea, { height: insets.bottom }]} />
     <View style={[styles.component, { transform: [{ scale }] }]}>
       <View pointerEvents="none" style={styles.surface} />
@@ -63,7 +63,7 @@ export function BottomNavigation({ state, descriptors, navigation, insets }: Bot
         </Pressable>
       })}
     </View>
-    {Platform.OS === 'web' && active === 'Split' && <View pointerEvents="none" accessibilityElementsHidden style={{ position: 'absolute', bottom: 8, alignSelf: 'center', width: 135, height: 5, borderRadius: 100, backgroundColor: '#181818' }} />}
+
   </View>
 }
 const styles = StyleSheet.create({

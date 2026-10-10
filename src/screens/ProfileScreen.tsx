@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, Switch, View } from 'react-native';
 import { Asset, Button, Card, Dialog, Field, Message, ScreenLayout, T } from '../components/ui';
-import { BottomTabs } from '../components/BottomTabs';
 import { colors as c, fonts } from '../theme/tokens';
 import type { FigmaAsset } from '../theme/assets';
 import { useAccount, errorMessage } from '../state/AccountProvider';
@@ -19,7 +18,7 @@ export function ProfileScreen({ navigate }: { navigate: (screen: Screen) => void
     { title: 'HELP & SUPPORT', rows: [{ label: 'Help Center & FAQs', icon: 'ca79e.svg' }, { label: 'Contact Support', icon: '2429c.svg' }] },
     { title: 'ABOUT', rows: [{ label: 'About App', icon: '9f637.svg', subtitle: 'Version 1.0 (Hi-Fi Prototype)' }] },
   ];
-  return <ScreenLayout contentStyle={{ paddingHorizontal: 20, paddingTop: 5, paddingBottom: 48, gap: 20 }} footer={<BottomTabs navigate={navigate} />}>
+  return <ScreenLayout contentStyle={{ paddingHorizontal: 20, paddingTop: 5, paddingBottom: 48, gap: 20 }}>
     <Card><View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}><View style={{ height: 64, width: 64, borderRadius: 64, backgroundColor: c.paleYellow, justifyContent: 'center', alignItems: 'center' }}><T style={{ fontFamily: fonts.semibold, fontSize: 20 }}>{initials}</T>{(account.preview || account.session?.user.email_confirmed_at) && <View style={{ position: 'absolute', right: 0, bottom: 0, width: 20, height: 20, backgroundColor: c.yellow, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }}><Asset name="bca05.svg" /></View>}</View><View style={{ flex: 1 }}><View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}><T style={{ fontSize: 16, fontFamily: fonts.semibold, flexShrink: 1 }}>{account.profile.displayName || 'Your profile'}</T>{(account.preview || account.session?.user.email_confirmed_at) && <Asset name="faffa.svg" />}</View><T style={{ fontSize: 13 }}>{account.email}</T></View></View><Pressable accessibilityRole="button" onPress={() => open('Edit Profile')} style={{ backgroundColor: c.paleYellow, minHeight: 44, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 4, borderRadius: 8 }}><Asset name="9d5f5.svg" /><T>Edit Profile</T></Pressable></Card>
     <Card><View style={{ gap: 2 }}><T style={{ fontSize: 16, fontFamily: fonts.semibold, lineHeight: 24 }}>My Dining Preferences</T><T style={{ fontSize: 12 }}>Default preferences automatically applied.</T></View>
       {category('FAVORITE CUISINES', p.cuisines, c.yellow, ['aca5a.svg', 'c90e9.svg', '0e519.svg'])}

@@ -9,7 +9,9 @@ import dimensions from '../../assets/figma/dimensions.json';
 export function T({ style, ...props }: TextProps) { return <Text {...props} style={[{ fontFamily: fonts.regular, color: c.ink, fontSize: 14, lineHeight: 20 }, style]} />; }
 export function Asset({ name, width, height }: { name: FigmaAsset; width?: number; height?: number }) {
   const size = (dimensions as Record<string, { width: number; height: number }>)[name];
-  return <Image source={figmaAssets[name]} contentFit="contain" accessibilityElementsHidden style={{ width: size?.width ?? width ?? 124, height: size?.height ?? height ?? 124 }} />;
+  const source = figmaAssets[name] as any;
+  if (name.endsWith('.svg')) { const Svg = source.default ?? source; return <Svg width={size?.width ?? width ?? 124} height={size?.height ?? height ?? 124} />; }
+  return <Image source={source} contentFit="contain" accessibilityElementsHidden style={{ width: size?.width ?? width ?? 124, height: size?.height ?? height ?? 124 }} />;
 }
 export function Button({ title, onPress, busy, disabled, style, small, icon }: { title: string; onPress: () => void; busy?: boolean; disabled?: boolean; style?: StyleProp<ViewStyle>; small?: boolean; icon?: FigmaAsset }) {
   return <Pressable accessibilityRole="button" accessibilityLabel={title} accessibilityState={{ disabled: disabled || busy, busy }} disabled={disabled || busy} onPress={onPress} style={({ pressed }) => [styles.button, small && { minHeight: 44, borderRadius: 8 }, style, { opacity: disabled || busy ? 0.55 : pressed ? 0.8 : 1 }]}>
@@ -28,7 +30,7 @@ export function Dialog({ title, visible, onClose, children }: React.PropsWithChi
 }
 export function DeviceFrame({ children }: React.PropsWithChildren) {
   const insets = useSafeAreaInsets();
-  return <View style={{ flex: 1, width: '100%', maxWidth: 430, backgroundColor: c.background, paddingTop: Platform.OS === 'web' ? 0 : insets.top, paddingBottom: Platform.OS === 'web' ? 0 : insets.bottom }}>
+  return <View style={{ flex: 1, width: '100%', maxWidth: 390, backgroundColor: c.background, paddingTop: Platform.OS === 'web' ? 0 : insets.top, paddingBottom: Platform.OS === 'web' ? 0 : insets.bottom }}>
     {Platform.OS === 'web' && <View style={styles.status}><T style={{ fontFamily: fonts.semibold, fontSize: 17 }}>9:41</T><View style={[styles.row, { gap: 7 }]}><Asset name="83135.svg" /><Asset name="9ed76.svg" /><Asset name="fe7dd.svg" /></View></View>}
     {children}
     {Platform.OS === 'web' && <View style={{ height: 24, alignItems: 'center', justifyContent: 'center' }}><View style={{ backgroundColor: '#181818', height: 5, width: 135, borderRadius: 100 }} /></View>}
