@@ -1,4 +1,5 @@
-import { describe,expect,it } from 'vitest';
+import { describe,expect,it,vi } from 'vitest';
+vi.mock('../assets',()=>({asset:(name:string)=>name}));
 import { castVote,consensus,pickRandom,rankRestaurants,validInviteCode,winningRestaurant } from './model';
 import { demoMembers,restaurants } from '../recommendations/data';
 import type { DiningRoom } from '../contracts';

@@ -10,4 +10,4 @@ export const demoMembers: User[] = [
   {id:'jamie',name:'Jamie',preferences:{cuisines:['Japanese','Mediterranean'],restrictions:['Vegetarian (Strict)'],budget:[15,35],distanceMiles:4}},
   {id:'taylor',name:'Taylor',preferences:{cuisines:['Japanese'],restrictions:['Peanut Allergy'],budget:[10,30],distanceMiles:5}}
 ];
-export const asset = (name: string) => `/assets/figma/${name}`;
+export { asset } from '../assets';

@@ -1,4 +1,9 @@
 import { Children, cloneElement, useEffect, useRef, useState, type ReactNode } from 'react';
+import { ScrollView, View, Text, TextInput, useWindowDimensions, StyleSheet, type ImageSourcePropType } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Clipboard from 'expo-clipboard';
+import { DesignText } from './native/Design';
+import { Button, Sheet, ui } from './native/Controls';
 import type { ChompModuleProps, DiningRoom, Restaurant } from './contracts';
 import { asset, demoMembers, restaurants } from './recommendations/data';
 import { castVote, pickRandom, validInviteCode, winningRestaurant } from './group/model';
@@ -28,32 +33,29 @@ export const screens = {
 export type Route=keyof typeof screens;
 const initialRoom=():DiningRoom=>({id:'demo-room',code:'EAT-404',name:'Friday Dinner Squad',dateTime:'Today, 7:30 PM',scope:'Downtown (5 mi)',members:demoMembers,invited:['taylor'],votes:[{userId:'alex',restaurantId:'oishii',method:'free'},{userId:'jamie',restaurantId:'oishii',method:'random'},{userId:'taylor',restaurantId:'oishii',method:'free'}]});
 type Saved={room:DiningRoom;selectedId:string;bookmarks:string[];method:'free'|'random'};
-function loadState():Saved {
-  try{const raw=JSON.parse(localStorage.getItem('chomp.yuhan.v1')??'null');if(raw?.room?.members?.length && restaurants.some(r=>r.id===raw.selectedId) && Array.isArray(raw.bookmarks))return raw;}catch{/* A stale demo session must not prevent starting. */}
-  return {room:initialRoom(),selectedId:'oishii',bookmarks:[],method:'free'};
-}
-function currentRoute():Route {const r=location.hash.slice(1);return r in screens?r as Route:'/group';}
+const defaultState=():Saved=>({room:initialRoom(),selectedId:'oishii',bookmarks:[],method:'free'});
+const storageKey='chomp.yuhan.native.v1';
 
-export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPreferences,onRestaurantSelected}:ChompModuleProps){
-  const [saved,setSaved]=useState(loadState);
-  const [route,setRoute]=useState<Route>(currentRoute);
+export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPreferences,onRestaurantSelected,route:providedRoute,onNavigate}:ChompModuleProps){
+  const [saved,setSaved]=useState(defaultState);
+  const [internalRoute,setInternalRoute]=useState<Route>('/group');
+  const route=providedRoute??internalRoute;
+  const [ready,setReady]=useState(false);
   const [inviteCode,setInviteCode]=useState('');
   const [notice,setNotice]=useState('');
   const [modal,setModal]=useState<{title:string;body:ReactNode}|null>(null);
-  const panel=useRef<HTMLDivElement>(null);
-  const dialog=useRef<HTMLDialogElement>(null);
-  const [width,setWidth]=useState(Math.min(390,window.innerWidth));
+  const panel=useRef<ScrollView>(null);
+  const width=Math.min(390,useWindowDimensions().width);
   const room=providedRoom??saved.room;
   const selectedId=route.startsWith('/group')?(room.votes.find(v=>v.userId===user.id)?.restaurantId??saved.selectedId):saved.selectedId;
   const selected=restaurants.find(r=>r.id===selectedId)??restaurants[0];
   const result=winningRestaurant(room,restaurants)??selected;
   const screen=screens[route];
-  useEffect(()=>{const listener=()=>{setRoute(currentRoute());panel.current?.scrollTo(0,0);};window.addEventListener('hashchange',listener);return()=>window.removeEventListener('hashchange',listener);},[]);
-  useEffect(()=>{try{localStorage.setItem('chomp.yuhan.v1',JSON.stringify(saved));}catch{/* Demo remains usable without storage. */}},[saved]);
-  useEffect(()=>{const resize=()=>setWidth(Math.min(390,window.innerWidth));window.addEventListener('resize',resize);return()=>window.removeEventListener('resize',resize);},[]);
+  useEffect(()=>{let active=true;AsyncStorage.getItem(storageKey).then(raw=>{if(!active)return;try{const value=JSON.parse(raw??'null');if(value?.room?.members?.length&&restaurants.some(r=>r.id===value.selectedId)&&Array.isArray(value.bookmarks))setSaved(value);}catch{}setReady(true);}).catch(()=>{if(active)setReady(true);});return()=>{active=false;};},[]);
+  useEffect(()=>{if(ready)void AsyncStorage.setItem(storageKey,JSON.stringify(saved)).catch(()=>{});},[saved,ready]);
+  useEffect(()=>{panel.current?.scrollTo({y:0,animated:false});},[route]);
   useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(''),3500);return()=>clearTimeout(timer);},[notice]);
-  useEffect(()=>{if(modal)dialog.current?.showModal();else dialog.current?.close();},[modal]);
-  function go(next:Route){location.hash=next;setRoute(next);setNotice('');panel.current?.scrollTo(0,0);}
+  function go(next:Route){setInternalRoute(next);onNavigate?.(next);setNotice('');panel.current?.scrollTo({y:0,animated:false});}
   function updateRoom(next:DiningRoom){setSaved(s=>({...s,room:next}));onRoomChange?.(next);}
   function vote(restaurant:Restaurant,method:'free'|'random'){
     const updated=castVote(room,{userId:user.id,restaurantId:restaurant.id,method});
@@ -61,7 +63,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
     setSaved(s=>({...s,selectedId:restaurant.id,method,room:updated}));go(method==='random'?'/group/random-vote':'/group/vote');
   }
   function showAction(kind:'Directions'|'Call Table'|'View Menu',restaurant:Restaurant){
-    const body=kind==='View Menu'?<ul className="menu-items">{restaurant.menu.map(item=><li key={item.name}><span>{item.name}</span><strong>${item.price}</strong></li>)}</ul>:kind==='Directions'?<p>{restaurant.name} is {restaurant.distanceMiles} miles away. Walking and driving details are sample data for this HiFi.</p>:<p>Table availability for {restaurant.name} is a demonstration. No phone call will be placed.</p>;
+    const body=kind==='View Menu'?<View style={{gap:12}}>{restaurant.menu.map(item=><View key={item.name} style={{flexDirection:'row',justifyContent:'space-between',gap:12}}><Text style={ui.body}>{item.name}</Text><Text style={ui.buttonText}>${item.price}</Text></View>)}</View>:<Text style={ui.body}>{kind==='Directions'?`${restaurant.name} is ${restaurant.distanceMiles} miles away. Walking and driving details are sample data for this HiFi.`:`Table availability for ${restaurant.name} is a demonstration. No phone call will be placed.`}</Text>;
     setModal({title:kind==='View Menu'?restaurant.name:kind,body});
   }
   function preferences(){
@@ -83,16 +85,16 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   action('281:23257','Back to group options',()=>go('/group'));
   action('281:23013','Create Room',()=>{updateRoom(initialRoom());go('/group/create');});
   action('281:23040','Join Room',join);
-  bindings['281:23034']={children:<input className="invite-input" aria-label="Invite code" placeholder="e.g. EAT-404" value={inviteCode} maxLength={7} onChange={e=>setInviteCode(e.target.value.toUpperCase())} onKeyDown={e=>{if(e.key==='Enter')join();}}/>};
-  bindings['281:23269']={children:<input className="group-input" aria-label="Group name" value={room.name} maxLength={40} onChange={e=>updateRoom({...room,name:e.target.value})}/>};
+  bindings['281:23034']={children:<TextInput style={ui.input} accessibilityLabel="Invite code" placeholder="e.g. EAT-404" placeholderTextColor="#9c8a7c" value={inviteCode} maxLength={7} autoCapitalize="characters" autoCorrect={false} onChangeText={value=>setInviteCode(value.toUpperCase())} onSubmitEditing={join} returnKeyType="go"/>};
+  bindings['281:23269']={children:<TextInput style={[ui.input,{fontSize:16,fontFamily:'Jakarta700'}]} accessibilityLabel="Group name" value={room.name} maxLength={40} onChangeText={name=>updateRoom({...room,name})}/>};
   action('281:23272','Clear group name',()=>updateRoom({...room,name:''}));
   text(['281:23290'],route==='/group/join'?'Group information':'Start group feast');
   text(['281:23306'],room.code);
   text(['281:23283'],room.dateTime);
   text(['281:23288'],room.scope);
-  action('281:23279','Change dinner time',()=>setModal({title:'Dinner time',body:<input type="datetime-local" aria-label="Dinner date and time" onChange={e=>{if(e.target.value)updateRoom({...room,dateTime:new Date(e.target.value).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})});}}/>}));
-  action('281:23284','Change dining area',()=>setModal({title:'Dining area',body:<select aria-label="Dining area" value={room.scope} onChange={e=>updateRoom({...room,scope:e.target.value})}><option>Downtown (5 mi)</option><option>Midtown (3.5 mi)</option><option>Nearby (1 mi)</option></select>}));
-  action('281:23307','Copy Code',async()=>{try{await navigator.clipboard.writeText(room.code);setNotice('Invite code copied.');}catch{setModal({title:'Invite code',body:<input aria-label="Copy invite code" readOnly value={room.code} onFocus={e=>e.target.select()}/>});}});
+  action('281:23279','Change dinner time',()=>setModal({title:'Dinner time',body:<View style={{gap:12}}><Text style={ui.body}>Choose a dinner time or enter your own.</Text>{['Today, 7:30 PM','Tomorrow, 7:00 PM'].map(dateTime=><Button key={dateTime} secondary onPress={()=>{updateRoom({...room,dateTime});setModal(null);}}>{dateTime}</Button>)}<TextInput accessibilityLabel="Dinner date and time" style={ui.field} defaultValue={room.dateTime} onEndEditing={e=>{if(e.nativeEvent.text.trim())updateRoom({...room,dateTime:e.nativeEvent.text.trim()});}}/></View>}));
+  action('281:23284','Change dining area',()=>setModal({title:'Dining area',body:<View style={{gap:12}}>{['Downtown (5 mi)','Midtown (3.5 mi)','Nearby (1 mi)'].map(scope=><Button key={scope} secondary onPress={()=>{updateRoom({...room,scope});setModal(null);}}>{scope}</Button>)}</View>}));
+  action('281:23307','Copy Code',async()=>{try{await Clipboard.setStringAsync(room.code);setNotice('Invite code copied.');}catch{setModal({title:'Invite code',body:<Text selectable style={ui.title}>{room.code}</Text>});}});
   action('281:23382',room.invited.includes('david')?'Invited':'Invite David',()=>{updateRoom({...room,invited:[...new Set([...room.invited,'david'])]});setNotice('David added to the demo invitation list.');});
   if(room.invited.includes('david'))text(['281:23386'],'Invited');
   action('281:23397','Next: Set Dining Preferences',preferences);
@@ -104,7 +106,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   restaurants.forEach((r,i)=>{
     action(soloCtas[i],`Chomp at ${r.name}`,()=>{setSaved(s=>({...s,selectedId:r.id}));onRestaurantSelected?.(r);go('/recommendations/result');});
     action(groupCtas[i],`Vote for ${r.name}`,()=>vote(r,'free'));
-    [hearts[i],hearts[i+3]].forEach(id=>{action(id,`${saved.bookmarks.includes(r.id)?'Unsave':'Save'} ${r.name}`,()=>setSaved(s=>({...s,bookmarks:s.bookmarks.includes(r.id)?s.bookmarks.filter(x=>x!==r.id):[...s.bookmarks,r.id]})));bindings[id].props={'aria-pressed':saved.bookmarks.includes(r.id),'data-saved':saved.bookmarks.includes(r.id)};});
+    [hearts[i],hearts[i+3]].forEach(id=>{action(id,`${saved.bookmarks.includes(r.id)?'Unsave':'Save'} ${r.name}`,()=>setSaved(s=>({...s,bookmarks:s.bookmarks.includes(r.id)?s.bookmarks.filter(x=>x!==r.id):[...s.bookmarks,r.id]})));bindings[id].props={accessibilityState:{selected:saved.bookmarks.includes(r.id)},style:saved.bookmarks.includes(r.id)?{backgroundColor:'#ffd43b'}:undefined};});
   });
   action('294:25235','Spin Between These 3',()=>vote(pickRandom(restaurants),'random'));
   ['312:26550','312:26389'].forEach(id=>action(id,'View Result',()=>{const winner=winningRestaurant(room,restaurants);if(!winner){setNotice('Waiting for everyone to vote.');return;}onRestaurantSelected?.(winner,room);go('/group/result');}));
@@ -118,30 +120,31 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   text(['312:26470','309:26242'],selected.rating);
   text(['312:26476','309:26248'],`${selected.cuisine} • ${selected.category}`);
   text(['258:22656'],`${selected.cuisine} • ${selected.category} • $${selected.price.join('–')} • ${selected.distanceMiles} miles away`);
+  text(['312:26444','309:26176'],<>You voted for <DesignText style={{fontFamily:'Jakarta700'}}>{selected.name}</DesignText> in the Chomp poll. Your squad will see your vote counted.</>);
+    ['312:26444','309:26176'].forEach(id=>bindings[id].props={className:'v327',style:{width:350,fontSize:12,lineHeight:17}});
   if(selected.id!=='oishii'){
-    text(['312:26444','309:26176'],<>You voted for <strong>{selected.name}</strong> in the Chomp poll. Your squad will see your vote counted.</>);
-    ['312:26444','309:26176'].forEach(id=>bindings[id].props={className:'v327 dynamic-vote-description'});
     text(['258:22647'],`${selected.rating} (${selected.reviews})`);
     text(['258:22662'],selected.perks[0]);text(['258:22664'],selected.perks[1]);text(['258:22666'],selected.perks[2]);
   }
   // Images supplied by restaurant data stay dynamic, with each design's crop retained.
   function dynamicImages(node:ReactNode):ReactNode{
     if(!node || typeof node!=='object' || !('props' in node))return node;
-    const element=node as import('react').ReactElement<{children?:ReactNode;src?:string;alt?:string;style?:Record<string,unknown>;className?:string}>;
+    const element=node as import('react').ReactElement<{children?:ReactNode;src?:ImageSourcePropType;alt?:string;contentFit?:'fill'|'cover';style?:Record<string,unknown>;className?:string}>;
     const src=element.props.src;
     const restaurant=route==='/group/result'?result:selected;
-    if(src && /\/(91d18|f37ad)\.png$/.test(src)){
-      const imageName=src.endsWith('f37ad.png')?restaurant.voteImage:restaurant.resultImage;
-      return cloneElement(element,{src:asset(imageName),alt:restaurant.name,...(restaurant.id!=='oishii'?{style:{...element.props.style,inset:0,width:'100%',height:'100%',objectFit:'cover'}}:{})});
+    if(src && (src===asset('91d18.png')||src===asset('f37ad.png'))){
+      const imageName=src===asset('f37ad.png')?restaurant.voteImage:restaurant.resultImage;
+      return cloneElement(element,{src:asset(imageName),alt:restaurant.name,...(restaurant.id!=='oishii'?{contentFit:'cover' as const,style:{...element.props.style,top:0,left:0,right:0,bottom:0,width:'100%',height:'100%'}}:{})});
     }
     return cloneElement(element,{children:Children.map(element.props.children,dynamicImages)});
   }
   const view=dynamicImages(bindView(screen.view(),bindings));
-  return <>
-    <div className="phone-scroll" ref={panel} style={{width}} aria-label={screen.label}>
-      <div style={{height:screen.height*width/390,width}}><div className="phone-canvas" style={{height:screen.height,transform:`scale(${width/390})`}}>{view}</div></div>
-    </div>
-    {notice&&<div role="status" className="toast">{notice}</div>}
-    <dialog ref={dialog} className="chomp-dialog" onCancel={()=>setModal(null)} onClick={e=>{if(e.target===dialog.current)setModal(null);}}><h2>{modal?.title}</h2>{modal?.body}<button className="primary" onClick={()=>setModal(null)}>Done</button></dialog>
-  </>;
+  return <View style={{flex:1,alignItems:'center',backgroundColor:'#fff8f4'}}>
+    <ScrollView ref={panel} style={{width}} contentContainerStyle={{minHeight:844*width/390}} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} accessibilityLabel={screen.label}>
+      <View style={{height:screen.height*width/390,width,overflow:'hidden'}}><View style={{width:390,height:screen.height,transform:[{scale:width/390}],transformOrigin:'top left'}}>{view}</View></View>
+    </ScrollView>
+    {!!notice&&<View accessibilityLiveRegion="polite" style={nativeStyles.toast}><Text style={{color:'#fff',fontFamily:'Jakarta500',textAlign:'center'}}>{notice}</Text></View>}
+    <Sheet visible={!!modal} title={modal?.title??''} onClose={()=>setModal(null)}>{modal?.body}</Sheet>
+  </View>;
 }
+const nativeStyles=StyleSheet.create({toast:{position:'absolute',bottom:40,left:24,right:24,maxWidth:350,alignSelf:'center',backgroundColor:'#251e14',padding:16,borderRadius:20}});

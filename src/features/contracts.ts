@@ -20,6 +20,8 @@ export interface DiningRoom {
 export interface Receipt { id: string; restaurantId: string; roomId?: string }
 export interface ChompModuleProps {
   user: User;
+  route?: import('./ChompModule').Route;
+  onNavigate?: (route: import('./ChompModule').Route) => void;
   room?: DiningRoom;
   onRoomChange?: (room: DiningRoom) => void;
   onHome?: () => void;
