@@ -1,8 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { NavigationContainer, DefaultTheme, createNavigationContainerRef } from '@react-navigation/native';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { NavigationContainer, DefaultTheme, getStateFromPath, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator, type NativeStackScreenProps, type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { createBottomTabNavigator, type BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { CompositeScreenProps } from '@react-navigation/native';
+import * as Linking from 'expo-linking';
+import type { LinkingOptions } from '@react-navigation/native';
+import { linkConfig, linkFallback } from './linking';
 import { BottomNavigation } from './BottomNavigation';
 import type { MainTabParamList, RootStackParamList } from './types';
 import type { Screen } from '../types/models';
@@ -45,9 +48,21 @@ function MainTabs() { return <Tabs.Navigator initialRouteName="Decide" tabBar={p
 function NotFound({ navigation }: Props<'NotFound'>) { return <ScreenLayout contentStyle={{ padding: 24, gap: 20 }}><T>Page not found.</T><Button title="Back to Decide" onPress={() => navigation.navigate('Main', { screen: 'Decide' })} /></ScreenLayout>; }
 export function AppNavigator({ initialPreview, onReady }: { initialPreview?: Screen | null; onReady?: () => void }) {
   const a = useAccount(), signedIn = !!a.session || a.preview, ready = a.onboarded || a.preview;
+  const linking = useMemo<LinkingOptions<RootStackParamList>>(() => ({
+    prefixes: ['chomp://', Linking.createURL('/')], config: linkConfig,
+    getStateFromPath: (path, options) => {
+      // Supabase owns email confirmation, recovery and OAuth callbacks.
+      if (path.split(/[?#]/)[0].replace(/^\//, '') === 'auth/callback') return undefined;
+      const state = getStateFromPath(path, options);
+      if (!state) return state;
+      const root = state.routes[state.index ?? state.routes.length - 1];
+      const fallback = linkFallback(root.name, signedIn, ready, a.preview);
+      return fallback ? { routes: [{ name: fallback }] } : state;
+    },
+  }), [signedIn, ready, a.preview]);
   const wasOnboarded = useRef(a.onboarded);
   useEffect(() => { if (!a.preview && !wasOnboarded.current && a.onboarded && navigationRef.isReady()) navigationRef.resetRoot({ index: 0, routes: [{ name: 'Main' }] }); wasOnboarded.current = a.onboarded; }, [a.onboarded, a.preview]);
-  return <NavigationContainer ref={navigationRef} onReady={() => { if (initialPreview) navigatePreview(initialPreview); onReady?.(); }} theme={{ ...DefaultTheme, colors: { ...DefaultTheme.colors, background: theme.colors.background, card: theme.colors.surface, text: theme.colors.ink, primary: theme.colors.primary } }}>
+  return <NavigationContainer linking={linking} ref={navigationRef} onReady={() => { if (initialPreview) navigatePreview(initialPreview); onReady?.(); }} theme={{ ...DefaultTheme, colors: { ...DefaultTheme.colors, background: theme.colors.background, card: theme.colors.surface, text: theme.colors.ink, primary: theme.colors.primary } }}>
     <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.colors.background } }}>
       {signedIn ? <Stack.Group navigationKey={a.preview ? 'preview' : 'account'}>{ready ? <Stack.Screen name="Main" component={MainTabs} /> : null}<Stack.Screen name="Preferences" component={Preferences} options={{ gestureEnabled: false }} />{ready && <><Stack.Screen name="ProfilePreferences" component={ProfilePreferences} options={{ gestureEnabled: false }} /><Stack.Screen name="DecidePreferences" component={MealPreferences} options={{ gestureEnabled: false }} /><Stack.Screen name="Recommendations" component={RecommendationsScreen} /><Stack.Screen name="Restaurant" component={RestaurantScreen} /><Stack.Screen name="Group" component={GroupScreen} /><Stack.Screen name="GroupRoom" component={GroupRoomScreen} /><Stack.Screen name="GroupConsensus" component={ConsensusScreen} /><Stack.Screen name="GroupVote" component={GroupVoteScreen} /><Stack.Screen name="History" component={HistoryScreen} /><Stack.Screen name="SplitScan" component={SplitScanScreen} /><Stack.Screen name="SplitReceipt" component={SplitReceiptScreen} /><Stack.Screen name="NotFound" component={NotFound} /></>}{a.preview && <><Stack.Screen name="Welcome" component={Welcome} /><Stack.Screen name="SignIn" component={SignIn} /><Stack.Screen name="SignUp" component={SignUp} /></>}</Stack.Group> : <Stack.Group navigationKey="guest"><Stack.Screen name="Welcome" component={Welcome} /><Stack.Screen name="SignIn" component={SignIn} /><Stack.Screen name="SignUp" component={SignUp} /></Stack.Group>}
     </Stack.Navigator>

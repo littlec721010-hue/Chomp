@@ -86,3 +86,11 @@ macOS 如遇 Metro `EMFILE`，安装 Watchman：`brew install watchman`。仅预
 - 三条来源分支的提交历史保留在整合分支内。
 
 参考：[Expo 项目配置](https://docs.expo.dev/get-started/create-a-project/)、[Supabase React Native Auth](https://supabase.com/docs/guides/auth/quickstarts/react-native)。
+
+## 整合修复：页面地址与 Recent Chomps
+
+`src/navigation/linking.ts` 统一页面 URL，包括 `/decide`、`/split`、`/profile`、`/sign-in`、`/sign-up`、`/preferences`、`/history`、`/split/scan`、`/split/receipt`、`/restaurants/:id` 和群组流程。导航 URL 配置不会绕过账号状态：未登录先进入欢迎页，未完成首次偏好设置进入 Preferences；已登录或本地预览可进入对应功能页。`auth/callback` 留给 Supabase 的验证、OAuth 和恢复流程处理。
+
+Recent Chomps 和 See all 共用 DiningProvider.recent。预览模式补充当前目录中的三家有效示例餐厅，按选择顺序置顶并去重；真实账号只显示本次会话选择记录。横向滑动、网页鼠标拖动和卡片停靠仍保留。示例仅三家，不再显示无法打开详情的虚构餐厅卡片。
+
+新增回归检查在 `tests/integration-links.test.ts`；地址往返、参数解析、账号限制与历史列表一致性均有覆盖。

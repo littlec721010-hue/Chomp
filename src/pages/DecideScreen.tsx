@@ -16,12 +16,7 @@ import Wifi from '../../public/assets/navigation/wifi.svg'
 import Cellular from '../../public/assets/navigation/cellular.svg'
 
 type Props = { onSolo: () => void; onGroup: () => void; onHistory: () => void; onRestaurant: (id: string) => void }
-// Local demo history. The first two cards preserve the Version3 examples.
 const restaurantPhotos: Record<string, number> = { oishii: require('../../public/assets/figma/06631.png'), pasta: require('../../public/assets/figma/cec1d.png'), taqueria: require('../../public/assets/figma/73440.png') };
-const sampleRecent = [
-  { id: 'oishii', name: 'Oishii Ramen & Izakaya', cuisine: 'Japanese', distance: '0.4 mi', image: require('../assets/decide/62333.png'), imageWidth: '103.53%' as const, imageLeft: '-1.77%' as const },
-  { id: 'pasta', name: 'Pasta Fresca Handcrafted', cuisine: 'Italian', distance: '1.1 mi', image: require('../assets/decide/38e36.png'), imageWidth: '106.13%' as const, imageLeft: '-3.06%' as const },
-]
 function Choice({group=false,onPress}: {group?:boolean;onPress:()=>void}) {
   const Badge = group ? GroupBadge : SoloBadge
   const Illustration = group ? GroupPeople : SoloPerson
@@ -38,7 +33,7 @@ function Choice({group=false,onPress}: {group?:boolean;onPress:()=>void}) {
 }
 export function DecideScreen({onSolo,onGroup,onHistory,onRestaurant}:Props) {
   const dining = useDining();
-  const recent = dining.history.length ? dining.history.map(r => ({ ...sampleRecent[r.id === 'pasta' ? 1 : 0], image: restaurantPhotos[r.id], id: r.id, name: r.name, cuisine: r.cuisine, distance: `${r.distanceMiles} mi` })) : sampleRecent;
+  const recent = dining.recent.map(r => ({ image: restaurantPhotos[r.id], id: r.id, name: r.name, cuisine: r.cuisine, distance: r.distanceMiles + ' mi' }));
   const tray = useRef<ScrollView>(null)
   const offset = useRef(0)
   const drag = useRef<{ startX: number; startOffset: number } | null>(null)
@@ -50,6 +45,7 @@ export function DecideScreen({onSolo,onGroup,onHistory,onRestaurant}:Props) {
       <View style={styles.choices}><Choice onPress={onSolo}/><Choice group onPress={onGroup}/></View>
       <View style={styles.recent}>
         <View style={styles.recentHeader}><View style={styles.recentLabel}><History/><Text style={styles.recentTitle}>{dining.history.length ? 'Recent Chomps' : 'Sample Chomps'}</Text></View><Pressable accessibilityRole="link" hitSlop={8} onPress={onHistory}><Text style={styles.seeAll}>View history ({dining.history.length})</Text></Pressable></View>
+        {!recent.length && <Text style={styles.meta}>Your choices from this session will appear here.</Text>}
         <ScrollView ref={tray} horizontal nestedScrollEnabled directionalLockEnabled showsHorizontalScrollIndicator={false}
           snapToInterval={202} decelerationRate="fast" scrollEventThrottle={16}
           onScroll={event => { offset.current = event.nativeEvent.contentOffset.x }}
@@ -60,7 +56,7 @@ export function DecideScreen({onSolo,onGroup,onHistory,onRestaurant}:Props) {
             if (Math.abs(distance) > 5) { suppressClickUntil.current = Date.now() + 250; tray.current?.scrollTo({ x: Math.max(0, drag.current.startOffset - distance), animated: false }) }
           }}
           onPointerUp={() => { drag.current = null }} onPointerCancel={() => { drag.current = null }} contentContainerStyle={styles.tray} style={styles.trayViewport}>
-          {recent.map(item=><View key={item.id} style={styles.restaurant}><View style={styles.photo}><Image source={item.image} accessibilityLabel={item.name} resizeMode="stretch" style={[styles.image,{width:item.imageWidth,left:item.imageLeft}]}/></View><View><Text numberOfLines={1} style={styles.restaurantName}>{item.name}</Text><Text style={styles.meta}>{item.cuisine} • {item.distance}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={`Chomp again at ${item.name}`} onPress={()=>{if(Date.now() >= suppressClickUntil.current) onRestaurant(item.id)}} style={({pressed})=>[styles.again,pressed&&styles.pressed]}><Repeat/><Text style={styles.againText}>Chomp Again</Text></Pressable></View>)}
+          {recent.map(item=><View key={item.id} style={styles.restaurant}><View style={styles.photo}><Image source={item.image} accessibilityLabel={item.name} resizeMode="cover" style={[styles.image,{width:'100%',left:0}]}/></View><View><Text numberOfLines={1} style={styles.restaurantName}>{item.name}</Text><Text style={styles.meta}>{item.cuisine} • {item.distance}</Text></View><Pressable accessibilityRole="button" accessibilityLabel={`Chomp again at ${item.name}`} onPress={()=>{if(Date.now() >= suppressClickUntil.current) onRestaurant(item.id)}} style={({pressed})=>[styles.again,pressed&&styles.pressed]}><Repeat/><Text style={styles.againText}>Chomp Again</Text></Pressable></View>)}
         </ScrollView>
       </View>
     </ScrollView>

@@ -1,0 +1,33 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { getStateFromPath, getPathFromState } from '@react-navigation/core';
+import { linkConfig, linkFallback } from '../src/navigation/linking';
+import { recentChomps } from '../src/features/history';
+import { restaurants } from '../src/features/recommendations/data';
+test('page URLs resolve and round-trip to the original nested screens', () => {
+  for (const [path, name, tab] of [['/decide','Main','Decide'],['/split','Main','Split'],['/profile','Main','Profile'],['/split/scan','SplitScan',null],['/split/receipt','SplitReceipt',null],['/sign-in','SignIn',null],['/sign-up','SignUp',null],['/history','History',null]] as const) {
+    const state = getStateFromPath(path, linkConfig)!;
+    assert.equal(state.routes.at(-1)?.name, name);
+    if (tab) assert.equal(state.routes.at(-1)?.state?.routes.at(-1)?.name, tab);
+    assert.equal(getPathFromState(state, linkConfig), path);
+  }
+});
+test('restaurant ids and group flags survive links', () => {
+  const state = getStateFromPath('/restaurants/oishii?group=true', linkConfig)!;
+  assert.deepEqual(state.routes.at(-1)?.params,{id:'oishii',group:true});
+  assert.equal((getStateFromPath('/recommendations?group=false',linkConfig)!.routes.at(-1)?.params as {group:boolean}).group,false);
+});
+test('links respect signed-out, onboarding and signed-in navigation', () => {
+  assert.equal(linkFallback('SplitScan', false, false, false),'Welcome');
+  assert.equal(linkFallback('Main', true, false, false),'Preferences');
+  assert.equal(linkFallback('SignIn', true, true, false),'Main');
+  assert.equal(linkFallback('SignIn', true, true, true),undefined);
+  assert.equal(linkFallback('SplitScan', true, true, false),undefined);
+});
+test('homepage and history use the same unique list with selected restaurants first', () => {
+  const samples=[restaurants[0],restaurants[2],restaurants[1]];
+  assert.equal(recentChomps([],samples).length,3);
+  assert.deepEqual(recentChomps([restaurants[1]],samples).map(r=>r.id),['taqueria','oishii','pasta']);
+  assert.deepEqual(recentChomps([]),[]);
+  assert.deepEqual(recentChomps([restaurants[1],restaurants[1]]).map(r=>r.id),['taqueria']);
+});
