@@ -44,7 +44,7 @@ export function DecideScreen({onSolo,onGroup,onHistory,onRestaurant}:Props) {
       <View style={styles.hook}><Text style={styles.title}>What are we eating{'\n'}today?</Text><Text style={styles.subtitle}>No debates, no endless scrolling. Just good food.</Text></View>
       <View style={styles.choices}><Choice onPress={onSolo}/><Choice group onPress={onGroup}/></View>
       <View style={styles.recent}>
-        <View style={styles.recentHeader}><View style={styles.recentLabel}><History/><Text style={styles.recentTitle}>{dining.history.length ? 'Recent Chomps' : 'Sample Chomps'}</Text></View><Pressable accessibilityRole="link" hitSlop={8} onPress={onHistory}><Text style={styles.seeAll}>View history ({dining.history.length})</Text></Pressable></View>
+        <View style={styles.recentHeader}><View style={styles.recentLabel}><History/><Text style={styles.recentTitle}>Recent Chomps</Text></View><Pressable accessibilityRole="link" hitSlop={8} onPress={onHistory}><Text style={styles.seeAll}>See all ({recent.length})</Text></Pressable></View>
         {!recent.length && <Text style={styles.meta}>Your choices from this session will appear here.</Text>}
         <ScrollView ref={tray} horizontal nestedScrollEnabled directionalLockEnabled showsHorizontalScrollIndicator={false}
           snapToInterval={202} decelerationRate="fast" scrollEventThrottle={16}

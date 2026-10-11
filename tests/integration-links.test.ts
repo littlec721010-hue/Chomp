@@ -5,7 +5,7 @@ import { linkConfig, linkFallback } from '../src/navigation/linking';
 import { recentChomps } from '../src/features/history';
 import { restaurants } from '../src/features/recommendations/data';
 test('page URLs resolve and round-trip to the original nested screens', () => {
-  for (const [path, name, tab] of [['/decide','Main','Decide'],['/split','Main','Split'],['/profile','Main','Profile'],['/split/scan','SplitScan',null],['/split/receipt','SplitReceipt',null],['/sign-in','SignIn',null],['/sign-up','SignUp',null],['/history','History',null]] as const) {
+  for (const [path, name, tab] of [['/decide','Main','Decide'],['/decide/preferences','DecidePreferences',null],['/recommendations','Recommendations',null],['/split','Main','Split'],['/profile','Main','Profile'],['/split/scan','SplitScan',null],['/split/receipt','SplitReceipt',null],['/sign-in','SignIn',null],['/sign-up','SignUp',null],['/history','History',null]] as const) {
     const state = getStateFromPath(path, linkConfig)!;
     assert.equal(state.routes.at(-1)?.name, name);
     if (tab) assert.equal(state.routes.at(-1)?.state?.routes.at(-1)?.name, tab);
@@ -16,6 +16,12 @@ test('restaurant ids and group flags survive links', () => {
   const state = getStateFromPath('/restaurants/oishii?group=true', linkConfig)!;
   assert.deepEqual(state.routes.at(-1)?.params,{id:'oishii',group:true});
   assert.equal((getStateFromPath('/recommendations?group=false',linkConfig)!.routes.at(-1)?.params as {group:boolean}).group,false);
+  const edit = getStateFromPath('/decide/preferences/edit?group=true&surprise=false', linkConfig)!;
+  assert.equal(edit.routes.at(-1)?.name, 'DecideEditPreferences');
+  assert.deepEqual(edit.routes.at(-1)?.params, { group: true, surprise: false });
+  const confirmation = getStateFromPath('/decide/preferences?customized=true&group=false', linkConfig)!;
+  assert.equal(confirmation.routes.at(-1)?.name, 'DecidePreferences');
+  assert.deepEqual(confirmation.routes.at(-1)?.params, { customized: true, group: false });
 });
 test('links respect signed-out, onboarding and signed-in navigation', () => {
   assert.equal(linkFallback('SplitScan', false, false, false),'Welcome');

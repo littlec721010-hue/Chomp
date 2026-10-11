@@ -10,7 +10,10 @@ test('preference bridge normalizes known restrictions and preserves unsupported 
   const before = structuredClone(samplePreferences), converted = diningPreferences(samplePreferences);
   assert.deepEqual(converted.restrictions, ['Gluten-Free', 'Peanut Allergy', 'Shellfish']);
   assert.deepEqual(converted.dislikedFoods, samplePreferences.dislikedFoods);
-  assert.equal(rankRestaurants(restaurants, [{...demoMembers[0], preferences: converted}]).length, 0);
+  assert.equal(rankRestaurants(restaurants, [{...demoMembers[0], preferences: converted}]).length, 3);
+  const unsupported=diningPreferences({...samplePreferences,allergens:['Sesame']});
+  assert.ok(unsupported.restrictions.includes('Sesame'));
+  assert.equal(rankRestaurants(restaurants,[{...demoMembers[0],preferences:unsupported}]).length,0);
   converted.cuisines.push('Thai'); assert.deepEqual(samplePreferences, before);
   assert.equal(diningPreferences({...emptyPreferences,travelMiles:null}).distanceMiles, Infinity);
 });

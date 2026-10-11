@@ -10,7 +10,8 @@ export function consensus(members: User[]) {
 export function rankRestaurants(list: Restaurant[], members: User[]): Restaurant[] {
   if(!members.length) return [];
   const c=consensus(members);
-  return list.filter(r=>c.restrictions.every(x=>r.supports.includes(x)) && r.distanceMiles<=c.distanceMiles && c.budgetOverlap && r.price[0]<=c.budget[1] && r.price[1]>=c.budget[0]).sort((a,b)=>{
+  const disliked=new Set(members.flatMap(m=>m.preferences.dislikedFoods??[]).map(food=>food.trim().toLowerCase()));
+  return list.filter(r=>c.restrictions.every(x=>r.supports.includes(x)) && !(r.ingredients??[]).some(food=>disliked.has(food.trim().toLowerCase())) && r.distanceMiles<=c.distanceMiles && c.budgetOverlap && r.price[0]<=c.budget[1] && r.price[1]>=c.budget[0]).sort((a,b)=>{
     const score=(r: Restaurant)=>members.filter(m=>m.preferences.cuisines.includes(r.cuisine)).length*10+r.rating;
     return score(b)-score(a);
   });

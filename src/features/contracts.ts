@@ -8,6 +8,7 @@ export interface Preferences {
 }
 export interface User { id: string; name: string; preferences: Preferences }
 export interface Restaurant {
+  isMock?: boolean; ingredients?: string[];
   id: string; name: string; cuisine: string; category: string;
   price: [number, number]; distanceMiles: number; rating: number; reviews: string;
   cardImage: string; resultImage: string; voteImage: string;
