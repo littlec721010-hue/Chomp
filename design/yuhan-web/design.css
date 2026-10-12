@@ -1,0 +1,426 @@
+.v0{--tx:-50%;transform:translate(var(--tx,0),var(--ty,0));position:absolute;background-color:#181818;bottom:8px;height:5px;left:50%;border-radius:100px;width:135px}
+.v1{background-color:#fff8f4;position:relative;width:100%;height:100%}
+.v2{position:absolute;background-color:#fff8f4;height:1387px;left:20px;top:57px;width:350px}
+.v3{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:20px;padding-top:4px;right:12px;top:57px}
+.v4{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;position:relative;flex-shrink:0;width:100%}
+.v5{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:24px;letter-spacing:-0.65px;width:100%}
+.v6{line-height:32px}
+.v7{position:absolute;display:block;cursor:pointer;height:24px;left:20px;top:36px;width:12px}
+.v8{position:absolute;display:block;inset:0;max-width:none;width:100%;height:100%}
+.v9{position:absolute;background-color:#fff1e5;align-content:stretch;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;gap:8px;align-items:center;left:20px;padding:16px;right:20px;border-radius:16px;top:102px}
+.v10{background-color:rgba(254,125,94,0.2);align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:32px;height:32px}
+.v11{position:relative;flex-shrink:0;width:16.5px;height:16.5px}
+.v12{height:38.5px;position:relative;flex-shrink:0;width:278px}
+.v13{--ty:-50%;transform:translate(var(--tx,0),var(--ty,0));overflow-wrap:break-word;position:absolute;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;left:-1px;color:#251e14;font-size:14px;top:19px;white-space:nowrap}
+.v14{line-height:19.25px}
+.v15{overflow-wrap:break-word;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;line-height:19.25px;color:#251e14}
+.v16{position:absolute;background-color:white;align-content:stretch;display:flex;flex-direction:column;isolation:isolate;align-items:flex-start;left:21px;overflow:clip;right:19px;border-radius:28px;box-shadow:0px 8px 24px -4px rgba(62,45,18,0.1);top:182px}
+.v17{align-content:stretch;display:flex;flex-direction:column;height:176px;align-items:flex-start;justify-content:center;overflow:clip;position:relative;flex-shrink:0;width:100%;z-index:2}
+.v18{flex:1 0 0;min-height:1px;position:relative;width:100%}
+.v19{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.v20{position:absolute;height:356.01%;left:0;max-width:none;top:-128%;width:100%}
+.v21{position:absolute;background-image:linear-gradient(to top,rgba(0,0,0,.6),transparent 50%,rgba(0,0,0,.2));inset:0}
+.v22{position:absolute;backdrop-filter:blur(6px);background-color:rgba(255,255,255,0.9);align-content:stretch;display:flex;align-items:center;left:12px;padding-left:12px;padding-right:12px;padding-top:6px;padding-bottom:6px;border-radius:9999px;box-shadow:0px 1px 2px 0px rgba(0,0,0,0.05);top:12px}
+.v23{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#a53b22;font-size:13px;white-space:nowrap}
+.v24{line-height:18px}
+.v25{position:absolute;backdrop-filter:blur(6px);background-color:rgba(255,255,255,0.8);align-content:stretch;display:flex;align-items:center;justify-content:center;right:12px;border-radius:9999px;width:36px;height:36px;top:12px}
+.v26{height:13.762px;position:relative;flex-shrink:0;width:15px}
+.v27{position:absolute;bottom:12px;align-content:stretch;display:flex;align-items:center;justify-content:space-between;left:12px;right:12px}
+.v28{align-content:stretch;filter:drop-shadow(0px 1px 0.5px rgba(0,0,0,0.06)) drop-shadow(0px 1px 1px rgba(0,0,0,0.1));display:flex;gap:6px;align-items:center;position:relative;flex-shrink:0}
+.v29{height:12.542px;position:relative;flex-shrink:0;width:7.583px}
+.v30{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;position:relative;flex-shrink:0}
+.v31{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#fff8f4;font-size:11px;letter-spacing:0.33px;white-space:nowrap}
+.v32{line-height:14px}
+.v33{backdrop-filter:blur(2px);background-color:rgba(0,0,0,0.4);align-content:stretch;display:flex;gap:4px;align-items:center;padding-left:10px;padding-right:10px;padding-top:4px;padding-bottom:4px;position:relative;border-radius:9999px;flex-shrink:0}
+.v34{height:11.083px;position:relative;flex-shrink:0;width:11.667px}
+.v35{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#fff8f4;font-size:12px;white-space:nowrap}
+.v36{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;opacity:.7;position:relative;flex-shrink:0}
+.v37{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#fff8f4;font-size:12px;white-space:nowrap}
+.v38{align-content:stretch;display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding:16px;position:relative;flex-shrink:0;width:100%;z-index:1}
+.v39{align-content:stretch;display:flex;align-items:flex-start;justify-content:space-between;position:relative;flex-shrink:0;width:100%}
+.v40{align-content:stretch;display:flex;flex-direction:column;gap:2px;align-items:flex-start;position:relative;flex-shrink:0}
+.v41{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:20px;letter-spacing:-0.5px;white-space:nowrap}
+.v42{line-height:28px}
+.v43{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#4d4633;font-size:14px;white-space:nowrap}
+.v44{line-height:20px}
+.v45{background-color:rgba(169,231,169,0.3);align-content:stretch;display:flex;gap:3.99px;align-items:center;padding-left:10px;padding-right:10px;padding-top:4px;padding-bottom:4px;position:relative;border-radius:9999px;flex-shrink:0}
+.v46{height:11.375px;position:relative;flex-shrink:0;width:11.917px}
+.v47{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#316938;font-size:11px;letter-spacing:0.33px;white-space:nowrap}
+.v48{background-color:#fff1e5;align-content:stretch;display:flex;gap:10px;align-items:flex-start;padding:8px;position:relative;border-radius:48px;flex-shrink:0;width:100%}
+.v49{align-content:stretch;display:flex;flex-direction:column;height:26px;align-items:flex-start;padding-top:2px;position:relative;flex-shrink:0;width:24px}
+.v50{background-color:#ffd43b;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:24px;height:24px}
+.v51{position:relative;flex-shrink:0;width:11.667px;height:11.667px}
+.v52{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-right:5.2px;position:relative;flex-shrink:0}
+.v53{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:12px;white-space:nowrap}
+.v54{margin-bottom:0}
+.v55{line-height:19.5px}
+.v56{overflow-wrap:break-word;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;line-height:19.5px;color:#a53b22}
+.v57{overflow-wrap:break-word;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;line-height:19.5px;color:#326a38}
+.v58{align-content:stretch;cursor:pointer;display:flex;flex-direction:column;height:52px;align-items:flex-start;padding-top:4px;position:relative;flex-shrink:0;width:100%}
+.v59{background-color:#ffd43b;align-content:stretch;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;height:48px;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:100%}
+.v60{align-content:stretch;display:flex;flex-direction:column;align-items:center;position:relative;flex-shrink:0}
+.v61{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#725b00;font-size:15px;text-align:center;letter-spacing:0.15px;white-space:nowrap}
+.v62{position:absolute;background-color:white;align-content:stretch;display:flex;flex-direction:column;isolation:isolate;align-items:flex-start;left:20px;overflow:clip;right:20px;border-radius:28px;box-shadow:0px 8px 24px -4px rgba(62,45,18,0.1);top:583px}
+.v63{position:absolute;height:108.37%;left:0;max-width:none;top:-4.18%;width:100%}
+.v64{position:relative;flex-shrink:0;width:10.5px;height:10.5px}
+.v65{background-color:#f4e6d9;align-content:stretch;display:flex;gap:4px;align-items:center;padding-left:10px;padding-right:10px;padding-top:4px;padding-bottom:4px;position:relative;border-radius:9999px;flex-shrink:0}
+.v66{height:10.833px;position:relative;flex-shrink:0;width:8.667px}
+.v67{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:11px;letter-spacing:0.33px;white-space:nowrap}
+.v68{background-color:rgba(254,125,94,0.2);align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:24px;height:24px}
+.v69{height:10.5px;position:relative;flex-shrink:0;width:11.667px}
+.v70{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-right:14.64px;position:relative;flex-shrink:0}
+.v71{line-height:19.5px;margin-bottom:0}
+.v72{align-content:stretch;display:flex;flex-direction:column;height:52px;align-items:flex-start;padding-top:4px;position:relative;flex-shrink:0;width:100%}
+.v73{position:absolute;background-color:white;align-content:stretch;display:flex;flex-direction:column;isolation:isolate;align-items:flex-start;left:20px;overflow:clip;right:20px;border-radius:28px;box-shadow:0px 8px 24px -4px rgba(62,45,18,0.1);top:984px}
+.v74{position:absolute;height:111.08%;left:0;max-width:none;top:-5.54%;width:100%}
+.v75{line-height:28px;margin-bottom:0}
+.v76{background-color:#f4e6d9;align-content:stretch;display:flex;gap:3.99px;align-items:center;padding-left:10px;padding-right:10px;padding-top:4px;padding-bottom:4px;position:relative;border-radius:9999px;flex-shrink:0}
+.v77{height:9.75px;position:relative;flex-shrink:0;width:11.917px}
+.v78{background-color:rgba(169,231,169,0.3);align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:24px;height:24px}
+.v79{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-right:1.3px;position:relative;flex-shrink:0}
+.v80{position:absolute;backdrop-filter:blur(16px);align-content:stretch;display:flex;flex-direction:column;gap:2px;align-items:flex-start;left:0;padding-top:5px;top:805px;width:390px}
+.v81{height:34px;position:relative;flex-shrink:0;width:100%}
+.v82{position:absolute;backdrop-filter:blur(16px);height:98px;left:0;overflow:clip;top:-6px;width:390px}
+.v83{position:absolute;height:53px;left:-2px;right:-1px;top:0}
+.v84{position:absolute;height:13px;right:32.57px;top:22.6px;width:27.228px}
+.v85{position:absolute;inset:43.77% 17.09% 33.4% 78.55%}
+.v86{position:absolute;inset:43.58% 23.36% 33.77% 71.76%}
+.v87{position:absolute;height:22px;left:43px;overflow:clip;top:18px;width:54px}
+.v88{--tx:-50%;transform:translate(var(--tx,0),var(--ty,0));overflow-wrap:break-word;position:absolute;font-family:-apple-system,sans-serif;font-weight:590;line-height:22px;left:27px;color:#181818;font-size:17px;text-align:center;top:calc(50% - 11px);width:54px}
+.v89{height:34px;position:relative;width:375px}
+.v90{position:absolute;inset:0 -1px 0 0;overflow:clip}
+.v91{--tx:-50%;transform:translate(var(--tx,0),var(--ty,0));position:absolute;background-color:rgba(255,212,59,0.25);filter:blur(32px);left:calc(50% + 0.5px);border-radius:9999px;width:320px;height:320px;top:-48px}
+.v92{position:absolute;background-color:rgba(254,125,94,0.2);filter:blur(20px);right:-64px;border-radius:9999px;width:224px;height:224px;top:192px}
+.v93{position:absolute;background-color:rgba(169,231,169,0.3);filter:blur(20px);left:-48px;border-radius:9999px;width:192px;height:192px;top:320px}
+.v94{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:center;left:28px;right:28px;top:69px}
+.v95{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:28px;text-align:center;letter-spacing:-0.7px;white-space:nowrap}
+.v96{line-height:36px;margin-bottom:0;white-space:pre}
+.v97{line-height:36px;white-space:pre}
+.v98{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:19px;padding-top:16px;right:21px;top:141px}
+.v99{background-color:white;align-content:stretch;display:flex;flex-direction:column;isolation:isolate;align-items:flex-start;overflow:clip;position:relative;border-radius:32px;box-shadow:0px 16px 36px -6px rgba(62,45,18,0.14);flex-shrink:0;width:100%}
+.v100{background-color:#f4e6d9;align-content:stretch;display:flex;flex-direction:column;height:208px;align-items:flex-start;justify-content:center;overflow:clip;position:relative;flex-shrink:0;width:100%;z-index:2}
+.v101{position:absolute;height:100%;left:-4.53%;max-width:none;top:0;width:109.06%}
+.v102{position:absolute;backdrop-filter:blur(6px);background-color:rgba(255,255,255,0.9);align-content:stretch;display:flex;gap:6px;align-items:center;left:12px;padding-left:12px;padding-right:12px;padding-top:4px;padding-bottom:4px;border-radius:9999px;box-shadow:0px 1px 2px 0px rgba(0,0,0,0.05);top:12px}
+.v103{background-color:#326a38;position:relative;border-radius:9999px;flex-shrink:0;width:8px;height:8px}
+.v104{position:absolute;background-color:#ffd43b;align-content:stretch;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;gap:3.99px;align-items:center;padding-left:10px;padding-right:10px;padding-top:4px;padding-bottom:4px;right:12px;border-radius:9999px;top:12px}
+.v105{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#725b00;font-size:11px;letter-spacing:0.33px;white-space:nowrap}
+.v106{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding:24px;position:relative;flex-shrink:0;width:100%;z-index:1}
+.v107{align-content:stretch;display:flex;flex-direction:column;gap:2px;align-items:flex-start;position:relative;flex-shrink:0;width:100%}
+.v108{align-content:stretch;display:flex;align-items:center;justify-content:space-between;position:relative;flex-shrink:0;width:100%}
+.v109{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:24px;letter-spacing:-0.24px;white-space:nowrap}
+.v110{height:18.35px;position:relative;flex-shrink:0;width:20px}
+.v111{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#4d4633;font-size:14px;width:100%}
+.v112{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-top:12px;position:relative;flex-shrink:0;width:100%}
+.v113{height:52px;position:relative;flex-shrink:0;width:100%}
+.v114{position:absolute;background-color:#a9e7a9;bottom:28px;align-content:stretch;display:flex;gap:4px;align-items:center;left:0;padding-bottom:4.5px;padding-top:3.5px;padding-left:10px;padding-right:10px;border-radius:9999px;top:2px}
+.v115{height:9.204px;position:relative;flex-shrink:0;width:9.206px}
+.v116{position:absolute;background-color:#f9ecdf;bottom:28px;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:114.95px;padding-left:10px;padding-right:10px;padding-top:4px;padding-bottom:4px;border-radius:9999px;top:2px}
+.v117{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#4d4633;font-size:11px;letter-spacing:0.33px;white-space:nowrap}
+.v118{position:absolute;background-color:#f9ecdf;bottom:0;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:0;padding-left:10px;padding-right:10px;padding-top:4px;padding-bottom:4px;border-radius:9999px;top:30px}
+.v119{background-color:#fff1e5;align-content:stretch;display:flex;gap:12px;align-items:center;padding:12px;position:relative;flex-shrink:0;width:100%}
+.v120{background-color:#ffd43b;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;overflow:clip;padding:2px;position:relative;border-radius:9999px;box-shadow:0px 1px 2px 0px rgba(0,0,0,0.05);flex-shrink:0;width:44px;height:44px}
+.v121{flex:1 0 0;min-height:1px;position:relative;border-radius:9999px;width:100%}
+.v122{position:absolute;inset:0;overflow:hidden;pointer-events:none;border-radius:9999px}
+.v123{position:absolute;left:0;max-width:none;width:100%;height:100%;top:0}
+.v124{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;position:relative;flex-shrink:0}
+.v125{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;margin-bottom:-0.75px;position:relative;flex-shrink:0;width:100%}
+.v126{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#a53b22;font-size:11px;letter-spacing:0.275px;text-transform:uppercase;white-space:nowrap}
+.v127{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-bottom:0.75px;position:relative;flex-shrink:0;width:100%}
+.v128{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:14px;white-space:nowrap}
+.v129{line-height:17.5px}
+.v130{position:absolute;align-content:stretch;display:flex;gap:8px;align-items:flex-start;justify-content:center;left:20px;padding-top:4px;right:20px;top:628px}
+.v131{background-color:#f9ecdf;align-content:stretch;display:flex;flex:1 0 0;flex-direction:column;align-items:center;justify-content:center;min-width:1px;padding:12px;position:relative}
+.v132{position:absolute;background-color:rgba(255,255,255,0);inset:0;box-shadow:0px 4px 16px -2px rgba(62,45,18,0.06)}
+.v133{align-content:stretch;display:flex;flex-direction:column;height:42px;align-items:flex-start;padding-bottom:6px;position:relative;flex-shrink:0;width:36px}
+.v134{background-color:white;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:36px;height:36px}
+.v135{position:relative;flex-shrink:0;width:15px;height:15px}
+.v136{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:11px;text-align:center;letter-spacing:0.33px;white-space:nowrap}
+.v137{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#4d4633;font-size:10px;text-align:center;white-space:nowrap}
+.v138{line-height:15px}
+.v139{position:absolute;background-color:rgba(255,255,255,0);inset:0 -0.01px 0 0;box-shadow:0px 4px 16px -2px rgba(62,45,18,0.06)}
+.v140{position:absolute;background-color:#ffd43b;align-content:stretch;cursor:pointer;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;height:48px;align-items:center;justify-content:center;left:36px;right:36px;border-radius:9999px;top:763px}
+.v141{position:absolute;height:88px;left:20px;right:12px;top:56px}
+.v142{position:absolute;background-color:#ffe082;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:20px;overflow:clip;padding:24px;right:20px;border-radius:48px;box-shadow:0px 8px 24px -4px rgba(62,45,18,0.12);top:189px}
+.v143{position:absolute;background-color:rgba(255,212,59,0.4);filter:blur(12px);bottom:-24px;right:-24px;border-radius:9999px;width:144px;height:144px}
+.v144{align-content:stretch;display:flex;flex-direction:column;gap:16px;align-items:flex-start;position:relative;flex-shrink:0;width:100%}
+.v145{background-color:rgba(255,255,255,0.8);align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:16px;box-shadow:0px 1px 2px 0px rgba(0,0,0,0.05);flex-shrink:0;width:56px;height:56px}
+.v146{position:relative;flex-shrink:0;width:24px;height:24px}
+.v147{background-color:rgba(255,255,255,0.9);align-content:stretch;display:flex;gap:4px;align-items:center;padding-left:12px;padding-right:12px;padding-top:4px;padding-bottom:4px;position:relative;border-radius:9999px;box-shadow:0px 1px 2px 0px rgba(0,0,0,0.05);flex-shrink:0}
+.v148{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#564500;font-size:11px;letter-spacing:0.33px;white-space:nowrap}
+.v149{align-content:stretch;display:flex;flex-direction:column;gap:4px;align-items:flex-start;position:relative;flex-shrink:0;width:100%}
+.v150{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#231b00;font-size:20px;letter-spacing:-0.6px;width:100%}
+.v151{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#564500;font-size:14px;width:100%}
+.v152{line-height:20px;margin-bottom:0}
+.v153{align-content:stretch;display:flex;align-items:center;justify-content:space-between;padding-top:4px;position:relative;flex-shrink:0;width:100%}
+.v154{align-content:stretch;display:flex;align-items:flex-start;position:relative;flex-shrink:0}
+.v155{background-color:#dee8ff;align-content:stretch;display:flex;align-items:center;justify-content:center;margin-right:-8px;position:relative;border-radius:9999px;flex-shrink:0;width:32px;height:32px}
+.v156{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;margin-right:-8px;position:relative;flex-shrink:0;width:32px;height:32px}
+.v157{background-color:#fe7d5e;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:32px;height:32px}
+.v158{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;position:relative;flex-shrink:0;width:32px;height:32px}
+.v159{background-color:#a9e7a9;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:32px;height:32px}
+.v160{background-color:#231b00;align-content:stretch;cursor:pointer;display:flex;gap:4px;height:44px;align-items:center;padding-left:24px;padding-right:24px;position:relative;border-radius:9999px;flex-shrink:0}
+.v161{--ty:-50%;transform:translate(var(--tx,0),var(--ty,0));position:absolute;background-color:rgba(255,255,255,0);height:44px;left:0;right:-0.67px;border-radius:9999px;box-shadow:0px 4px 6px -1px rgba(0,0,0,0.1),0px 2px 4px -2px rgba(0,0,0,0.1);top:50%}
+.v162{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#ffe082;font-size:15px;text-align:center;letter-spacing:0.15px;white-space:nowrap}
+.v163{position:relative;flex-shrink:0;width:13.333px;height:13.333px}
+.v164{position:absolute;background-color:#f4e6d9;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:20px;overflow:clip;padding:24px;right:20px;border-radius:48px;box-shadow:0px 4px 16px -2px rgba(62,45,18,0.06);top:513px}
+.v165{align-content:stretch;display:flex;gap:8px;align-items:center;position:relative;flex-shrink:0;width:100%}
+.v166{background-color:#fdf6f2;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:16px;flex-shrink:0;width:48px;height:48px}
+.v167{height:18.667px;position:relative;flex-shrink:0;width:23.333px}
+.v168{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:20px;white-space:nowrap}
+.v169{line-height:26px}
+.v170{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-top:4px;position:relative;flex-shrink:0;width:100%}
+.v171{align-content:stretch;display:flex;align-items:center;position:relative;flex-shrink:0;width:100%}
+.v172{align-content:stretch;display:flex;flex:1 0 0;flex-direction:column;align-items:flex-start;min-width:1px;overflow:clip;padding-bottom:14px;padding-left:44px;padding-right:16px;padding-top:13px;position:relative;border-radius:9999px}
+.v173{position:absolute;background-color:white;inset:0;pointer-events:none;border-radius:9999px}
+.v174{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;overflow:clip;position:relative;flex-shrink:0;width:100%}
+.v175{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#d0c6ad;font-size:20px;width:100%}
+.v176{line-height:normal}
+.v177{position:absolute;inset:0;pointer-events:none;border-radius:inherit;box-shadow:inset 0px 2px 4px 0px rgba(0,0,0,0.05)}
+.v178{position:absolute;height:10px;left:16.83px;top:21px;width:18.333px}
+.v179{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-left:4px;padding-right:4px;position:relative;flex-shrink:0;width:100%}
+.v180{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#4d4633;font-size:11px;letter-spacing:0.33px;width:100%}
+.v181{background-color:#ffd43b;align-content:stretch;cursor:pointer;display:flex;gap:4px;height:48px;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:100%}
+.v182{position:absolute;background-color:rgba(255,255,255,0);height:48px;left:0;right:0;border-radius:9999px;box-shadow:0px 4px 14px -2px rgba(255,212,59,0.5);top:0}
+.v183{position:absolute;align-content:stretch;display:flex;flex-direction:column;gap:4px;align-items:flex-start;left:20px;right:20px;top:60px}
+.v184{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:24px;letter-spacing:-0.8px;width:100%}
+.v185{line-height:40px}
+.v186{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:14px;width:100%}
+.v187{position:absolute;height:24px;left:20px;top:36px;width:12px}
+.v188{--ty:-50%;transform:translate(var(--tx,0),var(--ty,0));overflow-wrap:break-word;position:absolute;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;justify-content:center;line-height:0;left:20px;color:#251e14;font-size:24px;top:76px;letter-spacing:-0.8px;width:350px}
+.v189{position:absolute;background-color:#ffd43b;align-content:stretch;cursor:pointer;display:flex;height:56px;align-items:center;justify-content:center;left:20px;overflow:clip;right:20px;border-radius:9999px;box-shadow:0px 8px 24px -4px rgba(62,45,18,0.12);top:755px}
+.v190{align-content:stretch;display:flex;gap:8.01px;align-items:center;position:relative;flex-shrink:0}
+.v191{position:relative;flex-shrink:0;width:12px;height:12px}
+.v192{position:absolute;background-color:white;align-content:stretch;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;flex-direction:column;gap:12px;align-items:flex-start;left:20px;padding:16px;right:20px;border-radius:12px;top:107px}
+.v193{align-content:stretch;display:flex;gap:4px;align-items:center;position:relative;flex-shrink:0}
+.v194{height:13.333px;position:relative;flex-shrink:0;width:15px}
+.v195{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#111c2d;font-size:14px;white-space:nowrap}
+.v196{background-color:#fff2c4;align-content:stretch;display:flex;height:44px;align-items:flex-start;justify-content:center;overflow:clip;padding-left:12px;padding-right:12px;padding-top:13.5px;padding-bottom:13.5px;position:relative;border-radius:8px;flex-shrink:0;width:100%}
+.v197{align-content:stretch;display:flex;flex:1 0 0;flex-direction:column;align-items:flex-start;min-width:1px;overflow:auto;position:relative}
+.v198{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:400;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#111c2d;font-size:14px;width:100%}
+.v199{position:absolute;bottom:18.18%;align-content:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:6px;right:12px;top:40.91%}
+.v200{align-content:stretch;display:flex;flex-direction:column;gap:4px;align-items:flex-start;padding-top:4px;position:relative;flex-shrink:0;width:100%}
+.v201{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#464555;font-size:11px;letter-spacing:0.22px;width:100%}
+.v202{align-content:stretch;display:flex;gap:8px;align-items:flex-start;position:relative;flex-shrink:0;width:100%}
+.v203{background-color:#fff2c4;align-content:stretch;display:flex;gap:4px;height:40px;align-items:center;justify-content:center;overflow:clip;padding-left:24.23px;padding-right:24.25px;position:relative;border-radius:8px;flex-shrink:0}
+.v204{height:15px;position:relative;flex-shrink:0;width:13.5px}
+.v205{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;overflow:clip;position:relative;flex-shrink:0}
+.v206{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#111c2d;font-size:12px;white-space:nowrap}
+.v207{line-height:16px}
+.v208{background-color:#fff2c4;align-content:stretch;display:flex;gap:4px;height:40px;align-items:center;justify-content:center;overflow:clip;padding-left:19.8px;padding-right:19.81px;position:relative;border-radius:8px;flex-shrink:0}
+.v209{position:relative;flex-shrink:0;width:13.5px;height:13.5px}
+.v210{position:absolute;background-color:white;align-content:stretch;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;flex-direction:column;gap:12px;align-items:flex-start;left:19px;padding:16px;right:21px;border-radius:12px;top:304px}
+.v211{height:16.667px;position:relative;flex-shrink:0;width:15px}
+.v212{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:14px;white-space:nowrap}
+.v213{background-color:rgba(255,242,196,0.5);align-content:stretch;display:flex;align-items:center;justify-content:space-between;padding:12px;position:relative;border-radius:8px;flex-shrink:0;width:100%}
+.v214{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#464555;font-size:11px;letter-spacing:0.22px;white-space:nowrap}
+.v215{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#ffd43b;font-size:16px;letter-spacing:0.8px;white-space:nowrap}
+.v216{line-height:24px}
+.v217{background-color:rgba(255,212,59,0.7);align-content:stretch;display:flex;gap:4px;height:36px;align-items:center;padding-left:12px;padding-right:12px;position:relative;border-radius:8px;flex-shrink:0}
+.v218{height:13.333px;position:relative;flex-shrink:0;width:11.333px}
+.v219{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:12px;text-align:center;white-space:nowrap}
+.v220{align-content:stretch;display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding-top:4px;position:relative;flex-shrink:0;width:100%}
+.v221{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:12px;white-space:nowrap}
+.v222{align-content:stretch;display:flex;align-items:center;justify-content:space-between;padding-left:8px;padding-right:7.99px;padding-top:8px;padding-bottom:8px;position:relative;border-radius:8px;flex-shrink:0;width:100%}
+.v223{align-content:stretch;display:flex;gap:8px;align-items:center;position:relative;flex-shrink:0}
+.v224{background-color:#fff2c4;align-content:stretch;display:flex;align-items:center;justify-content:center;padding-bottom:10.5px;padding-top:9.5px;position:relative;border-radius:9999px;flex-shrink:0;width:36px;height:36px}
+.v225{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#111c2d;font-size:12px;text-align:center;white-space:nowrap}
+.v226{position:absolute;background-color:#005338;bottom:0;align-content:stretch;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;right:0;border-radius:9999px;width:10px;height:10px}
+.v227{background-color:rgba(255,255,255,0);position:relative;border-radius:9999px;box-shadow:0px 0px 0px 2px white;flex-shrink:0;width:10px;height:10px}
+.v228{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:400;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#005338;font-size:12px;white-space:nowrap}
+.v229{background-color:#fff2c4;align-content:stretch;display:flex;gap:4px;height:32px;align-items:center;padding-left:12px;padding-right:12px;position:relative;border-radius:9999px;flex-shrink:0}
+.v230{height:8.017px;position:relative;flex-shrink:0;width:10.867px}
+.v231{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#464555;font-size:11px;text-align:center;letter-spacing:0.22px;white-space:nowrap}
+.v232{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:400;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#464555;font-size:12px;white-space:nowrap}
+.v233{align-content:stretch;display:flex;align-items:center;justify-content:space-between;padding:8px;position:relative;border-radius:8px;flex-shrink:0;width:100%}
+.v234{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#0b1c30;font-size:12px;text-align:center;white-space:nowrap}
+.v235{background-color:#ffdf6d;align-content:stretch;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;gap:4px;height:32px;align-items:center;padding-left:12px;padding-right:12px;position:relative;border-radius:9999px;flex-shrink:0}
+.v236{position:relative;flex-shrink:0;width:9.333px;height:9.333px}
+.v237{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;font-size:11px;text-align:center;color:white;letter-spacing:0.22px;white-space:nowrap}
+.v238{--tx:-50%;transform:translate(var(--tx,0),var(--ty,0));overflow-wrap:break-word;position:absolute;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;line-height:22px;left:27px;color:#181818;font-size:17px;text-align:center;top:calc(50% - 11px);width:54px}
+.v239{position:absolute;background-color:#fff8f4;height:1009px;left:20px;top:52px;width:350px}
+.v240{position:absolute;align-content:stretch;display:flex;align-items:center;justify-content:space-between;left:20px;padding-top:8px;right:20px;top:52px}
+.v241{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#ffc700;font-size:11px;letter-spacing:0.55px;text-transform:uppercase;white-space:nowrap}
+.v242{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:20px;letter-spacing:-0.2px;white-space:nowrap}
+.v243{background-color:#fff2c4;align-content:stretch;display:flex;gap:4px;align-items:center;padding-left:12px;padding-right:12px;padding-top:4px;padding-bottom:4px;position:relative;border-radius:9999px;flex-shrink:0}
+.v244{background-color:#005338;position:relative;border-radius:9999px;flex-shrink:0;width:8px;height:8px}
+.v245{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:11px;letter-spacing:0.22px;white-space:nowrap}
+.v246{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:20px;padding-top:12px;right:20px;top:102px}
+.v247{background-color:white;align-content:stretch;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding:16px;position:relative;border-radius:12px;flex-shrink:0;width:100%}
+.v248{overflow-wrap:break-word;align-content:stretch;display:flex;flex-direction:column;gap:6.5px;align-items:flex-start;line-height:0;padding-top:5.5px;position:relative;flex-shrink:0;white-space:nowrap}
+.v249{display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;position:relative;flex-shrink:0;color:#251e14;font-size:12px}
+.v250{align-content:stretch;display:flex;gap:4px;align-items:baseline;position:relative;flex-shrink:0}
+.v251{display:flex;flex-direction:column;font-family:"Inter",sans-serif;font-weight:600;justify-content:center;font-style:normal;position:relative;flex-shrink:0;color:#ffd43b;font-size:24px;letter-spacing:-0.36px}
+.v252{display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:400;justify-content:center;position:relative;flex-shrink:0;color:#251e14;font-size:14px}
+.v253{background-color:#fff2c4;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:48px;height:48px}
+.v254{height:16px;position:relative;flex-shrink:0;width:22px}
+.v255{align-content:stretch;display:flex;flex-direction:column;gap:4px;align-items:flex-start;justify-content:center;padding-top:4px;position:relative;flex-shrink:0;width:100%}
+.v256{background-color:#fff2c4;align-content:stretch;display:flex;gap:4px;height:24px;align-items:center;padding-left:12px;padding-right:12px;padding-top:4px;padding-bottom:4px;position:relative;border-radius:9999px;flex-shrink:0}
+.v257{height:14px;position:relative;flex-shrink:0;width:14.667px}
+.v258{height:10.667px;position:relative;flex-shrink:0;width:14.667px}
+.v259{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:20px;padding-top:12px;right:20px;top:274px}
+.v260{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:16px;white-space:nowrap}
+.v261{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:400;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:12px;white-space:nowrap}
+.v262{background-color:#fff1e5;align-content:stretch;display:flex;align-items:center;justify-content:space-between;padding:8px;position:relative;border-radius:8px;flex-shrink:0;width:100%}
+.v263{background-color:rgba(255,199,0,0.5);align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:28px;height:28px}
+.v264{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#111c2d;font-size:11px;text-align:center;letter-spacing:0.22px;white-space:nowrap}
+.v265{background-color:#ffdc73;align-content:stretch;display:flex;align-items:center;padding-left:8px;padding-right:8px;padding-top:2px;padding-bottom:2px;position:relative;border-radius:9999px;flex-shrink:0}
+.v266{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#725b00;font-size:11px;letter-spacing:0.22px;white-space:nowrap}
+.v267{background-color:#ffdad6;align-content:stretch;display:flex;align-items:center;padding-left:8px;padding-right:8px;padding-top:2px;padding-bottom:2px;position:relative;border-radius:9999px;flex-shrink:0}
+.v268{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#93000a;font-size:11px;letter-spacing:0.22px;white-space:nowrap}
+.v269{background-color:#fff2c4;align-content:stretch;display:flex;gap:4px;align-items:flex-start;padding:8px;position:relative;border-radius:8px;flex-shrink:0;width:100%}
+.v270{height:15.333px;position:relative;flex-shrink:0;width:13.333px}
+.v271{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-right:41.84px;position:relative;flex-shrink:0}
+.v272{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:20px;padding-top:12px;right:20px;top:597px}
+.v273{align-content:stretch;display:flex;flex-direction:column;gap:12px;align-items:flex-start;position:relative;flex-shrink:0;width:100%}
+.v274{background-color:#ffc700;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:20px;height:20px}
+.v275{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:11px;text-align:center;letter-spacing:0.22px;white-space:nowrap}
+.v276{background-color:#e7eeff;align-content:stretch;display:flex;flex-direction:column;height:8px;align-items:flex-start;justify-content:center;overflow:clip;position:relative;border-radius:9999px;flex-shrink:0;width:100%}
+.v277{background-color:#ffc700;flex:1 0 0;min-height:1px;position:relative;border-radius:9999px;width:100%}
+.v278{background-color:rgba(255,212,59,0.6);align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:20px;height:20px}
+.v279{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;font-size:11px;color:rgba(37,30,20,0.8);letter-spacing:0.22px;white-space:nowrap}
+.v280{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;font-size:16px;color:rgba(37,30,20,0.8);white-space:nowrap}
+.v281{background-color:#fff8f4;height:8px;overflow:clip;position:relative;border-radius:9999px;flex-shrink:0;width:100%}
+.v282{position:absolute;background-color:rgba(255,212,59,0.6);bottom:0;left:0;right:25%;border-radius:9999px;top:0}
+.v283{background-color:#f3ebce;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:20px;height:20px}
+.v284{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;font-size:11px;color:rgba(37,30,20,0.6);letter-spacing:0.22px;white-space:nowrap}
+.v285{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;font-size:16px;color:rgba(37,30,20,0.6);white-space:nowrap}
+.v286{position:absolute;background-color:rgba(255,233,157,0.5);bottom:0;left:0;right:50%;border-radius:9999px;top:0}
+.v287{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:20px;padding-top:12px;right:20px;top:809px}
+.v288{align-content:stretch;display:flex;gap:8px;align-items:flex-start;justify-content:center;position:relative;flex-shrink:0;width:100%}
+.v289{background-color:white;align-content:stretch;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;flex:1 0 0;flex-direction:column;align-items:flex-start;justify-content:space-between;min-width:1px;padding:12px;position:relative;border-radius:12px}
+.v290{background-color:#fff2c4;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:28px;height:28px}
+.v291{height:13.5px;position:relative;flex-shrink:0;width:7.012px}
+.v292{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#111c2d;font-size:16px;width:100%}
+.v293{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:400;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#464555;font-size:12px;width:100%}
+.v294{position:absolute;background-color:#ffd43b;align-content:stretch;cursor:pointer;display:flex;height:50px;align-items:center;justify-content:center;left:43px;overflow:clip;right:45px;border-radius:9999px;box-shadow:0px 8px 24px -4px rgba(62,45,18,0.12);top:972px}
+.v295{position:absolute;background-color:#fff8f4;height:1656px;left:20px;top:57px;width:350px}
+.v296{background-color:#fff1e5;height:81px;position:relative;border-radius:21px;flex-shrink:0;width:318px}
+.v297{position:absolute;display:contents;left:8px;right:8px;top:16px}
+.v298{position:absolute;align-content:stretch;display:flex;gap:4px;align-items:flex-start;left:8px;right:8px;top:16px}
+.v299{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-right:7.45px;position:relative;flex-shrink:0}
+.v300{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Georgia",sans-serif;justify-content:center;line-height:0;font-style:normal;position:relative;flex-shrink:0;color:#251e14;font-size:12px;white-space:nowrap}
+.v301{font-family:"Plus Jakarta Sans",sans-serif;font-weight:400;line-height:15px}
+.v302{font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;line-height:15px}
+.v303{position:absolute;align-content:stretch;display:flex;gap:4px;align-items:flex-start;left:8px;right:8px;top:50px}
+.v304{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Inter",sans-serif;font-weight:700;justify-content:center;line-height:0;font-style:normal;position:relative;flex-shrink:0;color:#251e14;font-size:12px;white-space:nowrap}
+.v305{overflow-wrap:break-word;font-family:"Inter",sans-serif;font-weight:400;line-height:15px;font-style:normal}
+.v306{position:absolute;background-color:white;align-content:stretch;display:flex;flex-direction:column;isolation:isolate;align-items:flex-start;left:21px;overflow:clip;right:19px;border-radius:28px;box-shadow:0px 8px 24px -4px rgba(62,45,18,0.1);top:609px}
+.v307{background-color:#fff1e5;height:54px;position:relative;border-radius:21px;flex-shrink:0;width:100%}
+.v308{position:absolute;display:contents;left:13px;top:10px}
+.v309{position:absolute;align-content:stretch;display:flex;gap:4px;height:25px;align-items:flex-start;left:13px;top:10px;width:146px}
+.v310{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Inter",sans-serif;font-weight:400;justify-content:center;line-height:0;font-style:normal;position:relative;flex-shrink:0;color:#111c2d;font-size:12px;white-space:nowrap}
+.v311{position:absolute;align-content:stretch;display:flex;gap:4px;align-items:flex-start;left:13px;top:29px;width:146px}
+.v312{position:absolute;background-color:white;align-content:stretch;display:flex;flex-direction:column;isolation:isolate;align-items:flex-start;left:20px;overflow:clip;right:20px;border-radius:28px;box-shadow:0px 8px 24px -4px rgba(62,45,18,0.1);top:1009px}
+.v313{background-color:#fff1e5;height:65px;position:relative;border-radius:21px;flex-shrink:0;width:100%}
+.v314{position:absolute;display:contents;left:8px;right:8px;top:8px}
+.v315{position:absolute;align-content:stretch;display:flex;gap:4px;align-items:flex-start;left:8px;right:8px;top:8px}
+.v316{position:absolute;align-content:stretch;display:flex;gap:4px;align-items:flex-start;left:8px;right:8px;top:27px}
+.v317{height:14.25px;position:relative;flex-shrink:0;width:16.5px}
+.v318{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-right:24.09px;position:relative;flex-shrink:0}
+.v319{line-height:15px;margin-bottom:0}
+.v320{position:absolute;background-color:#fff1ed;align-content:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;left:20px;padding:16px;right:20px;border-radius:21px;top:1450px}
+.v321{align-content:stretch;display:flex;flex-direction:column;height:52px;align-items:flex-start;padding-bottom:4px;position:relative;flex-shrink:0;width:48px}
+.v322{background-color:#ffdad2;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:48px;height:48px}
+.v323{position:relative;flex-shrink:0;width:18px;height:18px}
+.v324{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:20px;text-align:center;white-space:nowrap}
+.v325{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;max-width:260px;padding-top:4px;position:relative;flex-shrink:0}
+.v326{align-content:stretch;display:flex;flex-direction:column;align-items:center;max-width:260px;padding-left:15.7px;padding-right:15.7px;position:relative;flex-shrink:0}
+.v327{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:14px;text-align:center;white-space:nowrap}
+.v328{line-height:20px;margin-bottom:0;white-space:pre}
+.v329{line-height:20px;white-space:pre}
+.v330{align-content:stretch;cursor:pointer;display:flex;flex-direction:column;height:60px;align-items:flex-start;padding-top:16px;position:relative;flex-shrink:0}
+.v331{background-color:#ffdad2;align-content:stretch;display:flex;gap:8px;height:44px;align-items:center;padding-left:24px;padding-right:24px;position:relative;border-radius:9999px;flex-shrink:0}
+.v332{height:18px;position:relative;flex-shrink:0;width:17px}
+.v333{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#3d0700;font-size:15px;text-align:center;letter-spacing:0.15px;white-space:nowrap}
+.v334{position:absolute;height:844px;left:0;overflow:clip;top:0;width:391px}
+.v335{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:88.8px;padding-bottom:8px;top:52px}
+.v336{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#251e14;font-size:32px;text-align:center;letter-spacing:-0.8px;white-space:nowrap}
+.v337{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:35px;max-width:320px;padding-bottom:20px;top:100px}
+.v338{align-content:stretch;display:flex;flex-direction:column;align-items:center;max-width:320px;padding-left:2.27px;padding-right:2.28px;position:relative;flex-shrink:0}
+.v339{line-height:20px;color:#251e14}
+.v340{overflow-wrap:break-word;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;line-height:20px;color:#251e14}
+.v341{overflow-wrap:break-word;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;line-height:20px;color:#251e14}
+.v342{overflow-wrap:break-word;font-family:"Plus Jakarta Sans",sans-serif;font-weight:500;line-height:20px}
+.v343{position:absolute;display:contents;left:20px;top:147px}
+.v344{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:20px;padding-bottom:16px;right:20px;top:147px}
+.v345{background-color:white;align-content:stretch;display:flex;flex-direction:column;gap:16px;align-items:flex-start;padding:20px;position:relative;border-radius:32px;flex-shrink:0;width:100%}
+.v346{position:absolute;background-color:rgba(255,255,255,0);inset:0;border-radius:32px;box-shadow:0px 4px 20px -2px rgba(62,45,18,0.08)}
+.v347{height:64px;position:relative;flex-shrink:0;width:100%}
+.v348{background-color:#fff1e5;align-content:stretch;display:flex;flex-direction:column;gap:10px;align-items:flex-start;padding:12px;position:relative;border-radius:16px;flex-shrink:0;width:100%}
+.v349{align-content:stretch;display:flex;align-items:center;position:relative;flex-shrink:0}
+.v350{background-color:#ffdc73;align-content:stretch;display:flex;align-items:center;padding-left:10px;padding-right:10px;padding-top:2px;padding-bottom:2px;position:relative;border-radius:9999px;flex-shrink:0}
+.v351{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#4d4633;font-size:13px;white-space:nowrap}
+.v352{align-content:stretch;display:flex;align-items:center;justify-content:space-between;padding-top:8px;position:relative;flex-shrink:0;width:100%}
+.v353{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#326a38;font-size:15px;letter-spacing:0.15px;white-space:nowrap}
+.v354{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:15px;letter-spacing:0.15px;white-space:nowrap}
+.v355{--ty:-50%;transform:translate(var(--tx,0),var(--ty,0));position:absolute;display:contents;left:52px;top:calc(50% - 222px)}
+.v356{--ty:-50%;transform:translate(var(--tx,0),var(--ty,0));position:absolute;background-color:#f4e6d9;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;left:52px;overflow:clip;width:64px;height:64px;top:calc(50% - 222px)}
+.v357{flex:1 0 0;min-height:1px;position:relative;border-radius:10px;width:100%}
+.v358{position:absolute;inset:0;overflow:hidden;pointer-events:none;border-radius:10px}
+.v359{position:absolute;height:100%;left:-41.76%;max-width:none;top:0;width:183.51%}
+.v360{position:absolute;background-color:rgba(255,255,255,0.9);bottom:4px;align-content:stretch;display:flex;align-items:center;padding-left:4px;padding-right:4px;padding-top:2px;padding-bottom:2px;right:4px;border-radius:9999px}
+.v361{height:7.917px;position:relative;flex-shrink:0;width:8.333px}
+.v362{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-left:2px;position:relative;flex-shrink:0}
+.v363{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:10px;white-space:nowrap}
+.v364{--ty:-50%;transform:translate(var(--tx,0),var(--ty,0));position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:132px;right:52px;top:calc(50% - 222px)}
+.v365{align-content:stretch;display:flex;flex:1 0 0;flex-direction:column;align-items:flex-start;min-width:1px;overflow:clip;position:relative}
+.v366{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:18px;width:100%}
+.v367{position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;left:21px;padding-bottom:24px;right:19px;top:367px}
+.v368{background-color:#f9ecdf;align-content:stretch;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding:16px;position:relative;border-radius:32px;flex-shrink:0;width:100%}
+.v369{align-content:stretch;display:flex;align-items:center;justify-content:space-between;padding-left:4px;padding-right:4px;position:relative;flex-shrink:0;width:100%}
+.v370{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#4d4633;font-size:15px;letter-spacing:0.375px;text-transform:uppercase;white-space:nowrap}
+.v371{background-color:rgba(169,231,169,0.6);align-content:stretch;display:flex;gap:4px;align-items:center;padding-left:8px;padding-right:8px;padding-top:2px;padding-bottom:2px;position:relative;border-radius:9999px;flex-shrink:0}
+.v372{background-color:#326a38;position:relative;border-radius:9999px;flex-shrink:0;width:6px;height:6px}
+.v373{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#326a38;font-size:11px;letter-spacing:0.33px;white-space:nowrap}
+.v374{align-content:stretch;display:flex;flex-direction:column;gap:8px;align-items:flex-start;position:relative;flex-shrink:0;width:100%}
+.v375{background-color:white;align-content:stretch;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;align-items:center;justify-content:space-between;padding:10px;position:relative;border-radius:16px;flex-shrink:0;width:100%}
+.v376{align-content:stretch;display:flex;gap:10px;align-items:center;position:relative;flex-shrink:0}
+.v377{background-color:#ffe082;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:36px;height:36px}
+.v378{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;font-size:16px;color:white;white-space:nowrap}
+.v379{position:absolute;background-color:#326a38;bottom:-2px;align-content:stretch;display:flex;align-items:center;justify-content:center;right:-2px;border-radius:9999px;width:14px;height:14px}
+.v380{height:5.01px;position:relative;flex-shrink:0;width:6.792px}
+.v381{align-content:stretch;display:flex;gap:6px;align-items:center;position:relative;flex-shrink:0;width:100%}
+.v382{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:16px;white-space:nowrap}
+.v383{background-color:#ffe082;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-left:6px;padding-right:6px;position:relative;border-radius:16px;flex-shrink:0}
+.v384{background-color:#fff1e5;align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;padding-left:10px;padding-right:10px;padding-top:4px;padding-bottom:4px;position:relative;border-radius:9999px;flex-shrink:0}
+.v385{background-color:rgba(255,255,255,0.8);align-content:stretch;display:flex;align-items:center;justify-content:space-between;padding:10px;position:relative;border-radius:16px;flex-shrink:0;width:100%}
+.v386{background-color:#f4e6d9;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:36px;height:36px}
+.v387{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#326a38;font-size:11px;letter-spacing:0.33px;white-space:nowrap}
+.v388{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#a53b22;font-size:11px;letter-spacing:0.33px;white-space:nowrap}
+.v389{position:absolute;display:contents;cursor:pointer;left:20px;right:20px;top:711px}
+.v390{position:absolute;background-color:#ffd43b;height:50px;left:20px;right:20px;border-radius:9999px;top:711px}
+.v391{position:absolute;background-color:rgba(255,255,255,0);height:50px;left:0;right:0;border-radius:9999px;box-shadow:0px 8px 24px -4px rgba(62,45,18,0.12);top:0}
+.v392{--tx:-50%;transform:translate(var(--tx,0),var(--ty,0));--ty:-50%;transform:translate(var(--tx,0),var(--ty,0));position:absolute;align-content:stretch;display:flex;flex-direction:column;align-items:center;left:calc(50% - 12.5px);top:50%}
+.v393{--tx:-50%;transform:translate(var(--tx,0),var(--ty,0));--ty:-50%;transform:translate(var(--tx,0),var(--ty,0));position:absolute;left:calc(50% + 48.67px);width:13.333px;height:13.333px;top:calc(50% - 0.33px)}
+.v394{position:absolute;background-color:#f9ecdf;align-content:stretch;cursor:pointer;display:flex;gap:6px;height:50px;align-items:center;justify-content:center;left:20px;right:20px;border-radius:9999px;top:771px}
+.v395{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#725b00;font-size:15px;text-align:center;white-space:nowrap}
+.v396{background-color:#ffdad2;align-content:stretch;display:flex;align-items:center;padding-left:10px;padding-right:10px;padding-top:2px;padding-bottom:2px;position:relative;border-radius:9999px;flex-shrink:0}
+.v397{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#84240d;font-size:13px;white-space:nowrap}
+.v398{background-color:#ffdc73;align-content:stretch;display:flex;align-items:center;justify-content:center;position:relative;border-radius:9999px;flex-shrink:0;width:36px;height:36px}
+.v399{background-color:#fff1e5;align-content:stretch;display:flex;align-items:center;padding-left:8px;padding-right:8px;padding-top:4px;padding-bottom:4px;position:relative;border-radius:9999px;flex-shrink:0}
+.v400{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#a53b22;font-size:11px;letter-spacing:0.33px;white-space:nowrap}
+.v401{line-height:36px;margin-bottom:0}
+.v402{line-height:36px}
+.v403{align-content:stretch;display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding:16px;position:relative;flex-shrink:0;width:100%;z-index:1}
+.v404{background-color:#fff1e5;align-content:stretch;display:flex;align-items:center;justify-content:space-between;padding:10px;position:relative;flex-shrink:0;width:100%}
+.v405{align-content:stretch;display:flex;align-items:flex-start;overflow:clip;position:relative;flex-shrink:0}
+.v406{max-width:104px;margin-right:-8px;position:relative;border-radius:9999px;box-shadow:0px 0px 0px 2px white;flex-shrink:0;width:32px;height:32px}
+.v407{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;max-width:96px;margin-right:-8px;position:relative;flex-shrink:0;width:32px;height:32px}
+.v408{max-width:104px;position:relative;border-radius:9999px;box-shadow:0px 0px 0px 2px white;flex-shrink:0;width:32px;height:32px}
+.v409{align-content:stretch;display:flex;flex-direction:column;align-items:flex-start;max-width:96px;position:relative;flex-shrink:0;width:32px;height:32px}
+.v410{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:600;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#211a13;font-size:13px;white-space:nowrap}
+.v411{position:relative;flex-shrink:0;width:16.667px;height:16.667px}
+.v412{align-content:stretch;display:flex;flex-direction:column;gap:6px;align-items:flex-start;position:relative;flex-shrink:0;width:100%}
+.v413{overflow-wrap:break-word;display:flex;flex-direction:column;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;justify-content:center;line-height:0;position:relative;flex-shrink:0;color:#4d4633;font-size:11px;letter-spacing:0.55px;text-transform:uppercase;width:100%}
+.v414{column-gap:8px;row-gap:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:  34px 34px;position:relative;flex-shrink:0;width:100%}
+.v415{background-color:#f9ecdf;grid-column:1;align-content:stretch;display:flex;gap:8px;height:34px;align-items:center;justify-self:stretch;padding:8px;position:relative;grid-row:1;flex-shrink:0}
+.v416{height:15px;position:relative;flex-shrink:0;width:12px}
+.v417{line-height:13.75px}
+.v418{background-color:#f9ecdf;grid-column:2;align-content:stretch;display:flex;gap:8px;height:34px;align-items:center;justify-self:stretch;padding:8px;position:relative;grid-row:1;flex-shrink:0}
+.v419{height:15px;position:relative;flex-shrink:0;width:13.961px}
+.v420{background-color:#f9ecdf;grid-column:1;align-content:stretch;display:flex;gap:8px;height:34px;align-items:center;justify-self:stretch;padding:8px;position:relative;grid-row:2;flex-shrink:0}
+.v421{height:12.744px;position:relative;flex-shrink:0;width:12.747px}
+.v422{background-color:#f9ecdf;grid-column:2;align-content:stretch;display:flex;gap:8px;height:34px;align-items:center;justify-self:stretch;padding:8px;position:relative;grid-row:2;flex-shrink:0}
+.v423{height:12px;position:relative;flex-shrink:0;width:16.5px}
+.v424{position:absolute;align-content:stretch;display:flex;gap:8px;align-items:flex-start;justify-content:center;left:19px;padding-top:4px;right:21px;top:580px}
+.v425{position:absolute;background-color:#ffd43b;align-content:stretch;cursor:pointer;filter:drop-shadow(0px 1px 1px rgba(0,0,0,0.05));display:flex;height:48px;align-items:center;justify-content:center;left:36px;right:36px;border-radius:9999px;top:757px}

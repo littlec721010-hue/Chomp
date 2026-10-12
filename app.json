@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Chomp",
+    "slug": "chomp",
+    "version": "1.0.0",
+    "scheme": "chomp",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": { "supportsTablet": true },
+    "web": { "bundler": "metro" },
+    "plugins": ["expo-font", "expo-web-browser"]
+  }
+}
