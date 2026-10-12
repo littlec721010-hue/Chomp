@@ -70,6 +70,11 @@ export function AppNavigator({ initialPreview, onReady }: { initialPreview?: Scr
     },
   }), [signedIn, ready, a.preview]);
   const wasOnboarded = useRef(a.onboarded);
+  useEffect(()=>{
+    if(initialPreview && signedIn && ready && navigationRef.isReady()) {
+      navigatePreview(initialPreview); onReady?.();
+    }
+  },[initialPreview,signedIn,ready,onReady]);
   useEffect(() => { if (!a.preview && !wasOnboarded.current && a.onboarded && navigationRef.isReady()) navigationRef.resetRoot({ index: 0, routes: [{ name: 'Main' }] }); wasOnboarded.current = a.onboarded; }, [a.onboarded, a.preview]);
   return <NavigationContainer linking={linking} ref={navigationRef} onStateChange={syncFrameBackground} onReady={() => { syncFrameBackground(); if (initialPreview) navigatePreview(initialPreview); onReady?.(); }} theme={{ ...DefaultTheme, colors: { ...DefaultTheme.colors, background: 'transparent', card: 'transparent', text: theme.colors.ink, primary: theme.colors.primary } }}>
     <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.colors.background } }}>
