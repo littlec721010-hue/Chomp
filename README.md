@@ -1,10 +1,16 @@
 # Chomp
 
-React Native + Expo + TypeScript。整合 Shan 的账号与偏好、Tongrong 的导航与 Split、Yuhan 的推荐与群组流程，统一运行于 Expo。整合分支：`integration/chomp-flows`。
+**Stop overthinking it. Let’s eat.**
 
-## 启动
+Chomp is a student dining prototype built with **React Native, Expo, and TypeScript**, based on the [Figma Version 3 HiFi design](https://www.figma.com/design/dFW4Nr54OfzHFRKWPkJwWV/Prototype?node-id=171-15254).
 
-需要 Node.js 22.13+（建议 Node 24 LTS）及 pnpm 11。首次安装：
+It combines Shan’s account and preference screens, Tongrong’s navigation and bill-splitting screens, and Yuhan’s recommendation and group dining flows in one Expo application.
+
+The stage-one delivery is available as [v0.1.0](https://github.com/littlec721010-hue/Chomp/releases/tag/v0.1.0). Its code has been merged into `develop` and `main`. The online demonstration currently deploys from `integration/chomp-flows`.
+
+## Getting started
+
+Use a Node.js version compatible with the dependencies in `package.json`, and pnpm 11.25.0.
 
 ```bash
 npm install -g pnpm@11.25.0
@@ -12,7 +18,72 @@ pnpm install
 pnpm start
 ```
 
-Expo 启动后按 `w` 打开浏览器。也可以运行 `pnpm web`。手机使用与 Expo SDK 57 兼容的 Expo Go 扫描终端二维码；如果 Expo Go 版本不匹配，使用对应 SDK 或 development build。
+Press `w` in the Expo terminal to open the browser, or start the Web preview directly:
+
+```bash
+pnpm web --port 8082
+```
+
+For mobile development, use an Expo Go version compatible with Expo SDK 57 or a compatible development build. Physical-device behavior still requires testing.
+
+## Demo preview
+
+The Web version, including production deployments, provides a **Demo preview · Explore the app** entry at the bottom of the screen. Open it to select a screen and explore the prototype without a Supabase account. Use **Switch screen** to reopen the selector.
+
+The demonstration uses a fictional Sarah Jordan profile and sample data. It does not create a real account, verify a password, send email, or synchronize rooms with other users. Demo profile edits and default preferences are saved locally through AsyncStorage. Real sign-in and sign-up require Supabase configuration; signed-in users must sign out before entering the demo.
+
+## Features and walkthrough
+
+- **Account:** welcome, sign-in, sign-up, initial preference setup, profile, and profile editing.
+- **Solo dining:** Decide → Start Solo Pick → saved or custom occasion preferences → recommendations or a surprise selection → restaurant result.
+- **Group dining:** create a room or join using sample code `EAT-404` → occasion preferences → group consensus → recommendations → free-choice or random voting → group result.
+- **Voting demonstration:** select **Simulate sample members’ votes** to complete the other members’ local votes. Results become available when everyone has voted. Members can change their vote.
+- **Split:** open the sample receipt scan flow, edit the bill, review each person’s share, and save it to receipt history. Uploaded photos require manual item entry; OCR is not connected.
+- **Recent Chomps:** the homepage carousel and **See all** share one deduplicated history list. The Web carousel supports horizontal scrolling and mouse dragging.
+
+Custom occasion preferences update the dining session without changing default profile preferences.
+
+## Mock data and limitations
+
+The catalog contains three fictional restaurants: **Kumo Ramen Studio**, **Seoul Taco Kitchen**, and **Mila Pasta House**. Their prices, distances, ingredients, dietary support, ratings, and menus exist only for prototype testing. Photos are reused design assets rather than evidence about real venues.
+
+Recommendations filter mock data by recorded dietary restrictions, disliked ingredients, budget, and travel radius, then rank it by cuisine preference and rating. Unsupported restrictions are retained. If nothing matches, cards remain visible as a labeled preview with selection disabled.
+
+Group codes, invitations, votes, bookmarks, dining history, and receipts are local session demonstrations and reset on reload. Demo profile data and default preferences persist locally. Live restaurant searches, verified dietary information, reservations, cross-user room synchronization, OCR, and payments are not connected.
+
+## Supabase setup
+
+1. Create a Supabase project.
+2. Apply `supabase/migrations/202610090001_accounts_and_preferences.sql` through the SQL Editor or Supabase CLI.
+3. Copy `.env.example` to `.env` and provide the project URL and **publishable / anon public key**. Never use a `service_role` key in the client application.
+4. Add the actual callback URLs under **Authentication → URL Configuration**. For a Web preview on port 8082, use `http://localhost:8082/auth/callback`; for a native build, use `chomp://auth/callback`. Expo Go generates its callback through `Linking.createURL('auth/callback')`.
+5. Configure email confirmation and the required Google, Facebook, or Twitter OAuth providers, then restart Expo. Hosted Web builds also need their deployed callback URL and public environment variables configured before rebuilding.
+
+Authentication supports email verification, password recovery, and persisted sessions. Real new accounts start without sample allergies. Account-loading failures display a retry screen rather than overwriting profile data.
+
+The `profiles` and `dining_preferences` tables use row-level security for user-owned records. Passwords are handled by Supabase Auth. Real email, OAuth, database access, and account isolation require testing against a configured Supabase project.
+
+## Project structure
+
+| Location | Purpose |
+| --- | --- |
+| `App.tsx` | Expo entry point, providers, and demo selector |
+| `src/navigation/` | Account-aware routes, URL linking, and shared navigation |
+| `src/state/AccountProvider.tsx` | Authentication, default preferences, and demo profile |
+| `src/features/DiningProvider.tsx` | Occasion preferences, rooms, votes, bookmarks, and history |
+| `src/screens/` | Shared account, profile, and preference screens |
+| `src/features/decide/` | Preference selection and reusable Decide UI |
+| `src/features/yuhan/` | Integrated native recommendation, group, voting, and result views |
+| `src/features/group/model.ts` | Filtering, consensus, voting, and result calculations |
+| `src/features/preferencesAdapter.ts` | Saved-to-session preference conversion |
+| `src/features/split/` | Receipt editing, history, and integer-cent bill calculations |
+| `assets/figma/`, `assets/yuhan/figma/`, `public/assets/` | Local design assets |
+| `design/` | Design references and prototype connection notes |
+| `tests/`, `scripts/split-model.test.cjs` | Automated regression tests |
+
+Fonts are loaded from local packages. SVG assets use the shared Metro transformer. Legacy Web design references are retained for comparison, not as a separate Vite application.
+
+## Validation
 
 ```bash
 pnpm typecheck
@@ -20,77 +91,16 @@ pnpm test
 pnpm export:web
 ```
 
-macOS 如遇 Metro `EMFILE`，安装 Watchman：`brew install watchman`。仅预览也可以 `CI=1 pnpm web`，这种方式修改代码后需要重启服务。
+Stage-one verification passed **24 automated tests**: 18 functional tests and 6 bill-calculation tests. Coverage includes input validation, preference conversion, filtering, routes, history consistency, consensus, voting, random selection, and exact-cent bill allocation. TypeScript checks and production Web export also passed.
 
-## 没有 Supabase 项目时
+Automated checks do not establish visual fidelity or physical-device compatibility. The team reviewed screens and reported visual issues during development. Layouts, camera access, and real authentication require appropriate manual testing; an exported bundle is not a tested mobile installation.
 
-开发版本底部的 **Open local preview** 可直接打开账号、Decide、Split 和 Profile 页面。预览使用明确标记的 Sarah Jordan 样例，不创建账号、不验证密码、不发送邮件。偏好仅保存到当前设备的 AsyncStorage，退出预览不会清除样例修改。正式构建不提供预览入口。
+## Web deployment
 
-正常 Sign in / Sign up 按钮需要真实 Supabase 配置。不能把本地预览当成注册或数据库联调成功。
+Vercel builds with `pnpm exec expo export --platform web` and serves `dist`. The root `vercel.json` serves existing static assets first and sends other paths to `index.html`, allowing application routes to refresh directly.
 
-## 六个页面与原型
+Deploy the branch containing the desired delivery version. Before sharing a classroom preview, test its URL in an unauthenticated browser and confirm the **Demo preview** entry appears. Vercel access protection is separate from application sign-in.
 
-| 页面 | Figma node | 实现 |
-|---|---|---|
-| Sign | 202:17860 | 欢迎页 → Sign in |
-| Sign in | 202:17973 | 邮箱密码登录、忘记密码、社交登录入口 |
-| Sign up | 202:18017 | 用户名、邮箱、密码确认、条款勾选、邮箱验证状态 |
-| Set Preference | 226:18411 | 新账号首次偏好设置，保存 → Decide 首页 |
-| Profile | 202:17624 | 动态资料、偏好摘要、编辑资料、设置、退出登录 |
-| Profile 1 | 338:28682 | 编辑偏好、预算校验、保存返回、放弃修改提示 |
+## Branch workflow
 
-设计来源：[Version 3](https://www.figma.com/design/dFW4Nr54OfzHFRKWPkJwWV/Prototype?node-id=171-15254)。原始 Figma 图标保存在 `assets/figma`，`manifest.json` 记录节点对应素材，所有字体由本地包加载。
-
-适配说明：原型的 Username 登录改为 Supabase 原生邮箱登录；用户名保存为个人资料。真实新账号不会预选示例过敏原。系统状态栏和底部安全区域在手机由系统提供，Web 预览有模拟状态栏。长页面滚动，底部导航固定，避免原型中的导航覆盖内容。社交按钮接入 Google/Facebook/Twitter OAuth，但每个提供方都需要在 Supabase 后台单独配置。
-
-## Supabase 配置
-
-1. 在 Supabase 创建项目。
-2. 将 `supabase/migrations/202610090001_accounts_and_preferences.sql` 在新项目的 SQL Editor 执行一次，或通过 Supabase CLI 执行迁移。
-3. 复制 `.env.example` 为 `.env`，填入项目的 Project URL 和 **publishable / anon 公共密钥**。不要填 service_role 密钥。
-4. 在 Authentication → URL Configuration 添加应用实际使用的回调地址：Web 开发环境为 `http://localhost:8081/auth/callback`，原生构建为 `chomp://auth/callback`。Expo Go 回调由 `Linking.createURL('auth/callback')` 生成；正式 OAuth 建议使用 development build 的稳定 scheme。
-5. 保留邮箱确认流程并配置所需 OAuth 提供方，然后重启 Expo。
-
-邮箱验证开启时，注册后会提示查收邮件；确认后再登录，未保存过偏好的账号进入 Set Preference。密码重置邮件返回应用后显示新密码表单。正常登录后恢复持久会话；资料读取失败会显示重试界面，不会将失败误判为新用户并覆盖数据。
-
-数据库表：`profiles` 和 `dining_preferences`。两张表启用 RLS，仅允许登录用户访问自己的行。密码只交给 Supabase Auth，不保存到应用数据库。首次成功保存偏好记录代表完成引导。
-
-尚无 Supabase 项目，因此真实注册、邮箱、OAuth、跨设备数据库读写及 RLS 隔离需配置后联调。建议用两个测试账号验证不能读取/修改对方行。条款、支持联系方式、通知推送和组内共享的实际服务需团队在发布前补齐；页面明确标注未接入的服务。
-
-## 整合结构
-
-- `App.tsx` 是唯一 Expo 应用入口；`src/navigation/AppNavigator.tsx` 管理账号门禁、原生 Stack 和 Decide / Split / Profile 底部导航。
-- `AccountProvider` 管理 Supabase 会话及个人默认偏好。`DiningProvider` 管理单次用餐偏好、房间、投票、收藏与当前会话的用餐历史。
-- `PreferencesScreen` 共用首次引导、Profile 编辑及单次用餐表单。单次用餐仅更新 DiningProvider，不写回个人资料。
-- Yuhan 的筛选和投票模型保留在 `src/features/group/model.ts`。`preferencesAdapter.ts` 转换两份偏好数据结构，保留未知过敏原，避免悄悄丢弃限制。
-- 推荐和群组页面已适配 React Native，使用原有餐厅图片。原始 DOM 视图保留于 `design/yuhan-web` 供设计对照，不再作为另一套 Vite 入口。
-- Tongrong 的 Split 页面使用原始 SVG 和整数分金额计算。SVG 由统一 Metro transformer 加载，Shan 的 Asset 组件也已兼容。
-
-## 本地演示流程与限制
-
-1. 开发底栏 → Open local preview → Decide。
-2. Start Solo Pick → 确认本次偏好 → 推荐 → 餐厅详情 → Decide 或 Split。
-3. Create / Join a Group → 创建房间或输入样例码 `EAT-404` → 本次偏好 → 群组共识 → 推荐 → 投票。
-4. 在投票页点击 **Simulate sample members’ votes** 演示其他成员投票，全部投票后显示结果。随机投票和修改投票均可使用。
-5. Split → Open Camera → Scan sample receipt → 修改账单、检查每位分账金额 → Done & Back to Split。自己的照片暂需手动录入。
-
-餐厅是静态样例，没有实时位置、电话、订位或饮食安全验证。无匹配时保留限制并显示空结果，不静默放宽过敏原。食材明细尚未接入，所以 disliked foods 会保留和展示，但不能据此验证菜品。可以用无过敏限制的虚构单次偏好演示完整推荐流程；真实过敏限制不要为了得到结果而删除。
-
-群组码、邀请列表、投票、历史、收藏、账单暂为当前会话的本地演示，刷新即重置；个人预览资料和默认偏好保存在 AsyncStorage。尚未接入跨用户房间、实时订阅、OCR 或支付。真实账号资料功能保留 Supabase 接入，需按上文配置项目后联调。原生三端 bundle 可构建，尚未进行真机相机和登录测试。
-
-## 已执行验证
-
-- TypeScript 检查通过；16 项测试覆盖账号/预算校验、偏好转换、限制筛选、群组共识、投票替换、结果、随机选择及分账金额。
-- Expo Web、iOS、Android bundle 导出成功（不是安装包/真机测试）。
-- 浏览器验证单次偏好与 Profile 隔离、空结果、推荐列表、邀请码校验、群组共识、投票到结果，以及样例扫描、四人精确分账、保存返回。
-- 三条来源分支的提交历史保留在整合分支内。
-
-参考：[Expo 项目配置](https://docs.expo.dev/get-started/create-a-project/)、[Supabase React Native Auth](https://supabase.com/docs/guides/auth/quickstarts/react-native)。
-
-## 整合修复：页面地址与 Recent Chomps
-
-`src/navigation/linking.ts` 统一页面 URL，包括 `/decide`、`/split`、`/profile`、`/sign-in`、`/sign-up`、`/preferences`、`/history`、`/split/scan`、`/split/receipt`、`/restaurants/:id` 和群组流程。导航 URL 配置不会绕过账号状态：未登录先进入欢迎页，未完成首次偏好设置进入 Preferences；已登录或本地预览可进入对应功能页。`auth/callback` 留给 Supabase 的验证、OAuth 和恢复流程处理。
-
-Recent Chomps 和 See all 共用 DiningProvider.recent。预览模式补充当前目录中的三家有效示例餐厅，按选择顺序置顶并去重；真实账号只显示本次会话选择记录。横向滑动、网页鼠标拖动和卡片停靠仍保留。示例仅三家，不再显示无法打开详情的虚构餐厅卡片。
-
-新增回归检查在 `tests/integration-links.test.ts`；地址往返、参数解析、账号限制与历史列表一致性均有覆盖。
+Develop on individual feature branches, review integrated changes on `integration/chomp-flows`, merge them into `develop`, and merge an accepted stage delivery into `main`. Create a release tag to preserve each confirmed delivery version.
