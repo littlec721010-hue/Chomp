@@ -7,14 +7,14 @@ import Battery from '../../../public/assets/navigation/battery.svg'
 import Wifi from '../../../public/assets/navigation/wifi.svg'
 import Cellular from '../../../public/assets/navigation/cellular.svg'
 export function SplitFrame({children,onBack,bottomPadding=44}:{children:ReactNode;onBack?:()=>void;bottomPadding?:number}) {
-  return <SafeAreaView style={s.safe} edges={['top','left','right','bottom']}><KeyboardAvoidingView style={s.safe} behavior={Platform.OS==='ios'?'padding':undefined}>
+  return <View style={s.safe}><KeyboardAvoidingView style={s.safe} behavior={Platform.OS==='ios'?'padding':undefined}>
     <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={[s.content,{paddingBottom:bottomPadding}]}>
-      {Platform.OS==='web'&&<View style={s.status} accessibilityElementsHidden><Text style={s.time}>9:41</Text><View style={s.icons}><Cellular width={18} height={12}/><Wifi width={16} height={12}/><Battery width={27} height={13}/></View></View>}
+
       <View style={{ paddingTop: Platform.OS === 'web' ? 5 : 0 }}>
       {onBack&&<Pressable accessibilityRole="button" accessibilityLabel="Back to Split" hitSlop={10} style={s.back} onPress={onBack}><Back/></Pressable>}{children}
       </View>
     </ScrollView>
-  </KeyboardAvoidingView></SafeAreaView>
+  </KeyboardAvoidingView></View>
 }
 export function SplitAction({label,onPress,children,secondary=false,disabled=false,height=48}:{label:string;onPress:()=>void;children?:ReactNode;secondary?:boolean;disabled?:boolean;height?:number}) {return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={({pressed})=>[s.action,{height},secondary&&{backgroundColor:'#a53b22'},(pressed||disabled)&&{opacity:.6}]}>{children}<Text style={[s.actionText,secondary&&{color:'white'}]}>{label}</Text></Pressable>}
-const s=StyleSheet.create({safe:{flex:1,backgroundColor:theme.colors.background},status:{height:47,marginHorizontal:-20,marginTop:-5},time:{position:'absolute',left:50,top:12,fontSize:17,lineHeight:22,fontWeight:'600',color:'#181818'},icons:{position:'absolute',right:32,top:17,flexDirection:'row',alignItems:'center',gap:5},content:{paddingHorizontal:20,paddingTop:5,paddingBottom:44,flexGrow:1},back:{height:24,width:24,marginTop:Platform.OS==='web'?-16:0,marginBottom:0,flexShrink:0},action:{height:48,borderRadius:999,backgroundColor:theme.colors.primary,flexDirection:'row',gap:8,justifyContent:'center',alignItems:'center'},actionText:{fontSize:15,lineHeight:20,fontFamily:theme.fonts.bold,color:theme.colors.onPrimary}})
+const s=StyleSheet.create({safe:{flex:1,backgroundColor:theme.colors.background},status:{height:47,marginHorizontal:-20,marginTop:-5},time:{position:'absolute',left:50,top:12,fontSize:17,lineHeight:22,fontWeight:'600',color:'#181818'},icons:{position:'absolute',right:32,top:17,flexDirection:'row',alignItems:'center',gap:5},content:{paddingHorizontal:20,paddingTop:5,paddingBottom:44,flexGrow:1},back:{height:24,width:24,marginTop:0,marginBottom:0,flexShrink:0},action:{height:48,borderRadius:999,backgroundColor:theme.colors.primary,flexDirection:'row',gap:8,justifyContent:'center',alignItems:'center'},actionText:{fontSize:15,lineHeight:20,fontFamily:theme.fonts.bold,color:theme.colors.onPrimary}})

@@ -1,3 +1,5 @@
+> 整合更新：本文记录原分支交接。当前应用结构、运行方式和限制以根目录 README.md 为准。
+
 # Chomp native app foundation
 
 ## Stack

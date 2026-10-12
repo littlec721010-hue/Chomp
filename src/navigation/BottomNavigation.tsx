@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
-import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native'
+import { Platform, Pressable, StyleSheet, View } from 'react-native'
 import { theme } from '../styles/theme'
 import type { MainTabParamList } from './types'
 import Decide from '../../public/assets/navigation/decide.svg'
@@ -33,17 +33,16 @@ const variants = {
 
 export function BottomNavigation({ state, descriptors, navigation, insets }: BottomTabBarProps) {
   const [width, setWidth] = useState(390)
-  const { height: viewportHeight } = useWindowDimensions()
   const scale = width / 390
   const active = state.routes[state.index].name as keyof MainTabParamList
   const variant = variants[active]
   const Background = variant.Background
-  return <View testID={`navbar-${active.toLowerCase()}`} onLayout={event => {
+  return <View pointerEvents="box-none" testID={`navbar-${active.toLowerCase()}`} onLayout={event => {
     const nextWidth = event.nativeEvent.layout.width
     if (nextWidth > 0) setWidth(nextWidth)
-  }} style={[styles.bar, { height: 130 * scale + insets.bottom }, (active === 'Decide' || active === 'Split') && { position: 'absolute', left: 0, top: Platform.OS === 'web' ? Math.max(0, Math.min(714 * scale, viewportHeight - 130 * scale)) : undefined, bottom: Platform.OS === 'web' ? undefined : 0 }]}>
+  }} style={[styles.bar, { height: 130 * scale + insets.bottom, marginTop: -47 * scale }]}>
     <View pointerEvents="none" style={[styles.safeArea, { height: insets.bottom }]} />
-    <View style={[styles.component, { transform: [{ scale }] }]}>
+    <View pointerEvents="box-none" style={[styles.component, { transform: [{ scale }] }]}>
       <View pointerEvents="none" style={styles.surface} />
       <View testID="navbar-ellpises" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" pointerEvents="none" style={[styles.background, { left: variant.backgroundX }]}>
         <Background width={127} height={94} />
@@ -63,7 +62,7 @@ export function BottomNavigation({ state, descriptors, navigation, insets }: Bot
         </Pressable>
       })}
     </View>
-    {Platform.OS === 'web' && active === 'Split' && <View pointerEvents="none" accessibilityElementsHidden style={{ position: 'absolute', bottom: 8, alignSelf: 'center', width: 135, height: 5, borderRadius: 100, backgroundColor: '#181818' }} />}
+
   </View>
 }
 const styles = StyleSheet.create({

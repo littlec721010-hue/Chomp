@@ -2,26 +2,12 @@
   "expo": {
     "name": "Chomp",
     "slug": "chomp",
+    "version": "1.0.0",
     "scheme": "chomp",
-    "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#fff8f4",
-    "ios": {
-      "supportsTablet": true
-    },
-    "web": {
-      "bundler": "metro"
-    },
-    "plugins": [
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "Choose a receipt photo to split your bill.",
-          "cameraPermission": "Take a receipt photo to split your bill.",
-          "microphonePermission": false
-        }
-      ]
-    ]
+    "ios": { "supportsTablet": true },
+    "web": { "bundler": "metro" },
+    "plugins": ["expo-font", "expo-web-browser"]
   }
 }
