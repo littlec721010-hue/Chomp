@@ -54,7 +54,7 @@ function IntegratedScreen({ navigation, route }: Props) {
     onBackToPreferences={() => navigation.navigate('DecidePreferences', { group: false })}
     onRestaurantSelected={restaurant => { selected.current = restaurant.id; d.select(restaurant); }}
     onPreferences={room => { d.setRoom(room); navigation.navigate('DecidePreferences', { group: true }); }} />
-    {pending && <View style={{ padding: 12 }}><Action title="Simulate sample members’ votes" variant="beige" disabled={!matches.length} onPress={() => {
+    {pending && <View style={{ padding: 12, paddingBottom: 24 }}><Action title="Simulate sample members’ votes" variant="beige" disabled={!matches.length} onPress={() => {
       let room = d.room!;
       for (const member of room.members.filter(m => m.id !== d.user.id)) room = castVote(room, { userId: member.id, restaurantId: pickRandom(matches).id, method: 'random' });
       d.setRoom(room);

@@ -1,0 +1,172 @@
+Chomp automated test report
+Generated: 2026-10-11T05:59:19.202Z
+Branch: integration/chomp-flows
+Commit: 77a742a (current working tree)
+
+Command: node node_modules/tsx/dist/cli.mjs --test --test-reporter=tap tests/dining.test.ts tests/integration-links.test.ts tests/recommendation-presentation.test.ts tests/validation.test.ts
+TAP version 13
+# Subtest: preference bridge normalizes known restrictions and preserves unsupported allergens
+ok 1 - preference bridge normalizes known restrictions and preserves unsupported allergens
+  ---
+  duration_ms: 1.9039
+  type: 'test'
+  ...
+# Subtest: consensus intersects budgets and radii, and empty group produces no result
+ok 2 - consensus intersects budgets and radii, and empty group produces no result
+  ---
+  duration_ms: 0.2507
+  type: 'test'
+  ...
+# Subtest: restriction filtering runs before cuisine ranking
+ok 3 - restriction filtering runs before cuisine ranking
+  ---
+  duration_ms: 0.24
+  type: 'test'
+  ...
+# Subtest: vote replacement, member validation and complete group result
+ok 4 - vote replacement, member validation and complete group result
+  ---
+  duration_ms: 0.3234
+  type: 'test'
+  ...
+# Subtest: updating occasion preferences leaves other members and source preferences intact
+ok 5 - updating occasion preferences leaves other members and source preferences intact
+  ---
+  duration_ms: 0.3744
+  type: 'test'
+  ...
+# Subtest: sample codes and random selection boundaries
+ok 6 - sample codes and random selection boundaries
+  ---
+  duration_ms: 0.2128
+  type: 'test'
+  ...
+# Subtest: page URLs resolve and round-trip to the original nested screens
+ok 7 - page URLs resolve and round-trip to the original nested screens
+  ---
+  duration_ms: 7.0558
+  type: 'test'
+  ...
+# Subtest: restaurant ids and group flags survive links
+ok 8 - restaurant ids and group flags survive links
+  ---
+  duration_ms: 1.0722
+  type: 'test'
+  ...
+# Subtest: links respect signed-out, onboarding and signed-in navigation
+ok 9 - links respect signed-out, onboarding and signed-in navigation
+  ---
+  duration_ms: 0.1277
+  type: 'test'
+  ...
+# Subtest: homepage and history use the same unique list with selected restaurants first
+ok 10 - homepage and history use the same unique list with selected restaurants first
+  ---
+  duration_ms: 0.1649
+  type: 'test'
+  ...
+# Subtest: generated mock restaurants match the Figma profile including shellfish restrictions
+ok 11 - generated mock restaurants match the Figma profile including shellfish restrictions
+  ---
+  duration_ms: 1.4411
+  type: 'test'
+  ...
+# Subtest: disliked ingredients exclude a mock restaurant and unsupported allergies retain preview-only state
+ok 12 - disliked ingredients exclude a mock restaurant and unsupported allergies retain preview-only state
+  ---
+  duration_ms: 0.1884
+  type: 'test'
+  ...
+# Subtest: matching options retain their filtered order and allow selection
+ok 13 - matching options retain their filtered order and allow selection
+  ---
+  duration_ms: 0.0976
+  type: 'test'
+  ...
+# Subtest: custom tags trim whitespace, prevent case-insensitive duplicates and bound input
+ok 14 - custom tags trim whitespace, prevent case-insensitive duplicates and bound input
+  ---
+  duration_ms: 0.9708
+  type: 'test'
+  ...
+# Subtest: budget accepts zero and cents but rejects blank, negative, nonfinite and reversed ranges
+ok 15 - budget accepts zero and cents but rejects blank, negative, nonfinite and reversed ranges
+  ---
+  duration_ms: 0.3999
+  type: 'test'
+  ...
+# Subtest: signup requires identity, valid email, password confirmation and consent
+ok 16 - signup requires identity, valid email, password confirmation and consent
+  ---
+  duration_ms: 0.2144
+  type: 'test'
+  ...
+# Subtest: new accounts never inherit sample allergies; stored preferences are validated
+ok 17 - new accounts never inherit sample allergies; stored preferences are validated
+  ---
+  duration_ms: 0.3434
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 499.0187
+
+Exit code: 0
+
+Command: node --test --test-reporter=tap scripts/split-model.test.cjs
+TAP version 13
+# Subtest: original receipt keeps printed amounts and all guest shares balance
+ok 1 - original receipt keeps printed amounts and all guest shares balance
+  ---
+  duration_ms: 1.1791
+  type: 'test'
+  ...
+# Subtest: editing prices recomputes percentages and does not mutate original sample
+ok 2 - editing prices recomputes percentages and does not mutate original sample
+  ---
+  duration_ms: 0.1518
+  type: 'test'
+  ...
+# Subtest: small totals and larger guest counts allocate every cent once
+ok 3 - small totals and larger guest counts allocate every cent once
+  ---
+  duration_ms: 0.0987
+  type: 'test'
+  ...
+# Subtest: invalid guests, quantities and rates cannot produce invalid balances
+ok 4 - invalid guests, quantities and rates cannot produce invalid balances
+  ---
+  duration_ms: 0.3526
+  type: 'test'
+  ...
+# Subtest: currency input rejects negative, scientific and fractional-cent prices
+ok 5 - currency input rejects negative, scientific and fractional-cent prices
+  ---
+  duration_ms: 0.4682
+  type: 'test'
+  ...
+# Subtest: second history receipt has its own total
+ok 6 - second history receipt has its own total
+  ---
+  duration_ms: 0.1505
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 314.0958
+
+Exit code: 0
+
+Overall: PASS

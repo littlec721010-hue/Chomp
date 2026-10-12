@@ -5,6 +5,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors as c, fonts } from '../theme/tokens';
 import { figmaAssets, type FigmaAsset } from '../theme/assets';
 import dimensions from '../../assets/figma/dimensions.json';
+import Svg, { Defs, RadialGradient, Stop, Rect, Circle } from 'react-native-svg';
+const FrameGlowContext=React.createContext<(enabled:boolean)=>void>(()=>{});
+export const useFrameGlow=()=>React.useContext(FrameGlowContext);
 
 export function T({ style, ...props }: TextProps) { return <Text {...props} style={[{ fontFamily: fonts.regular, color: c.ink, fontSize: 14, lineHeight: 20 }, style]} />; }
 export function Asset({ name, width, height }: { name: FigmaAsset; width?: number; height?: number }) {
@@ -30,10 +33,21 @@ export function Dialog({ title, visible, onClose, children }: React.PropsWithChi
 }
 export function DeviceFrame({ children }: React.PropsWithChildren) {
   const insets = useSafeAreaInsets();
-  return <View style={{ flex: 1, width: '100%', maxWidth: 390, backgroundColor: c.background, paddingTop: Platform.OS === 'web' ? 0 : insets.top, paddingBottom: Platform.OS === 'web' ? 0 : insets.bottom }}>
+  const [glow,setGlow]=React.useState(false);
+  const [frameWidth,setFrameWidth]=React.useState(390);
+  return <View onLayout={event=>setFrameWidth(event.nativeEvent.layout.width)} style={{ flex: 1, width: '100%', maxWidth: 390, backgroundColor: c.background, paddingTop: Platform.OS === 'web' ? 0 : insets.top, paddingBottom: Platform.OS === 'web' ? 0 : insets.bottom }}>
+    {glow&&Platform.OS==='web'&&<View pointerEvents="none" style={[StyleSheet.absoluteFill,{overflow:'hidden'}]}><View style={{position:'absolute',width:390,height:844,transform:[{scale:frameWidth/390}],transformOrigin:'top left'}}>
+      <View style={{position:'absolute',left:36,top:-48,width:320,height:320,borderRadius:160,backgroundColor:'rgba(255,212,59,0.25)',filter:'blur(32px)'}}/>
+      <View style={{position:'absolute',left:231,top:192,width:224,height:224,borderRadius:112,backgroundColor:'rgba(254,125,94,0.2)',filter:'blur(20px)'}}/>
+      <View style={{position:'absolute',left:-48,top:320,width:192,height:192,borderRadius:96,backgroundColor:'rgba(169,231,169,0.3)',filter:'blur(20px)'}}/>
+    </View></View>}
+    {glow&&Platform.OS!=='web'&&<Svg pointerEvents="none" width="100%" height="100%" viewBox="0 0 390 844" preserveAspectRatio="xMidYMin slice" style={StyleSheet.absoluteFill}>
+      <Defs>{[['frame-yellow','#FFD43B'],['frame-pink','#FE7D5E'],['frame-green','#A9E7A9']].map(([id,color])=><RadialGradient key={id} id={id}><Stop offset="0" stopColor={color} stopOpacity={0.25}/><Stop offset="0.55" stopColor={color} stopOpacity={0.12}/><Stop offset="1" stopColor={color} stopOpacity={0}/></RadialGradient>)}</Defs>
+      <Rect width={390} height={844} fill={c.background}/><Circle cx={195} cy={60} r={210} fill="url(#frame-yellow)"/><Circle cx={365} cy={300} r={160} fill="url(#frame-pink)"/><Circle cx={35} cy={520} r={150} fill="url(#frame-green)"/>
+    </Svg>}
     {Platform.OS === 'web' && <View style={styles.status}><T style={{ fontFamily: fonts.semibold, fontSize: 17 }}>9:41</T><View style={[styles.row, { gap: 7 }]}><Asset name="83135.svg" /><Asset name="9ed76.svg" /><Asset name="fe7dd.svg" /></View></View>}
-    {children}
-    {Platform.OS === 'web' && <View style={{ height: 24, alignItems: 'center', justifyContent: 'center' }}><View style={{ backgroundColor: '#181818', height: 5, width: 135, borderRadius: 100 }} /></View>}
+    <FrameGlowContext.Provider value={setGlow}>{children}</FrameGlowContext.Provider>
+    {Platform.OS === 'web' && <View pointerEvents="none" style={{ position: 'absolute', bottom: 8, left: 0, right: 0, alignItems: 'center', zIndex: 1000 }}><View style={{ backgroundColor: '#181818', height: 5, width: 135, borderRadius: 100 }} /></View>}
   </View>;
 }
 export const styles = StyleSheet.create({
@@ -44,5 +58,5 @@ export const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   overlay: { flex: 1, backgroundColor: 'rgba(37,30,20,0.38)', justifyContent: 'center', alignItems: 'center', padding: 20 },
   dialog: { backgroundColor: c.background, padding: 22, borderRadius: 24, width: '100%', maxWidth: 390, maxHeight: '85%', gap: 16 },
-  status: { height: 47, paddingHorizontal: 32, paddingLeft: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  status: { height: 47, backgroundColor:'transparent', paddingHorizontal: 32, paddingLeft: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 });

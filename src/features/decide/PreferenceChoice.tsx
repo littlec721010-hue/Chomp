@@ -23,9 +23,11 @@ const fields: {label:string; icon:IconName; small:IconName; color:string; hint:s
 ];
 export function PreferenceChoice({route,navigation}:NativeStackScreenProps<RootStackParamList,'DecidePreferences'>) {
  const account=useAccount(),d=useDining(),group=route.params?.group??false;
+ const [contentWidth,setContentWidth]=useState(0);
+ const wide=contentWidth>=350;
  const customized=route.params?.customized??false;
  const [choice,setChoice]=useState<'saved'|'custom'|null>(customized?'custom':null),[error,setError]=useState<string|null>(null);
- useEffect(()=>{if(customized){setChoice('custom');setError(null);}},[customized]);
+ useEffect(()=>{if(customized){setChoice('custom');setError(null);}},[customized,d.meal]);
  function submit(surprise=false) {
   if(!choice){setError('Choose saved preferences or customize for this time.');return;}
   if(choice==='custom'&&!customized){navigation.navigate('DecideEditPreferences',{group});return;}
@@ -36,13 +38,13 @@ export function PreferenceChoice({route,navigation}:NativeStackScreenProps<RootS
   else navigation.navigate('Recommendations',{group:false});
  }
  return <Page title="How would you like to set your preferences?" onBack={()=>navigation.canGoBack()?navigation.goBack():navigation.navigate('Main',{screen:'Decide'})}>
-  <Pressable accessibilityRole="radio" accessibilityState={{checked:choice==='saved'}} onPress={()=>{setChoice('saved');setError(null);}} style={styles.option}>
+  <Pressable accessibilityRole="radio" accessibilityState={{checked:choice==='saved'}} onPress={()=>{setChoice('saved');setError(null);}} onLayout={event=>setContentWidth(event.nativeEvent.layout.width)} style={styles.option}>
    <View style={styles.heading}><T style={styles.optionTitle}>Use Saved Profile Preferences</T><Radio selected={choice==='saved'}/></View><T style={styles.description}>Instantly use your existing default profile settings.</T>
    <View style={styles.summary}><T style={styles.eyebrow}>DEFAULT</T><View style={styles.grid}>{fields.map(f=><View key={f.label} style={styles.field}><View style={[styles.icon,{backgroundColor:f.color}]}><Icon name={f.icon}/></View><View style={{flex:1,minWidth:0}}><T style={styles.label}>{f.label}</T><T numberOfLines={1} style={styles.value}>{f.value(account.preferences)}</T></View></View>)}</View></View>
   </Pressable>
-  <Pressable accessibilityRole="radio" accessibilityState={{checked:choice==='custom'}} onPress={()=>{setChoice('custom');setError(null);navigation.navigate('DecideEditPreferences',{group});}} style={styles.option}>
+  <Pressable accessibilityRole="radio" accessibilityState={{checked:choice==='custom'}} onPress={()=>{setChoice('custom');setError(null);navigation.navigate('DecideEditPreferences',{group});}} onLayout={event=>setContentWidth(event.nativeEvent.layout.width)} style={styles.option}>
    <View style={styles.heading}><T style={styles.optionTitle}>Customize for This Time Only</T><Radio selected={choice==='custom'}/></View><T style={styles.description}>Tweak your preferences for this time without modifying your master profile.</T>
-   {customized?<View style={styles.summary}><T style={styles.eyebrow}>FOR THIS TIME</T><View style={styles.grid}>{fields.map(f=><View key={f.label} style={styles.field}><View style={[styles.icon,{backgroundColor:f.color}]}><Icon name={f.icon}/></View><View style={{flex:1,minWidth:0}}><T style={styles.label}>{f.label}</T><T numberOfLines={1} style={styles.value}>{f.value(d.meal)}</T></View></View>)}</View></View>:<View style={styles.hints}>{fields.map(f=><View key={f.label} style={styles.hint}><Icon name={f.small}/><T style={{fontSize:12,lineHeight:22,flex:1}}>{f.hint}</T></View>)}</View>}
+   {customized?<View style={styles.summary}><T style={styles.eyebrow}>FOR THIS TIME</T><View style={styles.grid}>{fields.map(f=><View key={f.label} style={styles.field}><View style={[styles.icon,{backgroundColor:f.color}]}><Icon name={f.icon}/></View><View style={{flex:1,minWidth:0}}><T style={styles.label}>{f.label}</T><T numberOfLines={1} style={styles.value}>{f.value(d.meal)}</T></View></View>)}</View></View>:<View style={styles.hints}>{fields.map(f=><View key={f.label} style={styles.hint}><Icon name={f.small}/><T numberOfLines={wide?1:undefined} adjustsFontSizeToFit={wide} minimumFontScale={0.85} style={{fontSize:12,lineHeight:22,flex:1,minWidth:0}}>{f.hint}</T></View>)}</View>}
   </Pressable>
   <Message text={error}/><View style={{gap:14,marginHorizontal:24,marginTop:4}}><Action title={group?'Submit & View Group Summary':'Submit & Show Me Options'} icon="1fbe0.svg" onPress={()=>submit()}/>{!group && <Action title="Submit & Surprise Me" icon="41dba.svg" variant="red" onPress={()=>submit(true)}/>}</View>
  </Page>;

@@ -32,3 +32,10 @@ test('matching options retain their filtered order and allow selection', () => {
   assert.deepEqual(screen.cards.map(r=>r.id),['pasta','oishii']);
   assert.equal(screen.previewOnly,false);
 });
+
+test('the user’s one-mile radius still offers three compatible mock options', () => {
+  const preferences=diningPreferences({...samplePreferences,travelMiles:1});
+  const matches=rankRestaurants(restaurants,[{id:'sarah',name:'Sarah',preferences}]);
+  assert.equal(matches.length,3);
+  assert.ok(matches.every(r=>r.distanceMiles<=1 && r.supports.includes('Shellfish')));
+});

@@ -1,7 +1,7 @@
 import { Children, cloneElement, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ScrollView, View, Text, TextInput, useWindowDimensions, StyleSheet, type ImageSourcePropType } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
-import { DesignText } from './native/Design';
+import { DesignImage, DesignText } from './native/Design';
 import { Button, Sheet, ui } from './native/Controls';
 import type { ChompModuleProps, DiningRoom, Restaurant } from '../contracts';
 import { demoMembers, restaurants } from '../recommendations/data';
@@ -9,6 +9,7 @@ import { asset } from './assets';
 import { recommendationPresentation } from './presentation';
 import { castVote, consensus, pickRandom, validInviteCode, winningRestaurant } from '../group/model';
 import { bindView, textBinding, type Binding } from './View';
+import { DinnerTimePicker } from './native/DinnerTimePicker';
 import D5 from './recommendations/views/Decide5';
 import D6 from './recommendations/views/Decide6';
 import D7 from './group/views/Decide7';
@@ -39,15 +40,17 @@ export type IntegratedProps = Omit<ChompModuleProps, 'room'> & {
   route?: Route; onNavigate?: (route: Route) => void;
   room?: DiningRoom; selectedId?: string; bookmarks?: string[];
   onBookmark?: (id: string) => void; matches?: Restaurant[];
-  onCreateRoom?: () => void; onJoinRoom?: () => void; onBackToPreferences?: () => void;
+  onCreateRoom?: () => void; onJoinRoom?: () => void; onBackToPreferences?: () => void; summaryContent?: ReactNode;
 };
 
-export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPreferences,onRestaurantSelected,route:providedRoute,onNavigate,selectedId:providedSelectedId,bookmarks:providedBookmarks,onBookmark,matches=restaurants,onCreateRoom,onJoinRoom,onBackToPreferences}:IntegratedProps){
+export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPreferences,onRestaurantSelected,route:providedRoute,onNavigate,selectedId:providedSelectedId,bookmarks:providedBookmarks,onBookmark,matches=restaurants,onCreateRoom,onJoinRoom,onBackToPreferences,summaryContent}:IntegratedProps){
   const [saved,setSaved]=useState(defaultState);
   const [internalRoute,setInternalRoute]=useState<Route>('/group');
   const route=providedRoute??internalRoute;
   const [inviteCode,setInviteCode]=useState('');
   const [notice,setNotice]=useState('');
+  const [consensusHeight,setConsensusHeight]=useState(1061);
+  const [groupResultHeight,setGroupResultHeight]=useState(844);
   const [modal,setModal]=useState<{title:string;body:ReactNode}|null>(null);
   const panel=useRef<ScrollView>(null);
   const width=Math.min(390,useWindowDimensions().width);
@@ -91,20 +94,32 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   action('281:23257','Back to group options',()=>go('/group'));
   action('281:23013','Create Room',()=>{if(onCreateRoom)onCreateRoom();else updateRoom(initialRoom());go('/group/create');});
   action('281:23040','Join Room',join);
-  bindings['281:23034']={children:<TextInput style={ui.input} accessibilityLabel="Invite code" placeholder="e.g. EAT-404" placeholderTextColor="#9c8a7c" value={inviteCode} maxLength={7} autoCapitalize="characters" autoCorrect={false} onChangeText={value=>setInviteCode(value.toUpperCase())} onSubmitEditing={join} returnKeyType="go"/>};
-  bindings['281:23269']={children:<TextInput style={[ui.input,{fontSize:16,fontFamily:'JakartaBold'}]} accessibilityLabel="Group name" value={room.name} maxLength={40} onChangeText={name=>updateRoom({...room,name})}/>};
+  bindings['281:23034']={props:{style:{backgroundColor:'white',height:52}},children:<TextInput style={[ui.input,{height:25,fontFamily:'JakartaBold',fontSize:20,lineHeight:25,includeFontPadding:false,backgroundColor:'transparent',borderWidth:0,outlineWidth:0}]} accessibilityLabel="Invite code" placeholder="e.g. EAT-404" placeholderTextColor="#d0c6ad" value={inviteCode} maxLength={7} autoCapitalize="characters" autoCorrect={false} onChangeText={value=>setInviteCode(value.toUpperCase())} onSubmitEditing={join} returnKeyType="go"/>};
+  bindings['281:23269']={children:<TextInput style={[ui.input,{fontSize:16,fontFamily:'Jakarta'}]} accessibilityLabel="Group name" value={room.name} maxLength={40} onChangeText={name=>updateRoom({...room,name})}/>};
   action('281:23272','Clear group name',()=>updateRoom({...room,name:''}));
   text(['281:23290'],route==='/group/join'?'Group information':'Start group feast');
   text(['281:23306'],room.code);
   text(['281:23283'],room.dateTime);
   text(['281:23288'],room.scope);
-  action('281:23279','Change dinner time',()=>setModal({title:'Dinner time',body:<View style={{gap:12}}><Text style={ui.body}>Choose a dinner time or enter your own.</Text>{['Today, 7:30 PM','Tomorrow, 7:00 PM'].map(dateTime=><Button key={dateTime} secondary onPress={()=>{updateRoom({...room,dateTime});setModal(null);}}>{dateTime}</Button>)}<TextInput accessibilityLabel="Dinner date and time" style={ui.field} defaultValue={room.dateTime} onEndEditing={e=>{if(e.nativeEvent.text.trim())updateRoom({...room,dateTime:e.nativeEvent.text.trim()});}}/></View>}));
+  action('281:23279','Change dinner time',()=>setModal({title:'Dinner time',body:<DinnerTimePicker initial={room.dateTime} onConfirm={dateTime=>{updateRoom({...room,dateTime});setModal(null);}}/>}));
   action('281:23284','Change dining area',()=>setModal({title:'Dining area',body:<View style={{gap:12}}>{['Downtown (5 mi)','Midtown (3.5 mi)','Nearby (1 mi)'].map(scope=><Button key={scope} secondary onPress={()=>{updateRoom({...room,scope});setModal(null);}}>{scope}</Button>)}</View>}));
+  ['281:23279','281:23284'].forEach(id=>bindings[id].props={style:{flexGrow:1,flexShrink:1,flexBasis:0,minWidth:0,paddingLeft:8,paddingRight:8}});
+  ['281:23282','281:23287'].forEach(id=>bindings[id]={props:{style:{minWidth:0,flexShrink:1,alignItems:'center'}}});
+  ['281:23283','281:23288'].forEach(id=>bindings[id].props={style:{minWidth:0,flexShrink:1,textAlign:'center'}});
   action('281:23307','Copy Code',async()=>{try{await Clipboard.setStringAsync(room.code);setNotice('Invite code copied.');}catch{setModal({title:'Invite code',body:<Text selectable style={ui.title}>{room.code}</Text>});}});
   action('281:23382',room.invited.includes('david')?'Invited':'Invite David',()=>{updateRoom({...room,invited:[...new Set([...room.invited,'david'])]});setNotice('David added to the demo invitation list.');});
-  if(room.invited.includes('david'))text(['281:23386'],'Invited');
+  if(room.invited.includes('david')){
+    bindings['281:23382'].props={className:'v229',disabled:true};
+    bindings['281:23383']={props:{className:'v230'},children:<DesignImage className="v8" src={asset('baf78.svg')} />};
+    text(['281:23386'],'Invited');
+    bindings['281:23386'].props={className:'v231'};
+  }
   action('281:23397','Next: Set Dining Preferences',preferences);
   action('298:25569','View Recommended Restaurants',()=>go('/group/recommendations'));
+  bindings['281:24327']={props:{style:{height:'auto',paddingTop:44,paddingBottom:67,paddingHorizontal:20},onLayout:(event:{nativeEvent:{layout:{height:number}}})=>setConsensusHeight(event.nativeEvent.layout.height)}};
+  bindings['298:25420']={props:{style:{display:'none'}}};
+  ['298:25421','298:25431','298:25451','298:25492','298:25542'].forEach(id=>bindings[id]={props:{style:{position:'relative',top:undefined,left:undefined,right:undefined,width:'100%'}}});
+  bindings['298:25569'].props={style:{position:'relative',top:undefined,left:undefined,right:undefined,marginTop:24,marginHorizontal:23,alignSelf:'stretch'}};
   text(['298:25426'],room.name);
   const shared=consensus(room.members),count=room.members.length;
   const overlap=shared.cuisines.length?Math.round(shared.cuisines.reduce((sum,[,n])=>sum+n,0)/(shared.cuisines.length*count)*100):0;
@@ -114,10 +129,17 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   text(['298:25450'],shared.budgetOverlap?`Budget Overlap: $${shared.budget[0]}–${shared.budget[1]}`:'Budget: No overlap');
   text(['298:25461'],`${count} members’ recorded preferences`);
   text(['298:25491'],<>Filtered by recorded restrictions. Confirm sample dietary information with the restaurant.</>);
-  bindings['298:25491'].props={style:{height:50}};
-  const restricted=room.members.filter(m=>m.preferences.restrictions.length);
+  bindings['298:25490']={props:{style:{flex:1,minWidth:0,paddingRight:0,flexShrink:1}}};
+  bindings['298:25491'].props={style:{width:'100%',minWidth:0,flexShrink:1}};
+  const restricted=[...room.members].sort((a,b)=>Number(b.id===user.id)-Number(a.id===user.id)).filter(m=>m.id===user.id||m.preferences.restrictions.length);
   [['298:25466','298:25468','298:25470'],['298:25474','298:25476','298:25478'],['298:25482','298:25484','298:25486']].forEach((ids,i)=>{
-    const member=restricted[i];text([ids[0]],member?.name.slice(0,2).toUpperCase()??'—');text([ids[1]],member?.name??'No restriction');text([ids[2]],member?.preferences.restrictions.join(', ')??'None recorded');
+    const member=restricted[i];text([ids[0]],member?.name.slice(0,2).toUpperCase()??'—');text([ids[1]],member?`${member.name}${member.id===user.id?' (You)':''}`:'No restriction');text([ids[2]],member?.preferences.restrictions.join(', ')??'None recorded');
+    const rowIds=['298:25463','298:25471','298:25479'], identityIds=['298:25464','298:25472','298:25480'],nameIds=['298:25467','298:25475','298:25483'],tagIds=['298:25469','298:25477','298:25485'];
+    bindings[rowIds[i]]={props:{style:{flexWrap:'wrap',gap:8}}};
+    bindings[identityIds[i]]={props:{style:{width:'100%',minWidth:0,flexShrink:1}}};
+    bindings[nameIds[i]]={props:{style:{flex:1,minWidth:0,flexShrink:1}}};
+    bindings[ids[1]].props={style:{width:'100%',flexShrink:1}};
+    bindings[tagIds[i]]={props:{style:{backgroundColor:'transparent',paddingLeft:0,paddingRight:0,paddingTop:0,paddingBottom:0,width:'100%',flexShrink:1}},children:<View style={{flexDirection:'row',flexWrap:'wrap',gap:4,flex:1,minWidth:0}}>{(member?.preferences.restrictions??['None recorded']).map(tag=><Text key={tag} style={{fontFamily:'JakartaSemiBold',fontSize:11,lineHeight:16,maxWidth:'100%',backgroundColor:/allergy|shellfish/i.test(tag)?'#FFDAD6':'#FFDC73',color:/allergy|shellfish/i.test(tag)?'#93000A':'#725B00',paddingHorizontal:8,paddingVertical:2,borderRadius:10}}>{tag}</Text>)}</View>};
   });
   [['298:25506','298:25509','298:25511'],['298:25520','298:25523','298:25525'],['298:25534','298:25537','298:25539']].forEach((ids,i)=>{
     const cuisine=shared.cuisines[i];text([ids[0]],cuisine?.[0]??'No selection');text([ids[1]],`${cuisine?.[1]??0}/${count} matched`);text([ids[2]],`${Math.round(100*(cuisine?.[1]??0)/count)}%`);
@@ -126,9 +148,18 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   text(['298:25555'],shared.budgetOverlap?'Shared budget range':'Review group budgets');
   text(['298:25565'],`≤ ${shared.distanceMiles} mi`);text(['298:25567'],room.scope);
   text(['312:26960'],`${count} Feasters Attending`);text(['312:26962'],room.members.map(m=>m.name).join(', '));
+  bindings['312:26958']={props:{style:{flex:1,minWidth:0,flexShrink:1}}};
+  bindings['312:26949']={props:{style:{flex:1,minWidth:0,flexShrink:1}}};
+  ['312:26959','312:26961','312:26960','312:26962'].forEach(id=>bindings[id]={...bindings[id],props:{style:{width:'100%',minWidth:0,flexShrink:1}}});
   text(['312:26859'],`${result.rating} (${result.reviews})`);
   text(['312:26967'],'SAMPLE RESTAURANT PERKS');
   ['312:26973','312:26978','312:26983','312:26988'].forEach((id,i)=>text([id],result.perks[i]??''));
+  ['312:26969','312:26974','312:26979','312:26984'].forEach(id=>bindings[id]={props:{style:{height:'auto',minHeight:44,width:'100%',overflow:'hidden'}}});
+  ['312:26972','312:26977','312:26982','312:26987'].forEach(id=>bindings[id]={props:{style:{flex:1,minWidth:0,flexShrink:1}}});
+  ['312:26973','312:26978','312:26983','312:26988'].forEach(id=>bindings[id].props={style:{width:'100%',minWidth:0,flexShrink:1}});
+  bindings['312:26834']={props:{style:{height:'auto',paddingHorizontal:20,paddingBottom:40},onLayout:(event:{nativeEvent:{layout:{height:number}}})=>setGroupResultHeight(event.nativeEvent.layout.height)}};
+  bindings['312:26847']={props:{style:{position:'relative',top:undefined,left:undefined,right:undefined,width:'100%',marginTop:141}}};
+  bindings['312:26887']={props:{style:{position:'relative',top:undefined,left:undefined,right:undefined,width:'100%',marginTop:20}}};
   text(['312:26490','312:26265'],user.name.slice(0,1));text(['312:26497','312:26272'],user.name);
   const pulseIds=route==='/group/random-vote'?[['312:26292','312:26294','312:26296'],['312:26307','312:26309','312:26311'],['312:26411','312:26413','312:26415']]:[['312:26515','312:26517','312:26519'],['312:26530','312:26532','312:26534'],['312:26545','312:26547','312:26549']];
   pulseIds.forEach((ids,i)=>{
@@ -141,7 +172,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   const soloCards=["258:22235","258:22286","258:22336"],groupCards=["281:24786","281:24830","281:24875"];
   const soloTops=[182,583,984],groupTops=[182,609,1009];
   const {cards:displayed}=recommendationPresentation(matches,restaurants);
-  if(!matches.length)text(['258:22233'],'Sample restaurants · No verified matches for your preferences');
+  text(['258:22233'],matches.length?`Top ${matches.length} ${matches.length===1?'match':'matches'} based on your preferences`:'Sample restaurants · No verified matches for your preferences');
   restaurants.forEach((r,i)=>{
     const index=displayed.findIndex(match=>match.id===r.id);
     bindings[soloCards[i]]={props:{style:index<0?{display:'none'}:{top:soloTops[index]}}};
@@ -159,6 +190,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   ['312:26550','312:26389'].forEach(id=>action(id,'View Result',()=>{const winner=winningRestaurant(room,matches);if(!winner){setNotice('Waiting for everyone to vote.');return;}onRestaurantSelected?.(winner,room);go('/group/result');}));
   ['312:26556','312:26395'].forEach(id=>action(id,'Change My Vote',()=>go('/group/recommendations')));
   ['258:22709','312:26918'].forEach(id=>action(id,'Back to Home',()=>onHome?.()));
+  bindings['312:26918'].props={style:{position:'relative',top:undefined,left:undefined,right:undefined,marginHorizontal:16,marginTop:32,alignSelf:'stretch'}};
   [['258:22678','312:26888','Directions'],['258:22688','312:26898','Call Table'],['258:22698','312:26908','View Menu']].forEach(([a,b,label])=>{action(a,label,()=>showAction(label as 'Directions',selected));action(b,label,()=>showAction(label as 'Directions',result));});
   const voted=room.votes.filter(v=>room.members.some(m=>m.id===v.userId)).length;
   text(['312:26461','309:26217'],`${voted} of ${room.members.length}`);
@@ -186,9 +218,14 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
       .replace(/Pasta Fresca Handcrafted/g,restaurants[2].name)
       .replace(/Mexican/g,restaurants[1].cuisine)
       .replace(/Street Food/g,restaurants[1].category)
+      .replace(/1\.2 mi/g,`${restaurants[1].distanceMiles} mi`)
+      .replace(/1\.5 mi/g,`${restaurants[2].distanceMiles} mi`)
       .replace(/\$15–30/g,'$15–24').replace(/\$20–30/g,'$18–26').replace(/\$25–40/g,'$20–28');
     if(!node || typeof node!=='object' || !('props' in node))return node;
-    const element=node as import('react').ReactElement<{children?:ReactNode;src?:ImageSourcePropType;alt?:string;contentFit?:'fill'|'cover';style?:Record<string,unknown>;className?:string}>;
+    const element=node as import('react').ReactElement<{children?:ReactNode;src?:ImageSourcePropType;alt?:string;contentFit?:'fill'|'cover';style?:Record<string,unknown>;className?:string;'data-name'?:string}>;
+    const resultPage=route==='/recommendations/result'||route==='/group/result'||route==='/group/vote'||route==='/group/random-vote';
+    if(resultPage&&element.props['data-name']==='Subtle ambient celebratory decorative canvas')return null;
+    if(resultPage&&element.props.className==='v1')return cloneElement(element,{style:{...element.props.style,backgroundColor:'transparent'},children:Children.map(element.props.children,dynamicImages)});
     const src=element.props.src;
     const restaurant=route==='/group/result'?result:selected;
     if(src && (src===asset('91d18.png')||src===asset('f37ad.png'))){
@@ -198,9 +235,11 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
     return cloneElement(element,{children:Children.map(element.props.children,dynamicImages)});
   }
   const view=dynamicImages(bindView(screen.view(),bindings));
-  return <View style={{flex:1,alignItems:'center',backgroundColor:'#fff8f4'}}>
-    <ScrollView ref={panel} style={{width}} contentContainerStyle={{minHeight:777*width/390}} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} accessibilityLabel={screen.label}>
-      <View style={{height:(screen.height-67)*width/390,width,overflow:'hidden'}}><View style={{width:390,height:screen.height,top:-33*width/390,transform:[{scale:width/390}],transformOrigin:'top left'}}>{view}</View></View>
+  const canvasHeight=route==='/group/result'?groupResultHeight:route==='/group/consensus'?consensusHeight:route==='/recommendations'?screen.height-401*(3-displayed.length):screen.height;
+  return <View style={{flex:1,alignItems:'center',backgroundColor:['/recommendations/result','/group/result','/group/vote','/group/random-vote'].includes(route)?'transparent':'#fff8f4'}}>
+    <ScrollView ref={panel} style={{width}} contentContainerStyle={{minHeight:777*width/390,paddingBottom:24}} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} accessibilityLabel={screen.label}>
+      {route==='/group/consensus'&&summaryContent}
+      <View style={{height:(canvasHeight-33)*width/390,width,overflow:'hidden'}}><View style={{width:390,height:route==='/group/consensus'||route==='/group/result'?undefined:canvasHeight,top:-33*width/390,transform:[{scale:width/390}],transformOrigin:'top left'}}>{view}</View></View>
     </ScrollView>
     {!!notice&&<View accessibilityLiveRegion="polite" style={nativeStyles.toast}><Text style={{color:'#fff',fontFamily:'JakartaMedium',textAlign:'center'}}>{notice}</Text></View>}
     <Sheet visible={!!modal} title={modal?.title??''} onClose={()=>setModal(null)}>{modal?.body}</Sheet>
