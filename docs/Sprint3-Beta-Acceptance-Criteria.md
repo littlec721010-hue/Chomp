@@ -13,6 +13,8 @@ Mandatory live integrations: real authentication and account isolation, shared m
 
 Confirmed Split scope: real receipt OCR and independent manual entry are both required. OCR results must be editable before confirmation. Bill allocation is equal splitting with exact integer-cent reconciliation; item ownership allocation is outside the confirmed scope. OCR is required for Beta acceptance, but an individual receipt can always be entered manually without using OCR.
 
+Primary Split flow: photograph/upload receipt → OCR populates a draft → user reviews recognized items, edits errors, adds missing items and removes incorrect items → user explicitly confirms the corrected bill → calculate equal shares → save. Manual correction and missing-item entry are normal steps after successful OCR, not only failure recovery. Independent manual entry remains a secondary path into the same editable bill and calculation model.
+
 Real restaurant search, reservations and payments are not established as mandatory by the supplied summary. Proposed scope: retain labeled restaurant fixtures; confirm this remaining boundary with the team before final sign-off.
 
 ## Gate A — Trustworthy Foundation (B01–B03)
@@ -25,7 +27,7 @@ Real restaurant search, reservations and payments are not established as mandato
 
 - B04: Two devices truly join the same room and synchronize votes; GROUP-01 through GROUP-04 apply.
 - B05: Persist account history and receipt records; DATA-01 through DATA-03 apply.
-- B06: Support real receipt OCR plus independent manual entry, editable recognition results, and exact-cent equal splitting. SPLIT-01 through SPLIT-04 apply. A predefined sample receipt does not count as OCR evidence.
+- B06: Support the full OCR → review/edit/add missing items → confirm → equal split → save flow, plus independent manual entry. SPLIT-01 through SPLIT-05 apply. A predefined sample receipt does not count as OCR evidence.
 
 ## Detailed technical acceptance checks for Gates A and B
 
@@ -49,6 +51,7 @@ Use two independently authenticated accounts, A and B, on two physical devices f
 | SPLIT-02 | A real receipt photo selected through camera or upload is processed by an actual OCR implementation. Recognized item names, quantities/prices, and available tax/tip/total fields populate an editable draft. Missing, ambiguous or inconsistent values are flagged for review; users can add, remove and correct fields before confirming. Predefined sample data is never substituted as a successful recognition result. | Original redacted receipt, actual recognition output, populated draft and corrected/confirmed bill for several distinct receipts. Record supported receipt formats and observed failures; agree on a representative fixture set and accuracy target before sign-off. |
 | SPLIT-03 | Manual entry remains available when camera permission is denied, photo selection is canceled, OCR times out/fails or a receipt is unreadable. Show the error/review state without claiming success; preserve existing manual edits during failure/retry and ask before replacing them with a new recognition result. | Permission/cancel/failure/unreadable-receipt cases and a completed manual fallback bill. |
 | SPLIT-04 | For both OCR-reviewed and manually entered bills, quantity/price edits, tax, tip and participant count produce correct subtotal/total and equal shares in integer cents. Allocate any remainder cents explicitly so shares differ by at most one cent and sum exactly to the total. Do not double-count tax/tip from OCR; flag differences between the printed total and computed total for correction before confirmation. | Calculation tests and manual cases covering divisible/non-divisible totals, changed guest counts, invalid inputs and printed-total mismatch. |
+| SPLIT-05 | Successful OCR opens the editable review draft rather than automatically finalizing a bill. Users can correct recognized item names, quantities and prices, add omitted items and remove incorrect items. All edits feed the same bill model; the confirmed equal shares and saved/reloaded receipt use the corrected values, never stale OCR output. Changes after confirmation require confirmation again before final save. | End-to-end record with an OCR error and an omitted item: original receipt → recognized draft → corrected/added items → confirmation → exact-cent split → saved/reloaded corrected bill. Also verify removal and editing after confirmation. |
 | NAV-01 | Core Decide, group, Split and Profile flows support entry, return/back and protected navigation without a dead end, stale account data or a crash. | Manual flow checklist on the declared Beta platforms. |
 
 Proposed synchronization acceptance target: remote membership, preference-submission and vote changes appear within 5 seconds on a stable connection without manual refresh. Record observed delays; this target requires team agreement and is not a supplied course threshold. Define tie/completion/leave/close rules before executing GROUP-04.
@@ -75,6 +78,7 @@ A Beta feature is done when:
 
 - Its acceptance IDs and expected behavior are agreed, implemented and linked to reviewable commits/PRs.
 - Required live behavior is verified with real accounts/backend data; mock/demo output is not substituted.
+- Split specifically demonstrates successful real OCR followed by review, correction and missing-item addition, explicit confirmation, exact-cent equal splitting and persistence of the corrected bill (SPLIT-02/04/05). Independent manual entry and OCR failure recovery must also pass; OCR success alone does not complete B06.
 - Applicable happy-path, invalid-input, unauthorized-access, refresh/reconnect and failure/retry cases have expected and actual results.
 - Changes are reviewed and integrated into the designated Beta branch; relevant tests, TypeScript checks and production Web export pass for that candidate.
 - Required manual device and accessibility checks have evidence; limitations identify untested platforms rather than implying coverage.
