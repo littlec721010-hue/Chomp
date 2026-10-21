@@ -4,6 +4,31 @@ Prepared: October 21, 2026. Planning baseline: main @ 8108dd4.
 Task 4 deliverable: executable manual test specifications, not completed test results.
 References: [acceptance criteria](Sprint3-Beta-Acceptance-Criteria.md) and [risks/dependencies](Sprint3-Technical-Risks-and-Dependencies.md).
 
+## Practical execution plan — 10 core scenarios plus 36 detailed cases
+
+The ten scenarios below organize the existing 36 detailed cases; they are not ten additional test cases or a replacement for the full coverage. Start each integration check with this core set, run affected extended cases after relevant changes, and complete the full applicable regression before Beta release. Reuse evidence from the same candidate/environment where appropriate. Registration can use fresh disposable accounts or linked same-candidate evidence; always recheck login/logout and account switching. Missing required integrations are Blocked, not an exemption from the core set.
+
+**Both real OCR and independent manual entry are mandatory.** Manual entry must work without selecting a photo or invoking OCR; it is not just an OCR fallback. Successful OCR must allow review, edits and missing-item additions before confirmation. The two paths converge on the same exact-cent equal-split and persistence behavior and require separate passing evidence.
+
+| Core ID | Scenario and minimum expected outcome | Detailed cases to use |
+| --- | --- | --- |
+| CORE-01 | Real authentication: A/B register and verify, then login/logout; protected access follows authentication state. | AC-01 |
+| CORE-02 | Account isolation: direct requests cannot read or modify the other account's private records; verify unchanged target data. | AC-03; account-bound history/receipt checks in DC-09 and SP-11 |
+| CORE-03 | Solo Decide: saved preferences affect recommendations; occasion edits preserve defaults; valid selection reaches the matching result. | DC-01, DC-02 |
+| CORE-04 | Restrictions: enforce supported constraints before ranking; no-match/unsupported restrictions do not silently relax into selectable results. | DC-03, DC-04 |
+| CORE-05 | Real group: A creates, B joins on another device, both submit preferences and see actual shared state. | GC-01, GC-03 |
+| CORE-06 | Voting/reconnect: votes and changed votes converge; reconnect restores authoritative state without duplicates or premature results. | GC-05, GC-08; record agreed lifecycle rules |
+| CORE-07 | OCR primary path: process a real image, review recognized output, correct errors, add missing items, confirm and split. | SP-01, SP-02; include a real recognition run, not only a stub |
+| CORE-08 | Independent manual path: start a blank bill without photo/OCR, enter and edit items/tax/tip/guests, confirm and split. | SP-04 |
+| CORE-09 | Exact-cent equal split: test known totals and indivisible remainders; shares sum to the confirmed bill total. | SP-07, SP-08; apply to corrected OCR and manual bills |
+| CORE-10 | Persistence: refresh/restart and a second device restore the correct account's Profile/preferences, dining history and corrected OCR/manual receipts. | AC-02, DC-09, SP-11 |
+
+All core scenarios are **Not run** until evidence is recorded. A scenario passes only when its required component checks pass; bundling multiple checks does not make the work optional. Record component failures and blocked dependencies individually.
+
+Extended checks cover invalid inputs/codes, ingredient aliases, stale routes, outsider/impersonation attacks, concurrent votes/ties, camera denial/OCR failure, late recognition responses, total mismatches, save retry, navigation and accessibility. Select affected cases during development; complete all applicable cases and input/platform variants for final regression. Resolve undefined acceptance policies before judging their dependent cases.
+
+Accessibility checks (UX-02) and at least three documented usability/stakeholder sessions (UX-03) remain required Gate C work, even though they are not separate rows in the ten-scenario integration checklist. Thirty-six detailed cases do not mean thirty-six user sessions; developers execute technical checks, while each user session uses a manageable selection of core tasks and records observations.
+
 ## Execution rules and setup
 
 Every case below starts as **Not run**. Execute against an identified Beta candidate; do not infer a pass from the Alpha's 24 model/route tests. If a required service is missing, record Blocked with the dependency, not Pass. If implemented behavior violates the expected outcome, record Fail. Keep original D identifiers when linking known defects; do not assign undocumented D numbers.
