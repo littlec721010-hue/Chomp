@@ -7,6 +7,10 @@ Inputs: Team-provided Sprint 3 requirements and Alpha retrospective summary; loc
 
 Gate structure follows the team's supplied roadmap screenshot: Gate A — Trustworthy Foundation (B01–B03); Gate B — Connected Experience (B04–B06); Gate C — Beta Candidate (B07). Detailed checks below operationalize that roadmap. Original course documents and numbered citations have not been independently verified.
 
+## Draft Sprint 3 Goal
+
+Turn the integrated Alpha into a Beta candidate with trustworthy account isolation, connected two-device dining decisions, persistent account-owned data, and usable receipt-to-equal-split flows through both real OCR and independent manual entry. Validate the candidate in at least three documented user/stakeholder sessions, triage findings, and use evidence to prioritize experience and accessibility revisions across Gates A, B and C.
+
 ## Scope
 
 Mandatory live integrations: real authentication and account isolation, shared multi-client rooms and voting, and persistent account-owned data. Demo mode and simulated votes cannot count as evidence for these requirements.
@@ -85,6 +89,8 @@ A Beta feature is done when:
 - Findings and fixes link back to test sessions, and targeted fixes include before/after evidence and retest outcomes.
 
 Proposed release rule: mandatory Gate A and Gate B criteria pass, at least three sessions and the Gate C evidence are complete, no Critical finding remains open, and every remaining Important finding has a documented team disposition. Required acceptance failures cannot be waived merely by labeling them Deferred. Team sign-off must identify the exact deployed commit and acknowledged limitations.
+
+For overall Beta completion, run the ten core integration scenarios and full applicable detailed regression in the [functional test plan](Sprint3-Decide-Split-Functional-Test-Cases.md), retaining component outcomes and platform evidence. The ten scenarios organize the 36 detailed cases; they do not replace accessibility review or the three user/stakeholder sessions. Both real OCR followed by correction/missing-item addition and independent no-photo manual entry require passing evidence, including persistence of the confirmed bill. Relevant checks must pass under the agreed Node 24/pnpm 11.25.0/Expo ~57 toolchain; historical Alpha Node 23 results do not establish this. Final evidence identifies candidate/deployment, backend migration version, coverage, residual issues and team sign-off; merging this draft alone does not approve release.
 
 ## Evidence record format
 
