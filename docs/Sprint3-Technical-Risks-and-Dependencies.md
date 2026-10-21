@@ -32,6 +32,8 @@ Sample wording also needs review during B06: `SplitReceiptScreen.tsx` currently 
 
 ## Integration dependencies and recommended order
 
+Confirmed primary Split flow: photograph/upload a receipt → real OCR populates an editable bill → user reviews and edits recognized items, adds missing items and removes incorrect items → user confirms the corrected bill → calculate exact-cent equal shares → save. Correction and missing-item entry are part of the normal post-OCR flow, not only an error fallback. The earlier requirement for independent manual entry remains a secondary path; it does not replace this primary flow. OCR and manual edits must feed the same bill model and calculation rules.
+
 | Step | Depends on | Reviewable output / exit check |
 | --- | --- | --- |
 | D1 — Agree shared contracts and lifecycle | Acceptance draft and team decisions | Authoritative user/room/vote/history/receipt shapes; monetary units; lifecycle rules; OCR draft contract and failure states. Name owners before parallel implementation. |
