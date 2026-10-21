@@ -84,6 +84,23 @@ Critical dependency chain: account identity → authorization/schema → real ro
 - Agree whether receipt images need to be retained. If stored, define owner-only access, retention and deletion; do not assume image storage is necessary just to persist structured bills.
 - Reserve devices, two verified test accounts and at least three user/stakeholder sessions; record the final deployment's commit and environments.
 
+## Sprint 2 backlog review and remaining tasks
+
+This section consolidates the supplied Sprint 2 summary, Alpha review and current source evidence. The original complete backlog and D01–D07 entries were not supplied; use the cross-reference above without inventing individual mappings or closure statuses.
+
+| Carryover | Remaining Beta work | Gate / risks |
+| --- | --- | --- |
+| Integrated screens and local checks | Repeatable reviewed PRs and CI/CLI checks; authoritative shared contracts and monetary units. Standardize Node 24/pnpm 11.25.0/Expo ~57; local upgrade remains deferred, not completed. | A; R10/R11/R13 |
+| Account repository and profile/preferences policies | Verify two real accounts, email/login/logout, preview/live separation and direct-client isolation. Existing migration does not prove deployed isolation. | A; R01/R02 |
+| Restriction filtering and result routes | Reviewed aliases, explicit unsupported/no-match labels, no silent relaxation, and unknown-ID recovery without substituting a restaurant. | A/navigation; R09/R14 |
+| Local rooms and votes | Backend-authorized shared lifecycle, real two-device membership/submissions/votes, concurrency and reconnect validation. | B; R02/R03/R04 |
+| In-memory dining and receipt histories | Owner-scoped storage, corrected bill persistence, reload/second-device retrieval, safe retries and account switching. | B; R05 |
+| Sample scan and photo-led manual entry | Real OCR → editable review/corrections/add missing items → confirm → equal split → save, plus independent manual entry without photo/OCR. Both are required; manual fallback does not satisfy OCR acceptance. | B; R06/R07/R08 |
+| Integer-cent equal-share model | Preserve accurate unit/line values and tax/tip precedence through OCR/manual edits and persistence; sum remainder shares exactly. Item ownership splitting is outside confirmed scope. | B; R07 |
+| Device and user evidence gaps | iOS/Android/Web regression, accessibility checks, at least three documented sessions, findings triage and selected fixes with before/after/retest evidence. | C; R12 |
+
+Implementation order follows D1–D7 above. Use the [ten core scenarios and 36 detailed cases](Sprint3-Decide-Split-Functional-Test-Cases.md) for verification; no carryover is closed by documenting it. Original D records, named owners and pending lifecycle/OCR scope decisions still require confirmation.
+
 ## Task 3 completion boundary
 
 The source-backed register and dependency order are the Task 3 deliverable. All listed gaps/risks remain open or unverified until their closure evidence is linked. Creating this register does not complete the implementation or pass any gate. Next task: derive functional Decide/Split test cases from acceptance IDs and these failure scenarios.
