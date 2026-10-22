@@ -44,6 +44,21 @@ NS identifiers are review-local findings, not replacements for original D01–D0
 | NS-07 / P1 / confirmed labeling and state gap | `SplitReceiptScreen.tsx` labels sample as OCR Receipt/Auto-matched; draft has no explicit user-confirmation state. Editor is already capable of editing/adding/removing line items. | Distinguish sample/manual/real OCR review state; require reconfirmation after edits and persist corrected values. Existing edit capability alone is not evidence of a real OCR pipeline. | SP-02/03/10/11; SPLIT-05 |
 | NS-08 / P0 / future backend boundary requirement | `group/model.ts` validates local membership on castVote but does not enforce database identity, eligibility or server lifecycle; all current users operate on client-owned objects. | Do not reuse local checks as authorization. Enforce room membership, own-vote identity, valid choices and completion rules on the backend; test outsider/impersonation/concurrent writes. | GC-05–08; R02/R04 |
 
+## User-reported result-page issue and agreed follow-up behavior
+
+The user reports that restaurant names sometimes do not match the corresponding image on the group result screen (Decide 17), and supplied a screenshot identifying that screen. This is a user-reported intermittent issue, not an independently reproduced runtime defect in this review. The screenshot identifies the target page; it does not by itself prove a specific mismatched name/image pair. Keep the report open until a reproducible sequence and expected restaurant ID are recorded.
+
+Add a focused result consistency check: record selected restaurant ID, current member vote and group winner; compare the recommendation/vote/result title, hero image, image label, rating, perks and menu for the same entity. Repeat across all fixture restaurants, change votes so the winner differs from the current member's choice, navigate back/forward and switch results quickly. Investigate both data binding and retained image state; do not declare either the confirmed root cause without reproduction evidence. The current Decide 17 template also lacks an explicit restaurant-name field in its hero content; include a clear name in the proposed design correction.
+
+Agreed requested behavior for NS-01:
+
+- When a result ID is unknown or no longer available, show “This restaurant no longer exists or is currently unavailable” (English copy consistent with the app), rather than displaying the first/default restaurant.
+- Provide “Back to recommendations” and a way to review meal preferences, preserving personal/group context. An absent group should still offer room recovery rather than fabricate a result.
+- Suggest a wider budget, travel distance or cuisine preference where appropriate. Keep recorded allergy and dietary restrictions; never automatically relax them to create a match.
+- When a valid result is available, display a clear restaurant name and ensure its image, rating, perks and menu/actions all belong to that same restaurant. A pending group result must not be presented as a final winner.
+
+This update records required behavior and verification work only. At the user's direction, application implementation is deferred. An unmerged experimental code-fix branch is not an accepted fix or a closed finding; keep NS-01 and the intermittent mismatch report open pending implementation and retest.
+
 ## Existing safeguards to preserve
 
 - Account load requests use a generation counter; loading failures offer retry instead of writing defaults over backend data.
