@@ -59,6 +59,10 @@ Agreed requested behavior for NS-01:
 
 This update records required behavior and verification work only. At the user's direction, application implementation is deferred. An unmerged experimental code-fix branch is not an accepted fix or a closed finding; keep NS-01 and the intermittent mismatch report open pending implementation and retest.
 
+### Confirmed tie-policy follow-up (documentation only)
+
+Group results must wait for all required votes. A unique leader wins; tied highest-vote restaurants form the only random draw set. The server persists one winner per round, with tie metadata, and both result pages show the same restaurant/name/image and a clear tie-break notice. Refresh/reconnect/repeated requests must not redraw. Current `group/model.ts` uses rating to break equal counts and client-local state, so this requirement is not implemented. Add to NS-08 follow-up and verify GC-06; post-finalization edits and membership/leave/close behavior remain separate pending decisions.
+
 ## Existing safeguards to preserve
 
 - Account load requests use a generation counter; loading failures offer retry instead of writing defaults over backend data.

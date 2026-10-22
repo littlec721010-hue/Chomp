@@ -17,7 +17,7 @@ The ten scenarios below organize the existing 36 detailed cases; they are not te
 | CORE-03 | Solo Decide: saved preferences affect recommendations; occasion edits preserve defaults; valid selection reaches the matching result. | DC-01, DC-02 |
 | CORE-04 | Restrictions: enforce supported constraints before ranking; no-match/unsupported restrictions do not silently relax into selectable results. | DC-03, DC-04 |
 | CORE-05 | Real group: A creates, B joins on another device, both submit preferences and see actual shared state. | GC-01, GC-03 |
-| CORE-06 | Voting/reconnect: votes and changed votes converge; reconnect restores authoritative state without duplicates or premature results. | GC-05, GC-08; record agreed lifecycle rules |
+| CORE-06 | Voting/ties/reconnect: after all votes, choose a sole highest-vote winner or one server-persisted random winner from tied leaders only; both devices show the tie notice and same result after reload/reconnect. | GC-05, GC-06 variants, GC-08 |
 | CORE-07 | OCR primary path: process a real image, review recognized output, correct errors, add missing items, confirm and split. | SP-01, SP-02; include a real recognition run, not only a stub |
 | CORE-08 | OCR failure recovery: handle denied camera/canceled selection/unreadable input/timeout; offer retry/reselect/cancel and preserve existing corrections. No independent manual path is required. | SP-05, SP-06 |
 | CORE-09 | Exact-cent equal split: test known totals and indivisible remainders; shares sum to the confirmed corrected OCR bill total. | SP-07, SP-08 |
@@ -72,7 +72,7 @@ Test inputs:
 
 ## Decide — real group lifecycle (Gate B)
 
-Before GC-05/06/08, record team-approved membership, completion, tie, preference-edit and leave/close rules. If not agreed, mark the dependent case Blocked (specification pending). The acceptance draft's 5-second synchronization target remains proposed; record observed latency rather than silently treating it as approved.
+Completion/tie policy is confirmed: all required members vote, then select the sole leader or randomly choose only among tied highest-vote restaurants. The server saves one result per round and both devices display it with a clear tie notice. Membership snapshots, post-finalization edits/reopening and leave/close rules remain pending; only dependent lifecycle variants are specification-blocked, not the confirmed tie rule. The acceptance draft's 5-second target remains proposed; record observed latency.
 
 | ID / acceptance | Preconditions and steps | Expected result |
 | --- | --- | --- |
@@ -81,9 +81,25 @@ Before GC-05/06/08, record team-approved membership, completion, tie, preference
 | GC-03 / GROUP-02 | A/B submit different occasion preferences; observe each device; inspect each account's defaults. | Submission status synchronizes; consensus uses the real submitted restrictions/budget/radius; defaults remain unchanged. |
 | GC-04 / GROUP-02, DECIDE-01 | Submit incompatible budgets or combined restrictions leaving no group match; attempt to start voting/select a result. | Explain no-match state, preserve constraints and block incompatible result selection. |
 | GC-05 / GROUP-03/04 | A votes; check result before B votes. B votes; A changes own vote. Compare both clients and stored rows. | Counts converge; completion follows the agreed rule; replacement does not create an extra vote; clients agree on the final result. |
-| GC-06 / GROUP-03/04 | A/B vote concurrently; retry the same vote; test a tie using an eligible controlled catalog. | One effective vote per member; no lost updates; tie/completion uses the agreed authoritative policy and converges across devices. |
+| GC-06 / GROUP-03/04 | Execute the tie variants below with eligible controlled restaurants; compare D1/D2 round/winner IDs, counts and tie notice; trigger concurrent finalization/result requests and reload/reconnect. | One effective vote per member; finalization only after all votes; one persisted random draw among highest-vote leaders only; both devices and retries keep the same winner and tie explanation. |
 | GC-07 / GROUP-03, SEC-02 | C and an anonymous client directly read room private state/submit votes. A attempts a write attributed to B. | Unauthorized reads/writes denied and rows unchanged; A cannot vote as B; valid member operations remain available. |
 | GC-08 / GROUP-04, DATA-03 | Disconnect D2, change votes/submissions on D1, reconnect/reload D2; repeat around leave/close transitions and any queued action. | Reconcile to server membership/preferences/votes; prevent duplicate/stale writes; closed/non-member state cannot continue voting; honest reconnect/error state. |
+
+### GC-06 tie variants (one detailed case, multiple inputs)
+
+Use real authorized test accounts for the supplied vote counts and two observing devices. Two accounts suffice for the 1–1 variant; larger variants need additional test members, not fake remote-member evidence. Controlled server/model fixtures can supplement but do not replace the live two-device run. Keep every test input set and round ID distinct.
+
+| Variant | Votes by eligible restaurant X / Y / Z | Expected |
+| --- | --- | --- |
+| Two-member tie | 1 / 1 / 0, all two votes complete | Winner X or Y only; explicit highest-vote tie notice; same persisted ID on D1/D2. |
+| Two leaders plus lower-vote option | 2 / 2 / 1, all five complete | Random winner X or Y only; Z excluded despite having a vote. |
+| Odd-sized three-way tie | 1 / 1 / 1, all three complete | Winner belongs to X/Y/Z; tie notice, one stored result and identical devices. |
+| No tie | 3 / 1 / 0, all four complete | X wins directly; do not claim a random tie-break. |
+| Voting incomplete | 1 / 1 / 0 with a third required member not voted | Waiting state; no final winner or tie draw yet. |
+| No valid choices | No valid eligible votes or an empty candidate set | No default/random winner; actionable validation/waiting state. |
+| Concurrent/repeated result reads | Any completed tie above; D1/D2 request result together, retry, reload and reconnect | Exactly one authoritative saved round outcome; never independent client draws or rerolls. Compare IDs as well as name/image/notice. |
+
+Randomness checks should establish that the draw input is exactly the tied leader set, rating/catalog ordering is not used to select its winner, and deterministic boundary inputs can reach each leader in a focused model/backend test. Do not require a small number of real draws to be evenly distributed or to produce different winners. Reopening after finalized votes is tested only after that separate policy is agreed.
 
 ## Split — OCR, review and correction (Gate B)
 

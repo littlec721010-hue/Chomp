@@ -9,6 +9,10 @@ Planning/review documents for Tasks 1–6 are merged. Priority Beta implementati
 
 Confirmed receipt scope: real OCR → editable review/corrections/add missing items → explicit confirmation → integer-cent equal split → save corrected bill. Independent blank-bill/manual entry without OCR is Deferred until usability feedback supports it. This is a scope decision, not implemented functionality or a test pass.
 
+### Confirmed voting rule update
+
+After all required votes, a sole highest-vote restaurant wins; if highest counts tie, choose randomly only among those leaders. Persist one server-authoritative result per round, display a clear tie explanation, and verify identical round/winner IDs and restaurant display on two devices after retry/refresh/reconnect. This applies to odd- and even-sized groups. The current local rating-based tie-break does not meet this rule; implementation and GC-06 verification remain pending. Membership changes and post-finalization edits/new rounds still require agreement. This is a planning update, not a Gate B pass.
+
 ## GitHub evidence index
 
 | PR | State at review | Contribution / boundary |
