@@ -10,6 +10,7 @@ import { ChompModule, type Route } from './ChompModule';
 import { Page, Action, s } from '../decide/ui';
 import { T } from '../../components/ui';
 import { photos } from '../decide/assets';
+import { restaurantResult } from './presentation';
 
 type Props = NativeStackScreenProps<RootStackParamList>;
 function IntegratedScreen({ navigation, route }: Props) {
@@ -27,6 +28,12 @@ function IntegratedScreen({ navigation, route }: Props) {
     GroupConsensus: '/group/consensus', GroupVote: params?.method === 'random' ? '/group/random-vote' : '/group/vote',
   };
   if (group && route.name !== 'Group' && !d.room) return <Page title="No active room"><Action title="Create or join a room" onPress={() => navigation.replace('Group')} /></Page>;
+  if (route.name === 'Restaurant' && !restaurantResult(restaurants, params?.id)) return <Page title="This restaurant is unavailable">
+    <T>This restaurant no longer exists or is currently unavailable.</T>
+    <T>Try a wider budget, travel distance, or cuisine preference. Keep your allergy and dietary restrictions.</T>
+    <Action title="Back to recommendations" onPress={() => navigation.replace('Recommendations', { group })} />
+    <Action title="Review meal preferences" variant="beige" onPress={() => navigation.navigate('DecidePreferences', { group })} />
+  </Page>;
   function navigate(next: Route) {
     switch (next) {
       case '/group': navigation.navigate('Group'); break;
@@ -51,7 +58,7 @@ function IntegratedScreen({ navigation, route }: Props) {
     selectedId={route.name === 'Restaurant' ? params?.id : undefined} bookmarks={d.bookmarks} onBookmark={d.bookmark}
     onRoomChange={d.setRoom} onCreateRoom={() => d.startRoom(false)} onJoinRoom={() => d.startRoom(true)}
     onHome={() => navigation.navigate('Main', { screen: 'Decide' })} onNavigate={navigate}
-    onBackToPreferences={() => navigation.navigate('DecidePreferences', { group: false })}
+    onBackToPreferences={() => navigation.navigate('DecidePreferences', { group })}
     onRestaurantSelected={restaurant => { selected.current = restaurant.id; d.select(restaurant); }}
     onPreferences={room => { d.setRoom(room); navigation.navigate('DecidePreferences', { group: true }); }} />
     {pending && <View style={{ padding: 12, paddingBottom: 24 }}><Action title="Simulate sample members’ votes" variant="beige" disabled={!matches.length} onPress={() => {

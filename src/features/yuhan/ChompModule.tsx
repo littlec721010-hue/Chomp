@@ -6,7 +6,8 @@ import { Button, Sheet, ui } from './native/Controls';
 import type { ChompModuleProps, DiningRoom, Restaurant } from '../contracts';
 import { demoMembers, restaurants } from '../recommendations/data';
 import { asset } from './assets';
-import { recommendationPresentation } from './presentation';
+import { recommendationPresentation, restaurantResult } from './presentation';
+import { Action, Page } from '../decide/ui';
 import { castVote, consensus, pickRandom, validInviteCode, winningRestaurant } from '../group/model';
 import { bindView, textBinding, type Binding } from './View';
 import { DinnerTimePicker } from './native/DinnerTimePicker';
@@ -56,13 +57,23 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   const width=Math.min(390,useWindowDimensions().width);
   const room=providedRoom??saved.room;
   const selectedId=providedSelectedId??(route.startsWith('/group')?(room.votes.find(v=>v.userId===user.id)?.restaurantId??saved.selectedId):saved.selectedId);
-  const selected=restaurants.find(r=>r.id===selectedId)??restaurants[0];
-  const result=winningRestaurant(room,matches)??selected;
   const bookmarks=providedBookmarks??saved.bookmarks;
   const screen=screens[route];
   useEffect(()=>{panel.current?.scrollTo({y:0,animated:false});},[route]);
   useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(''),3500);return()=>clearTimeout(timer);},[notice]);
   function go(next:Route){setInternalRoute(next);onNavigate?.(next);setNotice('');panel.current?.scrollTo({y:0,animated:false});}
+  const selection=restaurantResult(restaurants,selectedId);
+  const winner=winningRestaurant(room,matches);
+  const display=route==='/group/result'?restaurantResult(restaurants,winner?.id):selection;
+  if(!selection || !display)return <Page title="This restaurant is unavailable">
+    <Text style={ui.body}>This restaurant no longer exists or is currently unavailable. Group results also require everyone to finish voting.</Text>
+    <Text style={ui.body}>Try a wider budget, travel distance, or cuisine preference. Keep your allergy and dietary restrictions.</Text>
+    <Action title="Back to recommendations" onPress={()=>go(route.startsWith('/group')?'/group/recommendations':'/recommendations')} />
+    <Action title="Review meal preferences" variant="beige" onPress={()=>onBackToPreferences?.()} />
+  </Page>;
+  const selected=selection.restaurant;
+  // Group name, hero image, rating, perks and actions all use the same winner.
+  const result=display.restaurant;
   function updateRoom(next:DiningRoom){setSaved(s=>({...s,room:next}));onRoomChange?.(next);}
   function vote(restaurant:Restaurant,method:'free'|'random'){
     if(!matches.some(r=>r.id===restaurant.id)){setNotice('This restaurant does not match the current preferences.');return;}
@@ -152,6 +163,9 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   bindings['312:26949']={props:{style:{flex:1,minWidth:0,flexShrink:1}}};
   ['312:26959','312:26961','312:26960','312:26962'].forEach(id=>bindings[id]={...bindings[id],props:{style:{width:'100%',minWidth:0,flexShrink:1}}});
   text(['312:26859'],`${result.rating} (${result.reviews})`);
+  bindings['result:restaurant-name']={children:<Text accessibilityRole="header" style={{fontFamily:'JakartaBold',fontSize:22,lineHeight:28,color:'#251e14'}}>{result.name}</Text>};
+  text(['result:restaurant-description'],`${result.cuisine} • ${result.category} • Sample restaurant`);
+  bindings['312:26947']={props:{style:{height:'auto'}}};
   text(['312:26967'],'SAMPLE RESTAURANT PERKS');
   ['312:26973','312:26978','312:26983','312:26988'].forEach((id,i)=>text([id],result.perks[i]??''));
   ['312:26969','312:26974','312:26979','312:26984'].forEach(id=>bindings[id]={props:{style:{height:'auto',minHeight:44,width:'100%',overflow:'hidden'}}});
@@ -227,10 +241,10 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
     if(resultPage&&element.props['data-name']==='Subtle ambient celebratory decorative canvas')return null;
     if(resultPage&&element.props.className==='v1')return cloneElement(element,{style:{...element.props.style,backgroundColor:'transparent'},children:Children.map(element.props.children,dynamicImages)});
     const src=element.props.src;
-    const restaurant=route==='/group/result'?result:selected;
+    const restaurant=result;
     if(src && (src===asset('91d18.png')||src===asset('f37ad.png'))){
       const imageName=src===asset('f37ad.png')?restaurant.voteImage:restaurant.resultImage;
-      return cloneElement(element,{src:asset(imageName),alt:restaurant.name,...(restaurant.id!=='oishii'?{contentFit:'cover' as const,style:{...element.props.style,top:0,left:0,right:0,bottom:0,width:'100%',height:'100%'}}:{})});
+      return cloneElement(element,{key:`${restaurant.id}:${imageName}`,src:asset(imageName),alt:restaurant.name,...(restaurant.id!=='oishii'?{contentFit:'cover' as const,style:{...element.props.style,top:0,left:0,right:0,bottom:0,width:'100%',height:'100%'}}:{})});
     }
     return cloneElement(element,{children:Children.map(element.props.children,dynamicImages)});
   }
