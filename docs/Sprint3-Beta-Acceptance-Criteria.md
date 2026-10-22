@@ -7,17 +7,21 @@ Inputs: Team-provided Sprint 3 requirements and Alpha retrospective summary; loc
 
 Gate structure follows the team's supplied roadmap screenshot: Gate A — Trustworthy Foundation (B01–B03); Gate B — Connected Experience (B04–B06); Gate C — Beta Candidate (B07). Detailed checks below operationalize that roadmap. Original course documents and numbered citations have not been independently verified.
 
+## Scope revision — independent manual entry deferred
+
+October 21, 2026: the user deferred creating a receipt entirely by hand without OCR until usability-test feedback supports adding it. This supersedes the earlier mandatory independent-manual-entry requirement. Real OCR, editing recognized values, adding missing items, confirmation, exact-cent equal splitting and corrected-bill persistence remain required. OCR failure requires honest feedback, retry/reselect/cancel and preservation of existing edits; a blank manual-entry fallback is not currently required. SPLIT-01 is retained as Deferred for traceability, not a failed mandatory acceptance check.
+
 ## Draft Sprint 3 Goal
 
-Turn the integrated Alpha into a Beta candidate with trustworthy account isolation, connected two-device dining decisions, persistent account-owned data, and usable receipt-to-equal-split flows through both real OCR and independent manual entry. Validate the candidate in at least three documented user/stakeholder sessions, triage findings, and use evidence to prioritize experience and accessibility revisions across Gates A, B and C.
+Turn the integrated Alpha into a Beta candidate with trustworthy account isolation, connected two-device dining decisions, persistent account-owned data, and a usable OCR-to-reviewed-receipt-to-equal-split flow. Validate the candidate in at least three documented user/stakeholder sessions, triage findings, and use evidence to prioritize experience and accessibility revisions across Gates A, B and C.
 
 ## Scope
 
 Mandatory live integrations: real authentication and account isolation, shared multi-client rooms and voting, and persistent account-owned data. Demo mode and simulated votes cannot count as evidence for these requirements.
 
-Confirmed Split scope: real receipt OCR and independent manual entry are both required. OCR results must be editable before confirmation. Bill allocation is equal splitting with exact integer-cent reconciliation; item ownership allocation is outside the confirmed scope. OCR is required for Beta acceptance, but an individual receipt can always be entered manually without using OCR.
+Confirmed Split scope: real receipt OCR is required, with editable recognition results and missing-item addition before confirmation. Independent no-OCR manual entry is deferred pending test feedback. Bill allocation is equal splitting with exact integer-cent reconciliation; item ownership allocation is outside the confirmed scope.
 
-Primary Split flow: photograph/upload receipt → OCR populates a draft → user reviews recognized items, edits errors, adds missing items and removes incorrect items → user explicitly confirms the corrected bill → calculate equal shares → save. Manual correction and missing-item entry are normal steps after successful OCR, not only failure recovery. Independent manual entry remains a secondary path into the same editable bill and calculation model.
+Primary Split flow: photograph/upload receipt → OCR populates a draft → user reviews recognized items, edits errors, adds missing items and removes incorrect items → user explicitly confirms the corrected bill → calculate equal shares → save. Manual correction and missing-item entry remain normal steps after successful OCR; they are distinct from the deferred independent manual-entry feature.
 
 Real restaurant search, reservations and payments are not established as mandatory by the supplied summary. Proposed scope: retain labeled restaurant fixtures; confirm this remaining boundary with the team before final sign-off.
 
@@ -31,7 +35,7 @@ Real restaurant search, reservations and payments are not established as mandato
 
 - B04: Two devices truly join the same room and synchronize votes; GROUP-01 through GROUP-04 apply.
 - B05: Persist account history and receipt records; DATA-01 through DATA-03 apply.
-- B06: Support the full OCR → review/edit/add missing items → confirm → equal split → save flow, plus independent manual entry. SPLIT-01 through SPLIT-05 apply. A predefined sample receipt does not count as OCR evidence.
+- B06: Support the full OCR → review/edit/add missing items → confirm → equal split → save flow. SPLIT-02 through SPLIT-05 apply; SPLIT-01 is Deferred. A predefined sample receipt does not count as OCR evidence.
 
 ## Detailed technical acceptance checks for Gates A and B
 
@@ -51,10 +55,10 @@ Use two independently authenticated accounts, A and B, on two physical devices f
 | DATA-02 | Dining history and saved Split receipt history survive refresh/restart and load for the same account on another device. A cannot read or modify B's history. | Persisted history IDs, read-back and isolation checks. |
 | DATA-03 | Failed writes show failure and offer retry without falsely reporting success. Failed reads do not overwrite existing account data with sample/default values. Retried operations do not duplicate history or votes. | Controlled failed-read/write and retry cases. |
 | DECIDE-01 | Saved/custom preferences lead to recommendations and a selected result; supported constraints apply before ranking. No-match/unsupported restrictions are clearly explained and do not silently select an incompatible fixture. Group results use the real room's submitted data. | Personal and group walkthroughs, including no-match inputs. |
-| SPLIT-01 | Users can start a blank bill and manually enter/edit items, quantities, prices, tax, tip and participant count without a photo or OCR request. Valid bills can be saved and restored under DATA-02. Invalid values are rejected with actionable feedback. | Complete manual-entry, validation and save/reload walkthrough. |
+| SPLIT-01 — Deferred | Independent blank-bill/manual entry without photo/OCR is postponed at the user's direction until usability-test feedback supports it. | Record feedback and revisit decision; not a current release blocker or a passed check. |
 | SPLIT-02 | A real receipt photo selected through camera or upload is processed by an actual OCR implementation. Recognized item names, quantities/prices, and available tax/tip/total fields populate an editable draft. Missing, ambiguous or inconsistent values are flagged for review; users can add, remove and correct fields before confirming. Predefined sample data is never substituted as a successful recognition result. | Original redacted receipt, actual recognition output, populated draft and corrected/confirmed bill for several distinct receipts. Record supported receipt formats and observed failures; agree on a representative fixture set and accuracy target before sign-off. |
-| SPLIT-03 | Manual entry remains available when camera permission is denied, photo selection is canceled, OCR times out/fails or a receipt is unreadable. Show the error/review state without claiming success; preserve existing manual edits during failure/retry and ask before replacing them with a new recognition result. | Permission/cancel/failure/unreadable-receipt cases and a completed manual fallback bill. |
-| SPLIT-04 | For both OCR-reviewed and manually entered bills, quantity/price edits, tax, tip and participant count produce correct subtotal/total and equal shares in integer cents. Allocate any remainder cents explicitly so shares differ by at most one cent and sum exactly to the total. Do not double-count tax/tip from OCR; flag differences between the printed total and computed total for correction before confirmation. | Calculation tests and manual cases covering divisible/non-divisible totals, changed guest counts, invalid inputs and printed-total mismatch. |
+| SPLIT-03 | Handle denied camera permission, canceled selection, OCR timeout/failure and unreadable receipts without fake success. Offer gallery selection where available, retry/reselect/cancel; preserve existing edited drafts and ask before replacing them with a new recognition result. Independent manual entry is not required. | Permission/cancel/failure/unreadable-receipt cases, recovery actions and preserved-edit checks. |
+| SPLIT-04 | For OCR-reviewed bills including user corrections and added items, quantity/price edits, tax, tip and participant count produce correct subtotal/total and equal shares in integer cents. Allocate any remainder cents explicitly so shares differ by at most one cent and sum exactly to the total. Do not double-count tax/tip from OCR; flag differences between the printed total and computed total for correction before confirmation. | Calculation tests and editor cases covering divisible/non-divisible totals, changed guest counts, invalid inputs and printed-total mismatch. |
 | SPLIT-05 | Successful OCR opens the editable review draft rather than automatically finalizing a bill. Users can correct recognized item names, quantities and prices, add omitted items and remove incorrect items. All edits feed the same bill model; the confirmed equal shares and saved/reloaded receipt use the corrected values, never stale OCR output. Changes after confirmation require confirmation again before final save. | End-to-end record with an OCR error and an omitted item: original receipt → recognized draft → corrected/added items → confirmation → exact-cent split → saved/reloaded corrected bill. Also verify removal and editing after confirmation. |
 | NAV-01 | Core Decide, group, Split and Profile flows support entry, return/back and protected navigation without a dead end, stale account data or a crash. | Manual flow checklist on the declared Beta platforms. |
 
@@ -82,7 +86,7 @@ A Beta feature is done when:
 
 - Its acceptance IDs and expected behavior are agreed, implemented and linked to reviewable commits/PRs.
 - Required live behavior is verified with real accounts/backend data; mock/demo output is not substituted.
-- Split specifically demonstrates successful real OCR followed by review, correction and missing-item addition, explicit confirmation, exact-cent equal splitting and persistence of the corrected bill (SPLIT-02/04/05). Independent manual entry and OCR failure recovery must also pass; OCR success alone does not complete B06.
+- Split specifically demonstrates successful real OCR followed by review, correction and missing-item addition, explicit confirmation, exact-cent equal splitting and persistence of the corrected bill (SPLIT-02/04/05). OCR failure recovery must also pass; OCR success alone does not complete B06. Independent manual entry is Deferred, pending usability feedback.
 - Applicable happy-path, invalid-input, unauthorized-access, refresh/reconnect and failure/retry cases have expected and actual results.
 - Changes are reviewed and integrated into the designated Beta branch; relevant tests, TypeScript checks and production Web export pass for that candidate.
 - Required manual device and accessibility checks have evidence; limitations identify untested platforms rather than implying coverage.
@@ -90,7 +94,7 @@ A Beta feature is done when:
 
 Proposed release rule: mandatory Gate A and Gate B criteria pass, at least three sessions and the Gate C evidence are complete, no Critical finding remains open, and every remaining Important finding has a documented team disposition. Required acceptance failures cannot be waived merely by labeling them Deferred. Team sign-off must identify the exact deployed commit and acknowledged limitations.
 
-For overall Beta completion, run the ten core integration scenarios and full applicable detailed regression in the [functional test plan](Sprint3-Decide-Split-Functional-Test-Cases.md), retaining component outcomes and platform evidence. The ten scenarios organize the 36 detailed cases; they do not replace accessibility review or the three user/stakeholder sessions. Both real OCR followed by correction/missing-item addition and independent no-photo manual entry require passing evidence, including persistence of the confirmed bill. Relevant checks must pass under the agreed Node 24/pnpm 11.25.0/Expo ~57 toolchain; historical Alpha Node 23 results do not establish this. Final evidence identifies candidate/deployment, backend migration version, coverage, residual issues and team sign-off; merging this draft alone does not approve release.
+For overall Beta completion, run the ten core integration scenarios and full applicable detailed regression in the [functional test plan](Sprint3-Decide-Split-Functional-Test-Cases.md), retaining component outcomes and platform evidence. The ten scenarios organize 36 detailed entries, one Deferred; they do not replace accessibility review or the three user/stakeholder sessions. Real OCR followed by correction/missing-item addition requires passing evidence, including persistence of the confirmed bill. Independent no-photo manual entry is deferred pending feedback. Relevant checks must pass under the agreed Node 24/pnpm 11.25.0/Expo ~57 toolchain; historical Alpha Node 23 results do not establish this. Final evidence identifies candidate/deployment, backend migration version, coverage, residual issues and team sign-off; merging this draft alone does not approve release.
 
 ## Evidence record format
 
@@ -103,7 +107,7 @@ For each finding: finding ID | session/evidence | affected flow | category | rat
 ## Team decisions required before final approval
 
 1. Confirm detailed acceptance checks under the supplied Gate A/B/C roadmap and record the iOS/Android/Web test environments.
-2. Confirm fixture restaurant scope; choose representative receipt formats/test images and an OCR accuracy target. OCR plus independent manual entry and equal splitting are confirmed requirements.
+2. Confirm fixture restaurant scope; choose representative receipt formats/test images and an OCR accuracy target. OCR, post-recognition correction/addition and equal splitting are required; revisit independent manual entry after usability feedback.
 3. Approve the synchronization target and group completion/tie/leave/close rules.
 4. Assign backend configuration, room/persistence implementation and evidence owners; record the three testing sessions and gate dates.
 

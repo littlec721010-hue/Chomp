@@ -121,17 +121,17 @@ Critical examples: cross-account access, corrupted saved bills, unsafe restricti
 
 **Closure:** record a reproducible pair/sequence or agreed coverage for the intermittent case; retest all fixture identities, changed votes and navigation with comparable before/after evidence. Do not mark resolved solely because one sample result looks correct.
 
-## Example C — OCR service gap and mandatory manual path
+## Example C — OCR service gap; independent entry deferred
 
 **Type/evidence:** Service Gap; source-observed R06/R08 and NS-06. Gate B B06; tests SP-01–06. Proposed priority: blocks affected mandatory acceptance, not a runtime crash claim.
 
 **Current source behavior:** sample scan loads predefined data; uploaded photos require manual entry. Real OCR is unconnected and Split home lacks a direct blank-bill entry. Individual original D01/D03/D05 mapping is not confirmed.
 
-**Expected:** Both real OCR and independent manual entry work. Successful OCR produces a reviewable bill with editing, missing-item addition and removal, followed by explicit confirmation, precise equal splitting and persistence of corrected values. Manual input works without photo/OCR and remains available on recognition failure.
+**Expected:** Real OCR produces a reviewable bill with editing, missing-item addition and removal, followed by explicit confirmation, precise equal splitting and persistence of corrected values. Independent no-OCR manual entry is Deferred by the user's October 21 scope revision; revisit after usability feedback, not as a current release blocker.
 
-**Recovery:** use the existing photo-led manual path where available; it does not satisfy independent manual-entry or OCR acceptance. **Prevention:** agreed image-to-bill contract, honest recognition/error states, correction/confirmation workflow, integer cents and stale-response protection.
+**Recovery:** offer retry/reselect/cancel and preserve corrections on recognition failure. Existing prototype photo-led manual behavior may remain, but does not prove OCR acceptance; no new blank-bill fallback is required. **Prevention:** agreed image-to-bill contract, honest recognition/error states, correction/confirmation workflow, integer cents and stale-response protection.
 
-**Closure:** separate live OCR and independent manual runs pass; correction, fallback and persisted read-back checks pass. A sample animation or a new document cannot close this service gap.
+**Closure:** live OCR, correction/addition, error recovery and persisted read-back checks pass. Track independent entry separately as Deferred pending feedback, not fixed or failed. A sample animation or a new document cannot close the OCR service gap.
 
 ## Evidence and handoff
 

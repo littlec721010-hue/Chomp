@@ -8,7 +8,7 @@ References: [acceptance criteria](Sprint3-Beta-Acceptance-Criteria.md) and [risk
 
 The ten scenarios below organize the existing 36 detailed cases; they are not ten additional test cases or a replacement for the full coverage. Start each integration check with this core set, run affected extended cases after relevant changes, and complete the full applicable regression before Beta release. Reuse evidence from the same candidate/environment where appropriate. Registration can use fresh disposable accounts or linked same-candidate evidence; always recheck login/logout and account switching. Missing required integrations are Blocked, not an exemption from the core set.
 
-**Both real OCR and independent manual entry are mandatory.** Manual entry must work without selecting a photo or invoking OCR; it is not just an OCR fallback. Successful OCR must allow review, edits and missing-item additions before confirmation. The two paths converge on the same exact-cent equal-split and persistence behavior and require separate passing evidence.
+**Scope revision (October 21, 2026): independent no-OCR manual entry is Deferred pending usability feedback.** Successful real OCR still must allow review, edits, missing-item additions and removal before confirmation, exact-cent equal splitting and persistence. CORE-08 now covers OCR failure recovery; SP-04 retains the deferred feature for traceability. There are 36 detailed entries: 35 active and one Deferred. Active checks start Not run; the deferred feature is neither passed nor a current release blocker.
 
 | Core ID | Scenario and minimum expected outcome | Detailed cases to use |
 | --- | --- | --- |
@@ -19,9 +19,9 @@ The ten scenarios below organize the existing 36 detailed cases; they are not te
 | CORE-05 | Real group: A creates, B joins on another device, both submit preferences and see actual shared state. | GC-01, GC-03 |
 | CORE-06 | Voting/reconnect: votes and changed votes converge; reconnect restores authoritative state without duplicates or premature results. | GC-05, GC-08; record agreed lifecycle rules |
 | CORE-07 | OCR primary path: process a real image, review recognized output, correct errors, add missing items, confirm and split. | SP-01, SP-02; include a real recognition run, not only a stub |
-| CORE-08 | Independent manual path: start a blank bill without photo/OCR, enter and edit items/tax/tip/guests, confirm and split. | SP-04 |
-| CORE-09 | Exact-cent equal split: test known totals and indivisible remainders; shares sum to the confirmed bill total. | SP-07, SP-08; apply to corrected OCR and manual bills |
-| CORE-10 | Persistence: refresh/restart and a second device restore the correct account's Profile/preferences, dining history and corrected OCR/manual receipts. | AC-02, DC-09, SP-11 |
+| CORE-08 | OCR failure recovery: handle denied camera/canceled selection/unreadable input/timeout; offer retry/reselect/cancel and preserve existing corrections. No independent manual path is required. | SP-05, SP-06 |
+| CORE-09 | Exact-cent equal split: test known totals and indivisible remainders; shares sum to the confirmed corrected OCR bill total. | SP-07, SP-08 |
+| CORE-10 | Persistence: refresh/restart and a second device restore the correct account's Profile/preferences, dining history and corrected OCR receipts. | AC-02, DC-09, SP-11 |
 
 All core scenarios are **Not run** until evidence is recorded. A scenario passes only when its required component checks pass; bundling multiple checks does not make the work optional. Record component failures and blocked dependencies individually.
 
@@ -31,7 +31,7 @@ Accessibility checks (UX-02) and at least three documented usability/stakeholder
 
 ## Execution rules and setup
 
-Every case below starts as **Not run**. Execute against an identified Beta candidate; do not infer a pass from the Alpha's 24 model/route tests. If a required service is missing, record Blocked with the dependency, not Pass. If implemented behavior violates the expected outcome, record Fail. Keep original D identifiers when linking known defects; do not assign undocumented D numbers.
+Every active case below starts as **Not run**; SP-04 is Deferred by the scope decision above. Execute against an identified Beta candidate; do not infer a pass from the Alpha's 24 model/route tests. If a required service is missing, record Blocked with the dependency, not Pass. If implemented behavior violates the expected outcome, record Fail. Keep original D identifiers when linking known defects; do not assign undocumented D numbers.
 
 Use two verified real accounts A and B on devices D1/D2 connected to the same backend. Add account C as a room outsider; use anonymous requests for access checks. Do not use admin/service-role credentials to demonstrate normal-client isolation. For Web development, separate browser profiles are supplementary; final two-device evidence must use actual devices. Record iOS/Android/Web coverage separately. Demo-mode checks must be labeled and cannot establish live behavior.
 
@@ -85,7 +85,7 @@ Before GC-05/06/08, record team-approved membership, completion, tie, preference
 | GC-07 / GROUP-03, SEC-02 | C and an anonymous client directly read room private state/submit votes. A attempts a write attributed to B. | Unauthorized reads/writes denied and rows unchanged; A cannot vote as B; valid member operations remain available. |
 | GC-08 / GROUP-04, DATA-03 | Disconnect D2, change votes/submissions on D1, reconnect/reload D2; repeat around leave/close transitions and any queued action. | Reconcile to server membership/preferences/votes; prevent duplicate/stale writes; closed/non-member state cannot continue voting; honest reconnect/error state. |
 
-## Split — OCR, review, correction and manual entry (Gate B)
+## Split — OCR, review and correction (Gate B)
 
 Primary flow is OCR → review/edit/add missing items → confirm corrected bill → equal split → save. Recognition success alone is not completion. Each saved value must trace to the corrected bill, not stale OCR output.
 
@@ -94,21 +94,21 @@ Primary flow is OCR → review/edit/add missing items → confirm corrected bill
 | SP-01 / SPLIT-02/05 | With R1, test a camera capture on a supported physical device and a gallery upload as separate runs; inspect raw OCR output and editable draft before confirmation. | Real image processed; fields populate from recognition, not sample data. Supported fields/uncertainties clearly shown; draft not silently finalized. Record actual OCR accuracy separately from corrected accuracy. |
 | SP-02 / SPLIT-02/05 | OCR R2; compare against original, correct an item name/quantity/price, add a missing item and remove a wrong item; confirm, split, save and reload on D2. | Editing and addition are available after successful OCR; totals/shares and persisted items match the corrected bill. Evidence shows original → draft → corrections → confirmation → saved result. |
 | SP-03 / SPLIT-05 | After confirming, edit a line or add a missing item; attempt final save. | Bill returns to an unconfirmed/review-required state; updated values require confirmation before final save and drive recalculation. |
-| SP-04 / SPLIT-01 | Start a blank manual bill without selecting a photo or invoking OCR; enter R1 and confirm/split/save. | Independent manual path works; same validation/calculation model; saved receipt is marked manual, not OCR/sample. |
-| SP-05 / SPLIT-03 | Separately deny camera permission, cancel photo selection, process R3, and cause OCR timeout/network failure; continue by manual entry. | Actionable state, no fake success or unwanted sample substitution; a bill can still be completed manually. Cancel is handled as cancellation, not a claimed recognition failure. |
+| SP-04 / SPLIT-01 — Deferred | Independent blank-bill/manual entry without photo/OCR; revisit only after test feedback and an explicit scope decision. | Deferred, not Pass/Fail/Blocked for current release acceptance. Record the feedback/revisit decision. |
+| SP-05 / SPLIT-03 | Separately deny camera permission, cancel photo selection, process R3, and cause OCR timeout/network failure; use available gallery/retry/reselect/cancel actions. | Actionable state, no fake success or sample substitution; existing corrections survive recovery. Cancel is handled as cancellation, not a recognition failure. A new blank manual bill is not required. |
 | SP-06 / SPLIT-03/05 | Start OCR for image A, then edit manually or switch to bill/image B before A completes; allow A's delayed response and retry. | Late output cannot overwrite the active/newer draft or silently erase manual edits; replacement requires explicit user choice; no duplicate items from retry. |
 | SP-07 / SPLIT-04 | Enter normalized R1 with 3 guests; compare subtotal, tax, tip, total and each share. | $10.00 + $0.90 + $1.80 = $12.70; shares $4.24/$4.23/$4.23 under current first-guests remainder rule; sum exactly $12.70. |
 | SP-08 / SPLIT-04 | Use $10.00 total, no tax/tip, 3 guests; then $0.02 total and 4 guests. Change guest count to 1 and 100. | $3.34/$3.33/$3.33; then $0.01/$0.01/$0.00/$0.00. Every variant reconciles; shares differ by at most one cent. |
-| SP-09 / SPLIT-01/04 | Enter guests 0, -1, 1.5, 101; quantity 0/negative/fractional; blank/negative price, 1e3, 2.555; negative or over-100% rates; invalid date. Try saving an empty bill. | Clear field feedback, no invalid persisted bill/crash. Valid cents, quantities and 1–100 guest limits follow the current contract. Empty bill cannot save. |
+| SP-09 / SPLIT-04/05 | In an OCR draft editor, enter guests 0, -1, 1.5, 101; quantity 0/negative/fractional; blank/negative price, 1e3, 2.555; negative or over-100% rates; invalid date. Remove all items and try saving. | Clear field feedback, no invalid persisted bill/crash. Valid cents, quantities and 1–100 guest limits follow the current contract. Empty bill cannot save. |
 | SP-10 / SPLIT-02/04 | Use OCR data containing printed tax/tip amounts and total; compare to computed total. Test R4, then correct values and reconfirm. | No double-counted tax/tip; amount/rate precedence is explicit; mismatch flagged for correction before confirmation; corrected bill reconciles. |
-| SP-11 / DATA-02, SPLIT-05 | A saves an edited OCR bill and a manual bill; refresh/restart, sign into A on D2, reopen each; switch to B and attempt direct A/B receipt reads/writes. | Structured items, rates/amounts, guest count and confirmed values persist for A only; B cannot read/modify them; demo sample history is not seeded into a real empty account. |
+| SP-11 / DATA-02, SPLIT-05 | A saves two distinct OCR bills including corrections and added missing items; refresh/restart, sign into A on D2, reopen each; switch to B and attempt direct A/B receipt reads/writes. | Structured items, rates/amounts, guest count and confirmed values persist for A only; B cannot read/modify them; demo sample history is not seeded into a real empty account. |
 | SP-12 / DATA-03 | Interrupt save, retry twice after reconnect, then reopen from a fresh client. | Failure not reported as success; draft retained; one logical receipt rather than duplicate records; confirmed saved values restore. |
 
 ## Navigation, accessibility and evidence (Gate C)
 
 | ID / acceptance | Preconditions and steps | Expected result |
 | --- | --- | --- |
-| UX-01 / NAV-01, RELEASE-01 | On each iOS/Android/Web environment, walk solo/group Decide and OCR/manual Split; use back/cancel, direct links, refresh and sign-out. | No dead ends, wrong-account state or crashes; loading/error screens permit recovery; identify unsupported environments explicitly. |
+| UX-01 / NAV-01, RELEASE-01 | On each iOS/Android/Web environment, walk solo/group Decide and OCR Split with editing/addition; use back/cancel, direct links, refresh and sign-out. | No dead ends, wrong-account state or crashes; loading/error screens permit recovery; identify unsupported environments explicitly. |
 | UX-02 / A11Y-01 | Check narrow-screen layout and large text; keyboard-only Web navigation/focus; screen-reader names, validation errors, OCR progress and vote updates on declared assistive technology. | Controls and corrections are reachable/named; focus stays meaningful; errors/status are perceivable without color alone; record issues and targeted retests rather than claiming full conformance. |
 | UX-03 / USER-01, TRIAGE-01, FIX-01 | Use relevant tasks from these cases in at least three documented user/stakeholder sessions. Log observations, triage, fix priorities and retest. | Session/build/task evidence links to Critical/Important/Deferred/Out of Scope findings; selected experience/accessibility fixes retain comparable before/after evidence and outcomes. |
 
