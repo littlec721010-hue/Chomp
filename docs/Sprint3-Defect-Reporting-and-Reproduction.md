@@ -135,6 +135,8 @@ Critical examples: cross-account access, corrupted saved bills, unsafe restricti
 
 ## Evidence and handoff
 
+For future tie-result reports, attach room/round ID, required-member count, valid vote counts per eligible restaurant, tied-highest candidate IDs, stored winner ID/tie flag and both devices' name/image/notice. Confirm all votes were complete. Expected policy: one server-persisted random winner from tied highest-vote restaurants only; no rating tie-break, lower-vote winner or client-local reroll. Compare refresh/reconnect/concurrent result requests against the same stored result. Current rating-based model is a source-observed policy gap, not a reproduced live randomness failure. Link GROUP-04 / GC-06 / R04; do not invent an original D ID or mark this fixed by the documentation update.
+
 Link the actual report/issue to its test run, findings matrix, original D ID if verified, related risk and fix PR. Keep before/after evidence tied to a specific build and repeatable task. Gate C still requires at least three documented sessions and targeted accessibility/experience revisions; defect reports alone are not usability-session evidence.
 
 This format is ready for team use. Example records remain illustrative/unverified as stated; no new GitHub issues have been filed or findings marked fixed by this deliverable.
