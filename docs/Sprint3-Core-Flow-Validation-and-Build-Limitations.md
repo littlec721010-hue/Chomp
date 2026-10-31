@@ -6,6 +6,8 @@ References: [acceptance and DoD](Sprint3-Beta-Acceptance-Criteria.md), [function
 
 ## Evidence boundaries
 
+Version 3 planning revision (October 31): all 36 detailed cases are active again; manual creation is required alongside OCR correction. Tie expectations use lucky-diner/original-vote handling. See [Version 3 alignment](Sprint3-Version3-Design-Alignment.md). Historical evidence below remains historical; no new runtime checks were executed.
+
 - This pass inspects source and GitHub delivery status only. No new runtime/device/user test was executed against main @ 7903996.
 - The original Alpha review at 2500792 passed 24 automated tests, typecheck and Web export with local Node 23.10.0/pnpm 11.25.0. Application source, tests, package/lockfile and migrations show no differences from that baseline to 7903996. This supports continuity of source evidence, not a newly executed candidate pass.
 - Experimental code PR #10 at 9036f4a passed 27 tests and browser demo spot checks, but it was closed **without merging** at the user's direction. Those tests, changed screens and screenshots are not evidence of fixes in current main. The local dist output may also contain that experimental build; do not use it as a current-main validation artifact without rebuilding from the intended commit.
@@ -23,13 +25,13 @@ All ten scenarios are **Not run on the current candidate**. Source prerequisites
 | CORE-03 — solo Decide | Defaults/occasion state and fixture filtering/result routes are wired. | Not run | Candidate walkthrough showing actual selected ID/result and unchanged defaults. |
 | CORE-04 — restrictions | Adapter and no-match logic exist; alias coverage and safety labels still require review. | Not run | Supported/unsupported/no-match cases, preserved restrictions and blocked incompatible selection. |
 | CORE-05 — real group | Fixed sample code/members and local room state do not satisfy shared-device lifecycle. | Not run; live prerequisite missing in source | Real room/membership IDs on two devices and submitted-preference synchronization. |
-| CORE-06 — voting/ties/reconnect | Local votes lack server finalization/persistence; current equal-count tie-break uses rating, not the confirmed random-leader rule. | Not run; implementation pending | Complete all votes, select only from highest-vote ties, persist once; compare two devices' round/winner IDs and tie notice after concurrent requests, refresh and reconnect (GC-06). |
+| CORE-06 — lucky-diner ties/reconnect | Local rating tie-break has no persisted diner draw or V3 screens. | Not run; implementation pending | Completed 2–2 pool/pick/spin/reveal, shared diner/original-vote/restaurant IDs, concurrent requests and reconnect. |
 | CORE-07 — OCR + corrections | Scan animation loads sampleReceipt; actual OCR pipeline is unconnected. Line-item editing exists but does not establish OCR. | Not run; real OCR prerequisite missing in source | Real image/output, correction and missing-item addition, confirmation, equal split and saved corrected bill. |
-| CORE-08 — OCR recovery | Camera/gallery paths and messages exist; real OCR retry/reselect/cancel and stale-output behavior cannot yet be accepted. | Not run | Permission/cancel/timeout/unreadable-image runs with draft preservation and honest feedback. |
-| CORE-09 — exact-cent splitting | Integer-cent calculation and six model tests exist; current-candidate UI/OCR-to-save path not executed. | Not run | Known totals/remainders, corrected inputs and reconciled saved/read-back amounts. |
-| CORE-10 — persistence | Profile/preferences repository exists; dining/receipt histories remain useState stores. | Not run; history persistence missing in source | Same-account refresh/restart/second-device restoration and cross-account denial. |
+| CORE-08 — manual creation | No direct independent setup/item entry; current prototype starts from a photo/sample. | Not run; required by V3 | No-photo restaurant/date/settings, item editing/add/remove, back/review/confirm, split/save/read-back; OCR fallback recovery. |
+| CORE-09 — exact-cent splitting | Integer-cent calculation and six model tests exist; V3 OCR/manual integration not executed. | Not run | Both input paths, corrected totals/remainders and exact saved/read-back amounts. |
+| CORE-10 — persistence | Profile/preferences repository exists; dining/receipt histories remain useState stores. | Not run; history persistence missing in source | Same-account refresh/restart/second-device restoration of OCR/manual bills and history; cross-account denial. |
 
-SP-04 / SPLIT-01 (independent blank-bill/no-OCR entry) is **Deferred pending usability feedback**, not an active failed test. OCR review/edit/add missing items remains required. There are ten active core scenarios and 36 detailed entries: 35 active, one Deferred.
+SP-04/SPLIT-01 are restored to active Not run by the October 31 V3 revision. OCR correction/addition also remains required. Ten core scenarios organize 36 active detailed cases; unresolved tie-pool edge variants remain specification-blocked.
 
 ## Current build limitations and user impact
 

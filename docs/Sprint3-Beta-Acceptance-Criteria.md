@@ -7,21 +7,21 @@ Inputs: Team-provided Sprint 3 requirements and Alpha retrospective summary; loc
 
 Gate structure follows the team's supplied roadmap screenshot: Gate A — Trustworthy Foundation (B01–B03); Gate B — Connected Experience (B04–B06); Gate C — Beta Candidate (B07). Detailed checks below operationalize that roadmap. Original course documents and numbered citations have not been independently verified.
 
-## Scope revision — independent manual entry deferred
+## Version 3 scope revision — October 31, 2026
 
-October 21, 2026: the user deferred creating a receipt entirely by hand without OCR until usability-test feedback supports adding it. This supersedes the earlier mandatory independent-manual-entry requirement. Real OCR, editing recognized values, adding missing items, confirmation, exact-cent equal splitting and corrected-bill persistence remain required. OCR failure requires honest feedback, retry/reselect/cancel and preservation of existing edits; a blank manual-entry fallback is not currently required. SPLIT-01 is retained as Deferred for traceability, not a failed mandatory acceptance check.
+The user confirmed synchronization to updated Hi-Fi Version 3. Independent manual creation (Split 6–10) is required again; SPLIT-01/SP-04 return to active Not run. Lucky-diner selection (Decide 18–20) replaces direct restaurant-random ties. This supersedes the October 21 deferral and PR #13’s previous tie policy. See [Version 3 alignment](Sprint3-Version3-Design-Alignment.md). This is a documentation update, not implementation or a test pass.
 
 ## Draft Sprint 3 Goal
 
-Turn the integrated Alpha into a Beta candidate with trustworthy account isolation, connected two-device dining decisions, persistent account-owned data, and a usable OCR-to-reviewed-receipt-to-equal-split flow. Validate the candidate in at least three documented user/stakeholder sessions, triage findings, and use evidence to prioritize experience and accessibility revisions across Gates A, B and C.
+Turn the integrated Alpha into a Beta candidate with trustworthy account isolation, connected two-device dining decisions including V3 lucky-diner ties, persistent account-owned data, and both real OCR correction and independent manual bill creation. Validate in at least three documented sessions and prioritize evidence-backed experience/accessibility revisions across Gates A/B/C.
 
 ## Scope
 
 Mandatory live integrations: real authentication and account isolation, shared multi-client rooms and voting, and persistent account-owned data. Demo mode and simulated votes cannot count as evidence for these requirements.
 
-Confirmed Split scope: real receipt OCR is required, with editable recognition results and missing-item addition before confirmation. Independent no-OCR manual entry is deferred pending test feedback. Bill allocation is equal splitting with exact integer-cent reconciliation; item ownership allocation is outside the confirmed scope.
+Confirmed Split scope: real OCR with editable results/missing-item addition and independent no-OCR manual creation are both required. Manual setup → add/edit/remove items → review/confirm → exact-cent equal split → save. Both paths use the same bill model and account-owned storage; item ownership splitting is outside scope.
 
-Primary Split flow: photograph/upload receipt → OCR populates a draft → user reviews recognized items, edits errors, adds missing items and removes incorrect items → user explicitly confirms the corrected bill → calculate equal shares → save. Manual correction and missing-item entry remain normal steps after successful OCR; they are distinct from the deferred independent manual-entry feature.
+OCR flow: photograph/upload → recognized draft → correct errors/add missing items/remove incorrect items → confirm → equal split → save. Post-OCR correction is distinct from independent manual creation; neither substitutes for the other.
 
 Real restaurant search, reservations and payments are not established as mandatory by the supplied summary. Proposed scope: retain labeled restaurant fixtures; confirm this remaining boundary with the team before final sign-off.
 
@@ -33,17 +33,16 @@ Real restaurant search, reservations and payments are not established as mandato
 
 ## Gate B — Connected Experience (B04–B06)
 
-- B04: Two devices truly join the same room and synchronize votes; GROUP-01 through GROUP-04 apply, including the confirmed highest-vote tie policy below.
+- B04: Real two-device room/vote synchronization and V3 lucky-diner tie handling; GROUP-01 through GROUP-04 apply.
 
-### Confirmed group completion and tie policy
+### Version 3 group completion and lucky-diner tie policy
 
-After all required members have submitted valid votes for the current voting round, tally votes for eligible restaurants. A single highest-vote restaurant wins directly. If multiple restaurants share the highest vote count, select one at random **only from that tied highest-vote set**. This applies to any group size, including three members each voting differently, not just even-sized groups. Incomplete voting or no valid eligible votes must not produce a final result.
+After all required valid votes, a unique leader wins directly. In a completed 2–2 tie, Decide 18 shows the diner pool and Pick Lucky Diner; Decide 19 spins the nominees; Decide 20 reveals one lucky diner and uses their recorded original vote, then View Today’s Restaurant opens the result. Do not ask for a new deciding vote or directly randomize restaurants. The server stores one diner/original-vote/restaurant outcome per round; concurrent requests, two devices, reload and reconnect read it without rerolling. Explain whose original vote broke the tie. Mixed counts (e.g. 2–2–1), generalized nominee eligibility and post-finalization lifecycle still require agreement; do not infer these from the illustrated 2–2 flow.
 
-The server must finalize and persist one authoritative result per completed round, including the winning restaurant ID and whether a tie-break was used. Clients must not perform independent random draws. Concurrent finalization requests, refreshes, reconnects and repeated result-page visits return the same stored result. Clearly display: “Highest votes tied. Chomp randomly selected this restaurant from the tied leaders.” Show the chosen restaurant's name/image and tie explanation consistently on both devices. Do not use rating, first-list position or lower-vote restaurants as the tie-break.
+Persist round ID, candidate diner IDs, chosen diner ID, their original restaurant vote and resulting restaurant ID/tie metadata. Both devices display the same name/image and explanation. Rating/list order and client-local wheel animations cannot choose an independent outcome. Incomplete/no-valid-vote rounds cannot finalize. Implementation/live verification are pending.
 
-Acceptance evidence must compare both devices' room/round ID, final winner ID and tie indicator, not only similar-looking screens. Membership changes, edits after finalization and explicit reopening/new-round behavior still need a separate lifecycle agreement; they must not silently reroll an existing completed round. Implementation and live verification remain pending.
 - B05: Persist account history and receipt records; DATA-01 through DATA-03 apply.
-- B06: Support the full OCR → review/edit/add missing items → confirm → equal split → save flow. SPLIT-02 through SPLIT-05 apply; SPLIT-01 is Deferred. A predefined sample receipt does not count as OCR evidence.
+- B06: OCR → correction/addition → confirm → equal split → save, plus independent manual setup → item entry → review/confirm → equal split → save. SPLIT-01 through SPLIT-05 are active; a sample scan is not real OCR evidence.
 
 ## Detailed technical acceptance checks for Gates A and B
 
@@ -58,19 +57,19 @@ Use two independently authenticated accounts, A and B, on two physical devices f
 | GROUP-01 | A creates a real room; B joins the same backend room using its code. Both devices display the actual membership. Invalid/closed codes produce a recoverable error. No fixture members are required to complete the real flow. | Two-device recording and backend room/membership IDs. |
 | GROUP-02 | Both members submit occasion preferences. Shared submission status and the agreed consensus/result update on both devices; saved default preferences are unchanged by occasion-only edits. | Two-device before/after sequence and persisted records. |
 | GROUP-03 | A and B cast real votes. Each member can change only their own vote; changing a vote replaces it. Both clients show matching counts and the same outcome. An outsider cannot read private room state or write votes. | Concurrent-client run, changed-vote check, non-member API checks and resulting rows. |
-| GROUP-04 | Refresh/reconnect restores membership, submissions and votes without duplicates. Finalize only after all required members vote. For tied highest counts, persist one server-selected random winner from only the tied leaders, show the tie notice, and return that same result on both devices and reload/retry. No rating/default fallback. Leaving/closing and post-finalization edit rules still require agreement. | Two-/three-way ties, lower-vote exclusion, no-tie/pending-vote controls, concurrent finalization and two-device reload/reconnect evidence. |
+| GROUP-04 | After all votes, the V3 2–2 tie follows Pick Lucky Diner → shared spin → reveal original-vote restaurant → final result. Persist one authoritative diner/vote/restaurant tuple per round; two devices and refresh/reconnect keep the same tuple and notice. No new deciding vote, direct restaurant draw or rating fallback. | 2–2 flow, no-tie/pending controls, concurrent picks, reload/reconnect; generalized pools and lifecycle variants require agreement. |
 | DATA-01 | Profile and default preferences survive refresh, App restart and subsequent sign-in on another device. Data loads for the correct authenticated account. | A/B read-back sequence from a second client. |
 | DATA-02 | Dining history and saved Split receipt history survive refresh/restart and load for the same account on another device. A cannot read or modify B's history. | Persisted history IDs, read-back and isolation checks. |
 | DATA-03 | Failed writes show failure and offer retry without falsely reporting success. Failed reads do not overwrite existing account data with sample/default values. Retried operations do not duplicate history or votes. | Controlled failed-read/write and retry cases. |
 | DECIDE-01 | Saved/custom preferences lead to recommendations and a selected result; supported constraints apply before ranking. No-match/unsupported restrictions are clearly explained and do not silently select an incompatible fixture. Group results use the real room's submitted data. | Personal and group walkthroughs, including no-match inputs. |
-| SPLIT-01 — Deferred | Independent blank-bill/manual entry without photo/OCR is postponed at the user's direction until usability-test feedback supports it. | Record feedback and revisit decision; not a current release blocker or a passed check. |
+| SPLIT-01 | Without photo/OCR, enter restaurant/date and valid bill settings, add/edit/remove items with unit prices and quantities, review/confirm, equal split, save and restore. Keep entries through setup/item/review back navigation. | Split 6–10 walkthrough, multiple items, validation and saved read-back; active Not run. |
 | SPLIT-02 | A real receipt photo selected through camera or upload is processed by an actual OCR implementation. Recognized item names, quantities/prices, and available tax/tip/total fields populate an editable draft. Missing, ambiguous or inconsistent values are flagged for review; users can add, remove and correct fields before confirming. Predefined sample data is never substituted as a successful recognition result. | Original redacted receipt, actual recognition output, populated draft and corrected/confirmed bill for several distinct receipts. Record supported receipt formats and observed failures; agree on a representative fixture set and accuracy target before sign-off. |
-| SPLIT-03 | Handle denied camera permission, canceled selection, OCR timeout/failure and unreadable receipts without fake success. Offer gallery selection where available, retry/reselect/cancel; preserve existing edited drafts and ask before replacing them with a new recognition result. Independent manual entry is not required. | Permission/cancel/failure/unreadable-receipt cases, recovery actions and preserved-edit checks. |
-| SPLIT-04 | For OCR-reviewed bills including user corrections and added items, quantity/price edits, tax, tip and participant count produce correct subtotal/total and equal shares in integer cents. Allocate any remainder cents explicitly so shares differ by at most one cent and sum exactly to the total. Do not double-count tax/tip from OCR; flag differences between the printed total and computed total for correction before confirmation. | Calculation tests and editor cases covering divisible/non-divisible totals, changed guest counts, invalid inputs and printed-total mismatch. |
+| SPLIT-03 | Handle denied permission, cancellation, OCR failure/timeouts/unreadable receipts honestly. Offer retry/reselect/cancel and manual creation; preserve corrections and confirm before replacing an existing draft. | Permission/cancel/failure cases, completed manual fallback and preserved-edit evidence. |
+| SPLIT-04 | OCR-corrected and independently manual bills use integer cents for quantities/prices, tax/tip and equal shares. Allocate remainder so shares differ by at most one cent and sum to total; avoid double-counted tax/tip and flag printed-total mismatches before confirmation. | Both input paths, valid/invalid amounts, changed guest count, remainder and mismatch tests. |
 | SPLIT-05 | Successful OCR opens the editable review draft rather than automatically finalizing a bill. Users can correct recognized item names, quantities and prices, add omitted items and remove incorrect items. All edits feed the same bill model; the confirmed equal shares and saved/reloaded receipt use the corrected values, never stale OCR output. Changes after confirmation require confirmation again before final save. | End-to-end record with an OCR error and an omitted item: original receipt → recognized draft → corrected/added items → confirmation → exact-cent split → saved/reloaded corrected bill. Also verify removal and editing after confirmation. |
 | NAV-01 | Core Decide, group, Split and Profile flows support entry, return/back and protected navigation without a dead end, stale account data or a crash. | Manual flow checklist on the declared Beta platforms. |
 
-Proposed synchronization acceptance target: remote membership, preference-submission and vote changes appear within 5 seconds on a stable connection without manual refresh. Record observed delays; this target requires team agreement and is not a supplied course threshold. Completion/tie selection is confirmed above; agree membership/leave/close and post-finalization edit behavior before dependent lifecycle checks.
+Proposed synchronization target remains 5 seconds, pending team agreement. V3 2–2 lucky-diner flow is confirmed; member snapshots, mixed-count nominee pools, leave/close and post-finalization edits/new rounds remain pending.
 
 Current evidence baseline: account repository and profile/preferences RLS migration exist, but live verification has not been performed in this review. DiningProvider and Split store currently use in-memory state for rooms, votes and histories; these do not satisfy the live/persistence criteria. Existing 24 tests, typecheck and Web export passed on the Alpha review baseline; they do not establish Gate A or Gate B completion for a future Beta build.
 
@@ -94,7 +93,7 @@ A Beta feature is done when:
 
 - Its acceptance IDs and expected behavior are agreed, implemented and linked to reviewable commits/PRs.
 - Required live behavior is verified with real accounts/backend data; mock/demo output is not substituted.
-- Split specifically demonstrates successful real OCR followed by review, correction and missing-item addition, explicit confirmation, exact-cent equal splitting and persistence of the corrected bill (SPLIT-02/04/05). OCR failure recovery must also pass; OCR success alone does not complete B06. Independent manual entry is Deferred, pending usability feedback.
+- Split demonstrates real OCR correction/missing-item addition and independent manual creation, each with review/confirmation, integer-cent equal splitting and persisted corrected values. OCR failure recovery must pass; one path cannot substitute for the other.
 - Applicable happy-path, invalid-input, unauthorized-access, refresh/reconnect and failure/retry cases have expected and actual results.
 - Changes are reviewed and integrated into the designated Beta branch; relevant tests, TypeScript checks and production Web export pass for that candidate.
 - Required manual device and accessibility checks have evidence; limitations identify untested platforms rather than implying coverage.
@@ -102,7 +101,7 @@ A Beta feature is done when:
 
 Proposed release rule: mandatory Gate A and Gate B criteria pass, at least three sessions and the Gate C evidence are complete, no Critical finding remains open, and every remaining Important finding has a documented team disposition. Required acceptance failures cannot be waived merely by labeling them Deferred. Team sign-off must identify the exact deployed commit and acknowledged limitations.
 
-For overall Beta completion, run the ten core integration scenarios and full applicable detailed regression in the [functional test plan](Sprint3-Decide-Split-Functional-Test-Cases.md), retaining component outcomes and platform evidence. The ten scenarios organize 36 detailed entries, one Deferred; they do not replace accessibility review or the three user/stakeholder sessions. Real OCR followed by correction/missing-item addition requires passing evidence, including persistence of the confirmed bill. Independent no-photo manual entry is deferred pending feedback. Relevant checks must pass under the agreed Node 24/pnpm 11.25.0/Expo ~57 toolchain; historical Alpha Node 23 results do not establish this. Final evidence identifies candidate/deployment, backend migration version, coverage, residual issues and team sign-off; merging this draft alone does not approve release.
+For overall Beta completion, execute ten core scenarios and all applicable detailed regression: all 36 entries are active Not run again. Verify both bill input paths and the shared lucky-diner/original-vote/restaurant result. Undefined edge variants are specification-blocked, not passed. Accessibility review and three sessions remain required. Checks must pass under Node 24/pnpm 11.25.0/Expo ~57, with candidate/deployment/migration/environment evidence and team sign-off; document merge alone does not accept release.
 
 ## Evidence record format
 
@@ -115,8 +114,8 @@ For each finding: finding ID | session/evidence | affected flow | category | rat
 ## Team decisions required before final approval
 
 1. Confirm detailed acceptance checks under the supplied Gate A/B/C roadmap and record the iOS/Android/Web test environments.
-2. Confirm fixture restaurant scope; choose representative receipt formats/test images and an OCR accuracy target. OCR, post-recognition correction/addition and equal splitting are required; revisit independent manual entry after usability feedback.
-3. Approve the synchronization target, required-member snapshot, leave/close and post-finalization edit/new-round rules. All-votes completion and highest-vote random tie-break are confirmed, not pending.
+2. Confirm fixture restaurant scope, OCR formats/accuracy target and supported manual form precision. Both OCR correction and independent manual creation are required.
+3. Approve sync target, member snapshot, mixed-count/multiway nominee eligibility, leave/close and post-finalization/new-round rules. V3 2–2 lucky-diner/original-vote handling is confirmed; prior direct restaurant randomization is superseded.
 4. Assign backend configuration, room/persistence implementation and evidence owners; record the three testing sessions and gate dates.
 
 This document defines proposed acceptance, not achieved results. No backend schema changes, live user tests or implementation fixes are claimed by this deliverable.
