@@ -18,6 +18,8 @@ export interface Vote { userId: string; restaurantId: string; method: 'free' | '
 export interface DiningRoom {
   id: string; code: string; name: string; dateTime: string; scope: string;
   members: User[]; votes: Vote[]; invited: string[];
+  /** Local preview outcome only; a production room must finalize this on its server. */
+  luckyDiner?: { userId: string; restaurantId: string; voteSignature: string };
 }
 export interface Receipt { id: string; restaurantId: string; roomId?: string }
 export interface ChompModuleProps {

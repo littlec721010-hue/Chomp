@@ -29,9 +29,9 @@ export function calculateReceipt(receipt:SplitReceipt) {
   for(const item of receipt.items)if(!Number.isInteger(item.quantity)||item.quantity<1||!Number.isInteger(item.unitPriceCents)||item.unitPriceCents<0)throw new Error('Invalid receipt item.')
   if([receipt.taxRate,receipt.tipRate].some(rate=>!Number.isFinite(rate)||rate<0||rate>100))throw new Error('Rates must be between 0 and 100.')
   const subtotalCents=receipt.items.reduce((sum,item)=>sum+item.quantity*item.unitPriceCents,0)
-  const taxCents=Math.round(subtotalCents*receipt.taxRate/100)
+  const taxCents=Math.round(subtotalCents*Math.round(receipt.taxRate*1000)/100000)
   // Preserve the amount printed on an imported receipt. Editing prices or rates recomputes it.
-  const tipCents=receipt.importedTipCents??Math.round(subtotalCents*receipt.tipRate/100)
+  const tipCents=receipt.importedTipCents??Math.round(subtotalCents*Math.round(receipt.tipRate*1000)/100000)
   const totalCents=subtotalCents+taxCents+tipCents
   const base=Math.floor(totalCents/receipt.guestCount),remainder=totalCents%receipt.guestCount
   const guestSharesCents=Array.from({length:receipt.guestCount},(_,i)=>base+(i<remainder?1:0))
@@ -42,3 +42,20 @@ export function parsePrice(value:string):number|null {
   return Math.round(Number(value)*100)
 }
 export const money=(cents:number)=>`$${(cents/100).toFixed(2)}`
+
+/** Percentages can have three decimals (for example the V3 8.875% preset). */
+export function parseRate(value:string):number|null {
+  const input=value.trim();
+  if(!/^\d{1,3}(\.\d{1,3})?$/.test(input))return null;
+  const rate=Number(input);return rate<=100?rate:null;
+}
+export function validReceiptDate(value:string):boolean {
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+  const date=new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime())&&date.toISOString().slice(0,10)===value;
+}
+export function receiptItem(name:string,price:string,quantity:number,id:string) {
+  const cents=parsePrice(price);
+  if(!name.trim()||name.trim().length>100||cents===null||!Number.isInteger(quantity)||quantity<1||quantity>100)throw new Error('Enter an item name, a price with up to two decimals, and quantity 1–100.');
+  return {id,name:name.trim(),unitPriceCents:cents,quantity};
+}

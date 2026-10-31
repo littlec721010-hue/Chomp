@@ -8,6 +8,8 @@ export type RootStackParamList = {
   Recommendations: { group?: boolean } | undefined;
   Restaurant: { id: string; group?: boolean };
   Group: undefined; GroupRoom: { joined?: boolean } | undefined; GroupConsensus: undefined; GroupVote: { method: 'free' | 'random' };
+  GroupTie: undefined; GroupTieSpin: undefined; GroupTieReveal: undefined;
   History: undefined;
   SplitScan: { imageUri?: string } | undefined; SplitReceipt: undefined; NotFound: undefined;
+  SplitManualSetup: undefined; SplitManualItems: undefined;
 };

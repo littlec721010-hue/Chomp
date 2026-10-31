@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { Pressable, StyleSheet, Text, View, ScrollView } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { SplitFrame, SplitAction } from './components'
-import { calculateReceipt, cloneReceipt, money } from './model'
+import { calculateReceipt, cloneReceipt, emptyReceipt, money } from './model'
 import { useSplit } from './store'
 import { theme } from '../../styles/theme'
 import Camera from '../../assets/split/20aab.svg'
@@ -12,13 +12,14 @@ import Gallery from '../../assets/split/3df0f.svg'
 import GallerySmall from '../../assets/split/67736.svg'
 import GalleryPreview from '../../assets/split/e4ab1.svg'
 import Guests from '../../assets/split/5cfaf.svg'
-export function SplitHome({onScan,onReceipt}:{onScan:(uri?:string)=>void;onReceipt:()=>void}) {
+export function SplitHome({onScan,onReceipt,onManual}:{onScan:(uri?:string)=>void;onReceipt:()=>void;onManual:()=>void}) {
   const {recent,setDraft}=useSplit(),[message,setMessage]=useState(''),[busy,setBusy]=useState(false)
   const list=useRef<ScrollView>(null)
   async function choosePhoto(){setBusy(true);setMessage('');try{const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],quality:1});if(!result.canceled)onScan(result.assets[0].uri)}catch{setMessage('Unable to open your photo library. Please try again.')}finally{setBusy(false)}}
   return <SplitFrame bottomPadding={24}><Text style={s.title}>Split the bill</Text><Text style={s.subtitle}>Snap a paper receipt or upload a digital check.{'\n'}Chomp handles items, tax, and tips seamlessly.</Text>
     <View style={s.scanCard}><View style={s.cardHeader}><View><Text style={s.cardTitle}>Scan Receipt</Text><Text style={s.cardSubtitle}>Instant Optical Reader</Text></View><View style={s.headerIcon}><Camera/></View></View><View style={s.preview}><View style={s.previewIcon}><OCR/></View><Text style={s.previewText}>Preview a sample scan, or photograph your receipt for manual entry.</Text></View><SplitAction label="Open Camera" onPress={()=>onScan()}><CameraSmall/></SplitAction></View>
     <View style={s.uploadCard}><View style={s.cardHeader}><View><Text style={s.cardTitle}>Upload Receipt</Text><Text style={s.cardSubtitle}>Photo Gallery</Text></View><View style={s.headerIcon}><Gallery/></View></View><View style={s.preview}><View style={[s.previewIcon,{backgroundColor:'rgba(205,144,126,0.4)'}]}><GalleryPreview/></View><Text style={s.previewText}>Upload a photo, then enter items, tax, and tip manually.</Text></View><SplitAction label={busy?'Opening…':'Choose Photo'} disabled={busy} secondary onPress={choosePhoto}><GallerySmall/></SplitAction></View>
+    <View style={{marginTop:16}}><SplitAction label="Create Bill Manually" onPress={()=>{setDraft(emptyReceipt());onManual();}}/></View>
     {!!message&&<Text accessibilityRole="alert" style={s.notice}>{message}</Text>}
     <View style={s.recentHeader}><View style={s.recentHeading}><Text style={s.recentTitle}>Recent Splits</Text><View style={s.count}><Text style={s.countText}>{recent.length}</Text></View></View><Pressable accessibilityRole="button" onPress={()=>list.current?.scrollToEnd({animated:true})}><Text style={s.viewAll}>View All</Text></Pressable></View>
     <ScrollView ref={list} nestedScrollEnabled style={{maxHeight:240}} contentContainerStyle={{gap:10,paddingBottom:6}}>{recent.map((receipt,index)=><Pressable key={receipt.id} accessibilityRole="button" accessibilityLabel={`Open ${receipt.restaurantName} receipt`} onPress={()=>{setDraft(cloneReceipt(receipt));onReceipt()}} style={s.recentRow}><View style={{flex:1}}><Text numberOfLines={1} style={s.restaurant}>{receipt.restaurantName}</Text><View style={s.metadata}><Text style={s.metaText}>{index===0?'Yesterday':'3 days ago'} •</Text><Guests/><Text style={s.metaText}>{receipt.guestCount} diners</Text></View></View><Text style={s.total}>{money(calculateReceipt(receipt).totalCents)}</Text></Pressable>)}</ScrollView>
