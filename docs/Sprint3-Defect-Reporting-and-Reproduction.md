@@ -121,21 +121,21 @@ Critical examples: cross-account access, corrupted saved bills, unsafe restricti
 
 **Closure:** record a reproducible pair/sequence or agreed coverage for the intermittent case; retest all fixture identities, changed votes and navigation with comparable before/after evidence. Do not mark resolved solely because one sample result looks correct.
 
-## Example C — OCR service gap; independent entry deferred
+## Example C — OCR and independent manual-creation service gaps
 
 **Type/evidence:** Service Gap; source-observed R06/R08 and NS-06. Gate B B06; tests SP-01–06. Proposed priority: blocks affected mandatory acceptance, not a runtime crash claim.
 
 **Current source behavior:** sample scan loads predefined data; uploaded photos require manual entry. Real OCR is unconnected and Split home lacks a direct blank-bill entry. Individual original D01/D03/D05 mapping is not confirmed.
 
-**Expected:** Real OCR produces a reviewable bill with editing, missing-item addition and removal, followed by explicit confirmation, precise equal splitting and persistence of corrected values. Independent no-OCR manual entry is Deferred by the user's October 21 scope revision; revisit after usability feedback, not as a current release blocker.
+**Expected:** V3 requires real OCR with correction/missing-item addition and independent manual setup/item/review, each followed by confirmation, exact-cent equal splitting and persisted values. October 31 restores the previously deferred manual feature.
 
-**Recovery:** offer retry/reselect/cancel and preserve corrections on recognition failure. Existing prototype photo-led manual behavior may remain, but does not prove OCR acceptance; no new blank-bill fallback is required. **Prevention:** agreed image-to-bill contract, honest recognition/error states, correction/confirmation workflow, integer cents and stale-response protection.
+**Recovery:** OCR retry/reselect/cancel or independent manual creation, preserving edits or explicitly confirming replacement. Existing photo-led prototype behavior is not a complete manual setup flow or real OCR evidence.
 
-**Closure:** live OCR, correction/addition, error recovery and persisted read-back checks pass. Track independent entry separately as Deferred pending feedback, not fixed or failed. A sample animation or a new document cannot close the OCR service gap.
+**Closure:** separate real OCR and independent manual runs pass, including review/confirmation, error recovery, exact totals and account-owned read-back. Documents/sample animation cannot close these gaps.
 
 ## Evidence and handoff
 
-For future tie-result reports, attach room/round ID, required-member count, valid vote counts per eligible restaurant, tied-highest candidate IDs, stored winner ID/tie flag and both devices' name/image/notice. Confirm all votes were complete. Expected policy: one server-persisted random winner from tied highest-vote restaurants only; no rating tie-break, lower-vote winner or client-local reroll. Compare refresh/reconnect/concurrent result requests against the same stored result. Current rating-based model is a source-observed policy gap, not a reproduced live randomness failure. Link GROUP-04 / GC-06 / R04; do not invent an original D ID or mark this fixed by the documentation update.
+For V3 tie reports record room/round and candidate diner IDs, valid votes, selected diner, their stored original vote and final restaurant, plus both devices’ spin/reveal/name/image/notice. Complete all votes first; test one shared 2–2 diner draw, concurrent picks and reload without reroll. Direct restaurant randomization is superseded; current rating fallback is still a source gap. Mixed-count/multiway nominee eligibility remains pending; link GROUP-04/GC-06/R04 without inventing D IDs.
 
 Link the actual report/issue to its test run, findings matrix, original D ID if verified, related risk and fix PR. Keep before/after evidence tied to a specific build and repeatable task. Gate C still requires at least three documented sessions and targeted accessibility/experience revisions; defect reports alone are not usability-session evidence.
 

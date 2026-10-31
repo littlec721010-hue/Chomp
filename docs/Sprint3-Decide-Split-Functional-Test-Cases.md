@@ -8,7 +8,7 @@ References: [acceptance criteria](Sprint3-Beta-Acceptance-Criteria.md) and [risk
 
 The ten scenarios below organize the existing 36 detailed cases; they are not ten additional test cases or a replacement for the full coverage. Start each integration check with this core set, run affected extended cases after relevant changes, and complete the full applicable regression before Beta release. Reuse evidence from the same candidate/environment where appropriate. Registration can use fresh disposable accounts or linked same-candidate evidence; always recheck login/logout and account switching. Missing required integrations are Blocked, not an exemption from the core set.
 
-**Scope revision (October 21, 2026): independent no-OCR manual entry is Deferred pending usability feedback.** Successful real OCR still must allow review, edits, missing-item additions and removal before confirmation, exact-cent equal splitting and persistence. CORE-08 now covers OCR failure recovery; SP-04 retains the deferred feature for traceability. There are 36 detailed entries: 35 active and one Deferred. Active checks start Not run; the deferred feature is neither passed nor a current release blocker.
+**Version 3 revision — October 31, 2026:** OCR correction/addition and independent manual creation are both required; SP-04 is active Not run. GC-06 now checks Pick Lucky Diner → shared spin → original-vote restaurant reveal. All 36 detailed entries are active, organized into ten core scenarios. See [Version 3 alignment](Sprint3-Version3-Design-Alignment.md); no execution pass is claimed.
 
 | Core ID | Scenario and minimum expected outcome | Detailed cases to use |
 | --- | --- | --- |
@@ -17,11 +17,11 @@ The ten scenarios below organize the existing 36 detailed cases; they are not te
 | CORE-03 | Solo Decide: saved preferences affect recommendations; occasion edits preserve defaults; valid selection reaches the matching result. | DC-01, DC-02 |
 | CORE-04 | Restrictions: enforce supported constraints before ranking; no-match/unsupported restrictions do not silently relax into selectable results. | DC-03, DC-04 |
 | CORE-05 | Real group: A creates, B joins on another device, both submit preferences and see actual shared state. | GC-01, GC-03 |
-| CORE-06 | Voting/ties/reconnect: after all votes, choose a sole highest-vote winner or one server-persisted random winner from tied leaders only; both devices show the tie notice and same result after reload/reconnect. | GC-05, GC-06 variants, GC-08 |
+| CORE-06 | Complete all votes; for a 2–2 tie, show diner pool, pick/spin/reveal one server-stored lucky diner and their original-vote restaurant; both devices/reloads show the same tuple. | GC-05, GC-06, GC-08 |
 | CORE-07 | OCR primary path: process a real image, review recognized output, correct errors, add missing items, confirm and split. | SP-01, SP-02; include a real recognition run, not only a stub |
-| CORE-08 | OCR failure recovery: handle denied camera/canceled selection/unreadable input/timeout; offer retry/reselect/cancel and preserve existing corrections. No independent manual path is required. | SP-05, SP-06 |
-| CORE-09 | Exact-cent equal split: test known totals and indivisible remainders; shares sum to the confirmed corrected OCR bill total. | SP-07, SP-08 |
-| CORE-10 | Persistence: refresh/restart and a second device restore the correct account's Profile/preferences, dining history and corrected OCR receipts. | AC-02, DC-09, SP-11 |
+| CORE-08 | Independent manual creation: setup restaurant/date/settings, add/edit/remove items, review/confirm, equal split and save without photo/OCR. Also verify manual recovery from OCR failure in affected runs. | SP-04, SP-05, SP-06 |
+| CORE-09 | Exact-cent equal splitting reconciles confirmed OCR-corrected and manually created totals, including indivisible remainders. | SP-07, SP-08 |
+| CORE-10 | Restore correct-account Profile/preferences, dining history and OCR/manual bills after refresh/restart and on another device. | AC-02, DC-09, SP-11 |
 
 All core scenarios are **Not run** until evidence is recorded. A scenario passes only when its required component checks pass; bundling multiple checks does not make the work optional. Record component failures and blocked dependencies individually.
 
@@ -31,7 +31,7 @@ Accessibility checks (UX-02) and at least three documented usability/stakeholder
 
 ## Execution rules and setup
 
-Every active case below starts as **Not run**; SP-04 is Deferred by the scope decision above. Execute against an identified Beta candidate; do not infer a pass from the Alpha's 24 model/route tests. If a required service is missing, record Blocked with the dependency, not Pass. If implemented behavior violates the expected outcome, record Fail. Keep original D identifiers when linking known defects; do not assign undocumented D numbers.
+Every case starts Not run; SP-04 has been restored to active scope. Record actual candidate/environment results; missing services are Blocked, failures are Fail, and original D identifiers must not be guessed.
 
 Use two verified real accounts A and B on devices D1/D2 connected to the same backend. Add account C as a room outsider; use anonymous requests for access checks. Do not use admin/service-role credentials to demonstrate normal-client isolation. For Web development, separate browser profiles are supplementary; final two-device evidence must use actual devices. Record iOS/Android/Web coverage separately. Demo-mode checks must be labeled and cannot establish live behavior.
 
@@ -46,6 +46,7 @@ Test inputs:
 - R1: clear receipt with two items, Soup 1 × $6.00 and Tea 2 × $2.00; subtotal $10.00, tax $0.90, tip $1.80, total $12.70. Normalized rates: 9% and 18%. Three guests receive $4.24, $4.23, $4.23 under current first-guests remainder policy.
 - R2: a distinct real receipt that produces a recognition error or omitted item; retain the redacted original and raw output. If unavailable, use a separately labeled controlled OCR-response fixture to exercise correction, and retain a separate live real-image OCR run. A stub does not prove recognition works.
 - R3: blurred/unreadable receipt; R4: receipt whose printed total conflicts with computed line items/tax/tip. Document the exact expected correct bill from each original image.
+- V3 manual variants: enter multiple items via Split 6–10, revisit setup/review without losing entries, and compare known totals in both input paths. Split 6 shows 8.875% tax: record this precision variant as specification pending until the rate contract is agreed; never silently truncate it. Quantity 0 may be an empty-form placeholder but cannot be submitted as a valid item.
 
 ## Account and data prerequisites (Gate A; supports Decide/Split)
 
@@ -72,7 +73,7 @@ Test inputs:
 
 ## Decide — real group lifecycle (Gate B)
 
-Completion/tie policy is confirmed: all required members vote, then select the sole leader or randomly choose only among tied highest-vote restaurants. The server saves one result per round and both devices display it with a clear tie notice. Membership snapshots, post-finalization edits/reopening and leave/close rules remain pending; only dependent lifecycle variants are specification-blocked, not the confirmed tie rule. The acceptance draft's 5-second target remains proposed; record observed latency.
+After all required valid votes, a unique leader wins directly. In a completed 2–2 tie, Decide 18 shows the diner pool and Pick Lucky Diner; Decide 19 spins the nominees; Decide 20 reveals one lucky diner and uses their recorded original vote, then View Today’s Restaurant opens the result. Do not ask for a new deciding vote or directly randomize restaurants. The server stores one diner/original-vote/restaurant outcome per round; concurrent requests, two devices, reload and reconnect read it without rerolling. Explain whose original vote broke the tie. Mixed counts (e.g. 2–2–1), generalized nominee eligibility and post-finalization lifecycle still require agreement; do not infer these from the illustrated 2–2 flow. The proposed 5-second sync target is still pending.
 
 | ID / acceptance | Preconditions and steps | Expected result |
 | --- | --- | --- |
@@ -80,51 +81,51 @@ Completion/tie policy is confirmed: all required members vote, then select the s
 | GC-02 / GROUP-01 | Attempt malformed, nonexistent and closed-room codes; repeat a join for an existing member. | Recoverable errors for invalid/closed codes; no duplicate membership after retry/rejoin. |
 | GC-03 / GROUP-02 | A/B submit different occasion preferences; observe each device; inspect each account's defaults. | Submission status synchronizes; consensus uses the real submitted restrictions/budget/radius; defaults remain unchanged. |
 | GC-04 / GROUP-02, DECIDE-01 | Submit incompatible budgets or combined restrictions leaving no group match; attempt to start voting/select a result. | Explain no-match state, preserve constraints and block incompatible result selection. |
-| GC-05 / GROUP-03/04 | A votes; check result before B votes. B votes; A changes own vote. Compare both clients and stored rows. | Counts converge; completion follows the agreed rule; replacement does not create an extra vote; clients agree on the final result. |
-| GC-06 / GROUP-03/04 | Execute the tie variants below with eligible controlled restaurants; compare D1/D2 round/winner IDs, counts and tie notice; trigger concurrent finalization/result requests and reload/reconnect. | One effective vote per member; finalization only after all votes; one persisted random draw among highest-vote leaders only; both devices and retries keep the same winner and tie explanation. |
+| GC-05 / GROUP-03/04 | With at least three required voters, A votes and changes their own vote before the last member submits; inspect counts and stored rows, then complete the round. | Vote replacement is not duplicated; incomplete rounds show no final result; both clients converge. Post-finalization vote changes require a separate agreed rule. |
+| GC-06 / GROUP-03/04 | Run the V3 variants below; compare round/candidate-diner/chosen-diner/original-vote/final-restaurant IDs, tie message and both devices through spin/reveal and reconnect. | One server-stored outcome, chosen from the agreed diner pool; final restaurant equals that diner’s original vote. No independent client/restaurant draw or extra deciding vote. |
 | GC-07 / GROUP-03, SEC-02 | C and an anonymous client directly read room private state/submit votes. A attempts a write attributed to B. | Unauthorized reads/writes denied and rows unchanged; A cannot vote as B; valid member operations remain available. |
 | GC-08 / GROUP-04, DATA-03 | Disconnect D2, change votes/submissions on D1, reconnect/reload D2; repeat around leave/close transitions and any queued action. | Reconcile to server membership/preferences/votes; prevent duplicate/stale writes; closed/non-member state cannot continue voting; honest reconnect/error state. |
 
-### GC-06 tie variants (one detailed case, multiple inputs)
+### GC-06 V3 lucky-diner variants (one case, multiple inputs)
 
-Use real authorized test accounts for the supplied vote counts and two observing devices. Two accounts suffice for the 1–1 variant; larger variants need additional test members, not fake remote-member evidence. Controlled server/model fixtures can supplement but do not replace the live two-device run. Keep every test input set and round ID distinct.
+Use four real authorized members for the illustrated 2–2 flow and two observing devices. Controlled model/backend fixtures supplement but cannot replace live-device evidence.
 
-| Variant | Votes by eligible restaurant X / Y / Z | Expected |
+| Variant | Steps / input | Expected |
 | --- | --- | --- |
-| Two-member tie | 1 / 1 / 0, all two votes complete | Winner X or Y only; explicit highest-vote tie notice; same persisted ID on D1/D2. |
-| Two leaders plus lower-vote option | 2 / 2 / 1, all five complete | Random winner X or Y only; Z excluded despite having a vote. |
-| Odd-sized three-way tie | 1 / 1 / 1, all three complete | Winner belongs to X/Y/Z; tie notice, one stored result and identical devices. |
-| No tie | 3 / 1 / 0, all four complete | X wins directly; do not claim a random tie-break. |
-| Voting incomplete | 1 / 1 / 0 with a third required member not voted | Waiting state; no final winner or tie draw yet. |
-| No valid choices | No valid eligible votes or an empty candidate set | No default/random winner; actionable validation/waiting state. |
-| Concurrent/repeated result reads | Any completed tie above; D1/D2 request result together, retry, reload and reconnect | Exactly one authoritative saved round outcome; never independent client draws or rerolls. Compare IDs as well as name/image/notice. |
+| V3 2–2 tie | Four voters split X/X/Y/Y; enter Decide 18. | Candidate pool lists the four valid voters; no final restaurant before completion. |
+| Pick/spin/reveal | Pick Lucky Diner → Decide 19 → Decide 20; inspect server record. | Exactly one diner chosen; revealed restaurant equals their original X/Y vote; explain whose vote broke the tie. |
+| Restaurant detail | Use View Today’s Restaurant after reveal. | Name/image/rating/menu all match the same stored restaurant. |
+| Concurrent picks | Both devices pick/request outcome together; retry and reconnect during spin/reveal. | Same chosen diner, original vote, restaurant and explanation; no reroll. Animations do not independently select outcomes. |
+| No tie | Completed 3–1 vote. | Unique leader wins directly; no lucky-diner claim. |
+| Incomplete/invalid | A required vote missing, invalid member/vote, or no eligible choice. | No final draw; honest waiting/validation recovery, no default venue. |
+| Mixed-count/multiway | E.g. 2–2–1, 1–1–1, membership change or post-finalization edit. | Specification pending until candidate-pool/lifecycle rules are agreed. Do not silently retain old highest-restaurant-only draw or invent lower-vote eligibility. |
 
-Randomness checks should establish that the draw input is exactly the tied leader set, rating/catalog ordering is not used to select its winner, and deterministic boundary inputs can reach each leader in a focused model/backend test. Do not require a small number of real draws to be evenly distributed or to produce different winners. Reopening after finalized votes is tested only after that separate policy is agreed.
+Focused randomness tests check the diner pool and that each eligible diner can be selected under controlled inputs; final restaurant must equal the persisted original vote. Do not require small live samples to have even distribution or different winners. Randomizing diners and restaurants are distinct contracts.
 
-## Split — OCR, review and correction (Gate B)
+## Split — OCR correction and independent manual creation (Gate B)
 
-Primary flow is OCR → review/edit/add missing items → confirm corrected bill → equal split → save. Recognition success alone is not completion. Each saved value must trace to the corrected bill, not stale OCR output.
+Both flows are required: OCR → correction/addition → review/confirm, and manual setup → item entry → review/confirm; both continue to exact-cent equal split and persisted bill. Neither path is evidence that the other works.
 
 | ID / acceptance | Preconditions and steps | Expected result |
 | --- | --- | --- |
 | SP-01 / SPLIT-02/05 | With R1, test a camera capture on a supported physical device and a gallery upload as separate runs; inspect raw OCR output and editable draft before confirmation. | Real image processed; fields populate from recognition, not sample data. Supported fields/uncertainties clearly shown; draft not silently finalized. Record actual OCR accuracy separately from corrected accuracy. |
 | SP-02 / SPLIT-02/05 | OCR R2; compare against original, correct an item name/quantity/price, add a missing item and remove a wrong item; confirm, split, save and reload on D2. | Editing and addition are available after successful OCR; totals/shares and persisted items match the corrected bill. Evidence shows original → draft → corrections → confirmation → saved result. |
 | SP-03 / SPLIT-05 | After confirming, edit a line or add a missing item; attempt final save. | Bill returns to an unconfirmed/review-required state; updated values require confirmation before final save and drive recalculation. |
-| SP-04 / SPLIT-01 — Deferred | Independent blank-bill/manual entry without photo/OCR; revisit only after test feedback and an explicit scope decision. | Deferred, not Pass/Fail/Blocked for current release acceptance. Record the feedback/revisit decision. |
-| SP-05 / SPLIT-03 | Separately deny camera permission, cancel photo selection, process R3, and cause OCR timeout/network failure; use available gallery/retry/reselect/cancel actions. | Actionable state, no fake success or sample substitution; existing corrections survive recovery. Cancel is handled as cancellation, not a recognition failure. A new blank manual bill is not required. |
+| SP-04 / SPLIT-01 | Follow Split 6–10 without photo/OCR: enter restaurant/date/settings; add R1 items; edit/remove/add items; back to setup and return; review/confirm; split/save/reload. | Input survives navigation; multiple items, tax/tip, guests and corrected values reconcile; saved bill is manual, account-owned and restores. Active Not run. |
+| SP-05 / SPLIT-03 | Deny camera, cancel selection, process unreadable R3 or fail OCR; try retry/reselect/cancel, then switch to manual creation. | Honest error/cancel state; no sample substitution; edits retained or explicit replacement confirmation; complete a valid manual bill. |
 | SP-06 / SPLIT-03/05 | Start OCR for image A, then edit manually or switch to bill/image B before A completes; allow A's delayed response and retry. | Late output cannot overwrite the active/newer draft or silently erase manual edits; replacement requires explicit user choice; no duplicate items from retry. |
 | SP-07 / SPLIT-04 | Enter normalized R1 with 3 guests; compare subtotal, tax, tip, total and each share. | $10.00 + $0.90 + $1.80 = $12.70; shares $4.24/$4.23/$4.23 under current first-guests remainder rule; sum exactly $12.70. |
 | SP-08 / SPLIT-04 | Use $10.00 total, no tax/tip, 3 guests; then $0.02 total and 4 guests. Change guest count to 1 and 100. | $3.34/$3.33/$3.33; then $0.01/$0.01/$0.00/$0.00. Every variant reconciles; shares differ by at most one cent. |
-| SP-09 / SPLIT-04/05 | In an OCR draft editor, enter guests 0, -1, 1.5, 101; quantity 0/negative/fractional; blank/negative price, 1e3, 2.555; negative or over-100% rates; invalid date. Remove all items and try saving. | Clear field feedback, no invalid persisted bill/crash. Valid cents, quantities and 1–100 guest limits follow the current contract. Empty bill cannot save. |
+| SP-09 / SPLIT-01/04/05 | In both manual and OCR editors, test guests 0/-1/1.5/101, quantity 0/negative/fractional, negative/blank/fractional-cent prices, invalid dates/rates and empty bills. | Reject invalid persistence/calculation; actionable errors; valid 1–100 guests, cents and supported precision work. A zero-quantity design placeholder is not a valid submitted item. |
 | SP-10 / SPLIT-02/04 | Use OCR data containing printed tax/tip amounts and total; compare to computed total. Test R4, then correct values and reconfirm. | No double-counted tax/tip; amount/rate precedence is explicit; mismatch flagged for correction before confirmation; corrected bill reconciles. |
-| SP-11 / DATA-02, SPLIT-05 | A saves two distinct OCR bills including corrections and added missing items; refresh/restart, sign into A on D2, reopen each; switch to B and attempt direct A/B receipt reads/writes. | Structured items, rates/amounts, guest count and confirmed values persist for A only; B cannot read/modify them; demo sample history is not seeded into a real empty account. |
+| SP-11 / DATA-02, SPLIT-01/05 | A saves a corrected OCR bill and an independent manual bill; refresh/restart and reopen on D2; switch to B and attempt cross-account reads/writes. | Both retain exact items/settings/guest count and totals for A only; unauthorized access denied; sample receipts not seeded into live empty history. |
 | SP-12 / DATA-03 | Interrupt save, retry twice after reconnect, then reopen from a fresh client. | Failure not reported as success; draft retained; one logical receipt rather than duplicate records; confirmed saved values restore. |
 
 ## Navigation, accessibility and evidence (Gate C)
 
 | ID / acceptance | Preconditions and steps | Expected result |
 | --- | --- | --- |
-| UX-01 / NAV-01, RELEASE-01 | On each iOS/Android/Web environment, walk solo/group Decide and OCR Split with editing/addition; use back/cancel, direct links, refresh and sign-out. | No dead ends, wrong-account state or crashes; loading/error screens permit recovery; identify unsupported environments explicitly. |
+| UX-01 / NAV-01, RELEASE-01 | On iOS/Android/Web walk solo/group Decide including lucky-diner ties, OCR correction and manual creation; test back/cancel, direct links, refresh and sign-out. | No dead ends, wrong-account state or crashes; recoverable errors; unsupported coverage explicit. |
 | UX-02 / A11Y-01 | Check narrow-screen layout and large text; keyboard-only Web navigation/focus; screen-reader names, validation errors, OCR progress and vote updates on declared assistive technology. | Controls and corrections are reachable/named; focus stays meaningful; errors/status are perceivable without color alone; record issues and targeted retests rather than claiming full conformance. |
 | UX-03 / USER-01, TRIAGE-01, FIX-01 | Use relevant tasks from these cases in at least three documented user/stakeholder sessions. Log observations, triage, fix priorities and retest. | Session/build/task evidence links to Critical/Important/Deferred/Out of Scope findings; selected experience/accessibility fixes retain comparable before/after evidence and outcomes. |
 
