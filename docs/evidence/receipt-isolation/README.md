@@ -28,4 +28,8 @@ Following the requested A-to-B sequence on iPhone Safari, the user supplied one 
 
 Following the instruction to reopen the existing synthetic manual bill, save it without changes and refresh, the user supplied a history screenshot still containing exactly two records. The re-saved bill moved to the top, consistent with updated-time sorting. This supports the observed sequential repeat-save/idempotent update case; simultaneous requests and a lost-response retry remain separate scenarios.
 
-Receipt write/read failure recovery, direct authenticated receipt API tests and real-photo browser recognition remain pending. Do not mark the whole receipt feature or Gate B passed from these results.
+## Failed receipt save and retry
+
+Following the requested mobile offline-save/reconnect/retry sequence, the supplied first screenshot shows the synthetic bill renamed in its restaurant/title field (not its item field), with `Unable to save. Please retry.` and the edited draft still displayed. The second screenshot shows the updated synthetic title in history after recovery, with the record count still two. This supports failure disclosure, draft retention and successful retry without a duplicate in the observed sequence. The screenshot alone does not independently prove the requested final refresh occurred. Neither real personal expenses nor screenshots are committed.
+
+Receipt history failed-read recovery, direct authenticated receipt API tests and real-photo browser recognition remain pending. Do not mark the whole receipt feature or Gate B passed from these results.
