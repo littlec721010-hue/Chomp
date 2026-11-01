@@ -5,6 +5,7 @@ import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 import { supabase } from '../lib/supabase';
 import * as repository from '../lib/repository';
+import { canReuseAccount } from '../lib/account-session';
 import { emptyPreferences, samplePreferences, type Preferences, type Profile } from '../types/models';
 
 const previewKey = 'chomp:preview:v1';
@@ -26,16 +27,18 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
   const [preferences, setPreferences] = useState<Preferences>(emptyPreferences);
   const [onboarded, setOnboarded] = useState(false);
   const generation = useRef(0);
+  const loadedUser = useRef<string|null>(null);
   const load = useCallback(async (next: Session | null) => {
     const request = ++generation.current;
+    if(next?.user.id!==loadedUser.current)loadedUser.current=null;
     setSession(next); setLoadError(null);
-    if (!next) { setLoading(false); setProfile({ displayName: '', notifications: true, sharePreferences: false }); setPreferences(emptyPreferences); setOnboarded(false); return; }
+    if (!next) { loadedUser.current=null; setLoading(false); setProfile({ displayName: '', notifications: true, sharePreferences: false }); setPreferences(emptyPreferences); setOnboarded(false); return; }
     setLoading(true);
     try {
       const account = await repository.loadAccount(next.user.id);
       if (request !== generation.current) return;
       setProfile(account.profile ?? { displayName: next.user.user_metadata.display_name ?? '', notifications: true, sharePreferences: false });
-      setPreferences(account.preferences ?? emptyPreferences); setOnboarded(Boolean(account.preferences));
+      setPreferences(account.preferences ?? emptyPreferences); setOnboarded(Boolean(account.preferences)); loadedUser.current=next.user.id;
     } catch (e) { if (request === generation.current) setLoadError(errorMessage(e)); }
     finally { if (request === generation.current) setLoading(false); }
   }, []);
@@ -44,7 +47,10 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     let alive = true;
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, next) => {
       if (event === 'PASSWORD_RECOVERY') setRecovery(true);
-      if (event !== 'TOKEN_REFRESHED') setTimeout(() => { if (alive) void load(next); }, 0);
+      // Supabase may emit SIGNED_IN again when the browser regains focus.
+      // Refresh credentials without unmounting the current editing flow.
+      if (canReuseAccount(event,next?.user.id,loadedUser.current)) { setSession(next); return; }
+      setTimeout(() => { if (alive) void load(next); }, 0);
     });
     // INITIAL_SESSION from onAuthStateChange restores persisted sessions.
     return () => { alive = false; generation.current++; subscription.unsubscribe(); };

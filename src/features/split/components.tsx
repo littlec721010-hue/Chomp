@@ -1,4 +1,4 @@
-import type { ReactNode, RefObject } from 'react'
+import { useRef, type ReactNode, type RefObject } from 'react'
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { theme } from '../../styles/theme'
@@ -6,12 +6,22 @@ import Back from '../../assets/split/1f61f.svg'
 import Battery from '../../../public/assets/navigation/battery.svg'
 import Wifi from '../../../public/assets/navigation/wifi.svg'
 import Cellular from '../../../public/assets/navigation/cellular.svg'
-export function SplitFrame({children,onBack,bottomPadding=44,footer,scrollRef}:{children:ReactNode;onBack?:()=>void;bottomPadding?:number;footer?:ReactNode;scrollRef?:RefObject<ScrollView|null>}) {
+import { useBillField } from './useBillField'
+import { useSplit } from './store'
+export function SplitFrame({children,onBack,bottomPadding=44,footer,scrollRef,persistKey='home'}:{children:ReactNode;onBack?:()=>void;bottomPadding?:number;footer?:ReactNode;scrollRef?:RefObject<ScrollView|null>;persistKey?:string}) {
+  const {draft,backupUnavailable}=useSplit()
+  const localRef=useRef<ScrollView>(null),ref=scrollRef??localRef
+  const [position,setPosition]=useBillField('scroll',persistKey,0)
+  const restored=useRef(false),initialPosition=useRef(position),identity=useRef(draft.id+persistKey)
+  if(identity.current!==draft.id+persistKey){identity.current=draft.id+persistKey;restored.current=false;initialPosition.current=position}
   return <View style={s.safe}><KeyboardAvoidingView style={s.safe} behavior={Platform.OS==='ios'?'padding':undefined}>
-    <ScrollView ref={scrollRef} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={[s.content,{paddingBottom:bottomPadding}]}>
+    <ScrollView ref={ref} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} scrollEventThrottle={100}
+      onContentSizeChange={()=>{if(restored.current)return;restored.current=true;ref.current?.scrollTo({y:Math.max(0,Number(initialPosition.current)||0),animated:false})}}
+      onScroll={event=>{if(restored.current)setPosition(Math.max(0,event.nativeEvent.contentOffset.y))}}
+      contentContainerStyle={[s.content,{paddingBottom:bottomPadding}]}>
 
       <View style={{ paddingTop: Platform.OS === 'web' ? 5 : 0 }}>
-      {onBack&&<Pressable accessibilityRole="button" accessibilityLabel="Back to Split" hitSlop={10} style={s.back} onPress={onBack}><Back/></Pressable>}{children}
+      {backupUnavailable&&<Text accessibilityRole="alert" style={{color:theme.colors.secondary,fontSize:12,lineHeight:18,marginBottom:12}}>Draft recovery is unavailable in this browser. Save your bill before leaving this page.</Text>}{onBack&&<Pressable accessibilityRole="button" accessibilityLabel="Back to Split" hitSlop={10} style={s.back} onPress={onBack}><Back/></Pressable>}{children}
       </View>
     </ScrollView>{footer&&<View style={{paddingHorizontal:20,paddingTop:12,paddingBottom:34,backgroundColor:theme.colors.background}}>{footer}</View>}
   </KeyboardAvoidingView></View>
