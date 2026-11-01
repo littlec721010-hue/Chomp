@@ -92,8 +92,8 @@ export default function Decide17() {
           </DesignView>
           <DesignView className="v403" data-node-id="312:26947" data-name="Container">
             <DesignView style={{marginBottom:12,gap:4}}>
-              <DesignView data-node-id="result:restaurant-name"><DesignText>Restaurant</DesignText></DesignView>
-              <DesignView data-node-id="result:restaurant-description"><DesignText>Sample restaurant</DesignText></DesignView>
+              <DesignView data-node-id="478:1975"><DesignText>Restaurant</DesignText></DesignView>
+              <DesignView data-node-id="478:1978"><DesignText>Sample restaurant</DesignText></DesignView>
             </DesignView>
             <DesignView className="v404" data-node-id="312:26948" data-name="Background">
               <DesignView className="v223" data-node-id="312:26949" data-name="Container">

@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react'
-import { Pressable, StyleSheet, Text, View, ScrollView } from 'react-native'
-import * as ImagePicker from 'expo-image-picker'
+import { Modal, Pressable, StyleSheet, Text, View, ScrollView } from 'react-native'
 import { SplitFrame, SplitAction } from './components'
 import { calculateReceipt, cloneReceipt, emptyReceipt, money } from './model'
 import { useSplit } from './store'
@@ -8,19 +7,17 @@ import { theme } from '../../styles/theme'
 import Camera from '../../assets/split/20aab.svg'
 import CameraSmall from '../../assets/split/25b2f.svg'
 import OCR from '../../assets/split/cfe31.svg'
-import Gallery from '../../assets/split/3df0f.svg'
-import GallerySmall from '../../assets/split/67736.svg'
-import GalleryPreview from '../../assets/split/e4ab1.svg'
+import Edit from '../../assets/split/a1afc.svg'
+import ManualHint from '../../assets/split/584c4.svg'
+import ManualAction from '../../assets/split/0a4cf.svg'
 import Guests from '../../assets/split/5cfaf.svg'
 export function SplitHome({onScan,onReceipt,onManual}:{onScan:(uri?:string)=>void;onReceipt:()=>void;onManual:()=>void}) {
-  const {recent,setDraft,loading,historyError,reload}=useSplit(),[message,setMessage]=useState(''),[busy,setBusy]=useState(false)
+  const {recent,draft,setDraft,loading,historyError,reload}=useSplit(),[sourceOpen,setSourceOpen]=useState(false)
   const list=useRef<ScrollView>(null)
-  async function choosePhoto(){setBusy(true);setMessage('');try{const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],quality:1});if(!result.canceled)onScan(result.assets[0].uri)}catch{setMessage('Unable to open your photo library. Please try again.')}finally{setBusy(false)}}
-  return <SplitFrame bottomPadding={24}><Text style={s.title}>Split the bill</Text><Text style={s.subtitle}>Snap a paper receipt or upload a digital check.{'\n'}Chomp handles items, tax, and tips seamlessly.</Text>
-    <View style={s.scanCard}><View style={s.cardHeader}><View><Text style={s.cardTitle}>Scan Receipt</Text><Text style={s.cardSubtitle}>Instant Optical Reader</Text></View><View style={s.headerIcon}><Camera/></View></View><View style={s.preview}><View style={s.previewIcon}><OCR/></View><Text style={s.previewText}>Recognize an English USD receipt, then review every item before saving.</Text></View><SplitAction label="Open Camera" onPress={()=>onScan()}><CameraSmall/></SplitAction></View>
-    <View style={s.uploadCard}><View style={s.cardHeader}><View><Text style={s.cardTitle}>Upload Receipt</Text><Text style={s.cardSubtitle}>Photo Gallery</Text></View><View style={s.headerIcon}><Gallery/></View></View><View style={s.preview}><View style={[s.previewIcon,{backgroundColor:'rgba(205,144,126,0.4)'}]}><GalleryPreview/></View><Text style={s.previewText}>Choose a clear receipt image for editable text recognition.</Text></View><SplitAction label={busy?'Opening…':'Choose Photo'} disabled={busy} secondary onPress={choosePhoto}><GallerySmall/></SplitAction></View>
-    <View style={{marginTop:16}}><SplitAction label="Create Bill Manually" onPress={()=>{setDraft(emptyReceipt());onManual();}}/></View>
-    {!!message&&<Text accessibilityRole="alert" style={s.notice}>{message}</Text>}
+  return <SplitFrame bottomPadding={72}><Text accessibilityRole="header" style={s.title}>Split the bill</Text><Text style={s.subtitle}>Snap a paper receipt, upload a digital check, or add items manually. Chomp handles items, tax, and tips.</Text>
+    <View style={s.scanCard}><View style={s.cardHeader}><View><Text style={s.cardTitle}>Scan/Upload Receipt</Text><Text style={s.cardSubtitle}>Instant Optical Reader</Text></View><View style={s.headerIcon}><Camera/></View></View><View style={s.preview}><View style={s.previewIcon}><OCR/></View><Text style={s.previewText}>Recognize an English USD receipt, then review every item before saving.</Text></View><SplitAction label="Scan / Upload" onPress={()=>onScan()}><CameraSmall/></SplitAction></View>
+    <View style={s.uploadCard}><View style={s.cardHeader}><View><Text style={s.cardTitle}>Add Manually</Text><Text style={s.cardSubtitle}>Enter yourself</Text></View><View style={s.headerIcon}><Edit/></View></View><View style={s.preview}><View style={[s.previewIcon,{backgroundColor:'rgba(205,144,126,0.4)'}]}><ManualHint/></View><Text style={s.previewText}>Enter your meal, prices and quantities. We’ll calculate tax, tips and each diner’s share.</Text></View><SplitAction label="Create Bill Manually" secondary onPress={()=>{if(draft.items.length)setSourceOpen(true);else{setDraft(emptyReceipt());onManual();}}}><ManualAction/></SplitAction></View>
+    <Modal visible={sourceOpen} transparent animationType="fade" onRequestClose={()=>setSourceOpen(false)}><View style={{flex:1,backgroundColor:'#251e1466',justifyContent:'center',padding:24}}><View accessibilityViewIsModal style={{backgroundColor:theme.colors.background,borderRadius:24,padding:24,gap:16}}><Text style={s.cardTitle}>Create a new bill?</Text><Text style={[s.previewText,{flex:undefined}]}>This starts a fresh draft. Your saved bills remain in history.</Text><SplitAction label="Create Bill Manually" onPress={()=>{setSourceOpen(false);setDraft(emptyReceipt());onManual();}}/><SplitAction label="Cancel" secondary onPress={()=>setSourceOpen(false)}/></View></View></Modal>
     <View style={s.recentHeader}><View style={s.recentHeading}><Text style={s.recentTitle}>Recent Splits</Text><View style={s.count}><Text style={s.countText}>{recent.length}</Text></View></View><Pressable accessibilityRole="button" onPress={()=>list.current?.scrollToEnd({animated:true})}><Text style={s.viewAll}>View All</Text></Pressable></View>
     {loading&&<Text accessibilityLiveRegion="polite" style={s.notice}>Loading saved bills…</Text>}{!!historyError&&<View><Text accessibilityRole="alert" style={s.notice}>Unable to load saved bills. Your existing list has been kept. {historyError}</Text><SplitAction label="Retry loading bills" onPress={()=>void reload()}/></View>}{!loading&&!historyError&&!recent.length&&<Text style={s.notice}>No saved bills yet. Create or scan your first receipt.</Text>}
     <ScrollView ref={list} nestedScrollEnabled style={{maxHeight:240}} contentContainerStyle={{gap:10,paddingBottom:6}}>{recent.map((receipt,index)=><Pressable key={receipt.id} accessibilityRole="button" accessibilityLabel={`Open ${receipt.restaurantName} receipt`} onPress={()=>{setDraft(cloneReceipt(receipt));onReceipt()}} style={s.recentRow}><View style={{flex:1}}><Text numberOfLines={1} style={s.restaurant}>{receipt.restaurantName}</Text><View style={s.metadata}><Text style={s.metaText}>{receipt.date} •</Text><Guests/><Text style={s.metaText}>{receipt.guestCount} diners</Text></View></View><Text style={s.total}>{money(calculateReceipt(receipt).totalCents)}</Text></Pressable>)}</ScrollView>

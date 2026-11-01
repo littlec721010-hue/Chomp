@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, RefObject } from 'react'
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { theme } from '../../styles/theme'
@@ -6,14 +6,14 @@ import Back from '../../assets/split/1f61f.svg'
 import Battery from '../../../public/assets/navigation/battery.svg'
 import Wifi from '../../../public/assets/navigation/wifi.svg'
 import Cellular from '../../../public/assets/navigation/cellular.svg'
-export function SplitFrame({children,onBack,bottomPadding=44,footer}:{children:ReactNode;onBack?:()=>void;bottomPadding?:number;footer?:ReactNode}) {
+export function SplitFrame({children,onBack,bottomPadding=44,footer,scrollRef}:{children:ReactNode;onBack?:()=>void;bottomPadding?:number;footer?:ReactNode;scrollRef?:RefObject<ScrollView|null>}) {
   return <View style={s.safe}><KeyboardAvoidingView style={s.safe} behavior={Platform.OS==='ios'?'padding':undefined}>
-    <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={[s.content,{paddingBottom:bottomPadding}]}>
+    <ScrollView ref={scrollRef} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={[s.content,{paddingBottom:bottomPadding}]}>
 
       <View style={{ paddingTop: Platform.OS === 'web' ? 5 : 0 }}>
       {onBack&&<Pressable accessibilityRole="button" accessibilityLabel="Back to Split" hitSlop={10} style={s.back} onPress={onBack}><Back/></Pressable>}{children}
       </View>
-    </ScrollView>{footer&&<View style={{paddingHorizontal:20,paddingTop:12,paddingBottom:20,backgroundColor:theme.colors.background}}>{footer}</View>}
+    </ScrollView>{footer&&<View style={{paddingHorizontal:20,paddingTop:12,paddingBottom:34,backgroundColor:theme.colors.background}}>{footer}</View>}
   </KeyboardAvoidingView></View>
 }
 export function SplitAction({label,onPress,children,trailing,secondary=false,disabled=false,height=48}:{label:string;onPress:()=>void;children?:ReactNode;trailing?:ReactNode;secondary?:boolean;disabled?:boolean;height?:number}) {return <Pressable accessibilityRole="button" disabled={disabled} onPress={onPress} style={({pressed})=>[s.action,{height},secondary&&{backgroundColor:'#a53b22'},(pressed||disabled)&&{opacity:.6}]}>{children}<Text style={[s.actionText,secondary&&{color:'white'}]}>{label}</Text>{trailing}</Pressable>}

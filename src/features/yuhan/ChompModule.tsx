@@ -154,8 +154,8 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   bindings['312:26949']={props:{style:{flex:1,minWidth:0,flexShrink:1}}};
   ['312:26959','312:26961','312:26960','312:26962'].forEach(id=>bindings[id]={...bindings[id],props:{style:{width:'100%',minWidth:0,flexShrink:1}}});
   text(['312:26859'],`${result.rating} (${result.reviews})`);
-  bindings['result:restaurant-name']={children:<Text accessibilityRole="header" style={{fontFamily:'JakartaBold',fontSize:22,lineHeight:28,color:'#251e14'}}>{result.name}</Text>};
-  text(['result:restaurant-description'],`${result.cuisine} • ${result.category} • Sample restaurant`);
+  bindings['478:1975']={children:<Text accessibilityRole="header" style={{fontFamily:'JakartaBold',fontSize:20,lineHeight:28,letterSpacing:-.5,color:'#251e14'}}>{result.name}</Text>};
+  text(['478:1978'],`${result.cuisine} • ${result.category} • ${result.price.join('–')}`);
   bindings['312:26947']={props:{style:{height:'auto'}}};
   text(['312:26967'],'SAMPLE RESTAURANT PERKS');
   ['312:26973','312:26978','312:26983','312:26988'].forEach((id,i)=>text([id],result.perks[i]??''));
@@ -242,7 +242,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   const view=dynamicImages(bindView(screen.view(),bindings));
   const canvasHeight=route==='/group/result'?groupResultHeight:route==='/group/consensus'?consensusHeight:route==='/recommendations'?screen.height-401*(3-displayed.length):screen.height;
   return <View style={{flex:1,alignItems:'center',backgroundColor:['/recommendations/result','/group/result','/group/vote','/group/random-vote'].includes(route)?'transparent':'#fff8f4'}}>
-    <ScrollView ref={panel} style={{width}} contentContainerStyle={{minHeight:777*width/390,paddingBottom:24}} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} accessibilityLabel={screen.label}>
+    <ScrollView ref={panel} style={{width}} contentContainerStyle={{minHeight:777*width/390,paddingBottom:48}} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} accessibilityLabel={screen.label}>
       {route==='/group/consensus'&&summaryContent}
       <View style={{height:(canvasHeight-33)*width/390,width,overflow:'hidden'}}><View style={{width:390,height:route==='/group/consensus'||route==='/group/result'?undefined:canvasHeight,top:-33*width/390,transform:[{scale:width/390}],transformOrigin:'top left'}}>{view}</View></View>
     </ScrollView>

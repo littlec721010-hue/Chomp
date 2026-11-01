@@ -1,23 +1,50 @@
 # Version 3 UI implementation
 
-Design reference: [Hi-Fi Version 3](https://www.figma.com/design/dFW4Nr54OfzHFRKWPkJwWV/Prototype?node-id=171-15254).
+Updated November 1, 2026. Design source: [Hi-Fi Version 3](https://www.figma.com/design/dFW4Nr54OfzHFRKWPkJwWV/Prototype?node-id=171-15254).
 
-## Implemented in this change
+## Screen coverage
 
-- Manual bill creation: restaurant/date, diner count, tax/tip presets and custom percentages, item entry, editing/removal, receipt review and saving to the current session's history. An unfinished item is retained when moving back through setup.
-- Amounts use integer cents; percentages support three decimal places, including 8.875%. Equal shares distribute remaining cents without changing the total.
-- Completed group ties open the diner pool, spin and reveal screens. A randomly selected diner's original vote determines the restaurant. The selected diner/vote/restaurant tuple is retained for the local round; revisiting does not redraw, and completed rounds reject further votes.
-- The restaurant result binds the name and photo to the selected restaurant. Invalid restaurant routes show recovery guidance instead of silently displaying a default restaurant.
-- A labelled demo control creates a four-person 2–2 tie for preview testing. Unsupported mixed ties such as 2–2–1 require a separately agreed nominee policy.
+The Version 3 page was inspected using frame-level design context and screenshots. Existing matching implementations are reused; this update replaces differing layouts and keeps live data bound to their screens. Blank template frames are not additional user destinations. Selected/unselected preferences, scan progress and different item counts are states of working screens.
 
-Reference frames: 472:1786, 478:1838, 491:2421 (tie flow); 512:1304, 514:2005, 514:2540, 514:3323, 514:3059 (manual bill flow).
+| App area | Version 3 reference frames | Implementation / update |
+| --- | --- | --- |
+| Welcome / sign in / sign up | 202:17860 / 202:17973 / 202:18017 | Existing Version 3 forms and real email authentication retained; shared brand wordmark and decorative geometry corrected. Terms remain clear of the Home indicator. |
+| Onboarding defaults / edit defaults | 226:18411 / 338:28682 | Existing editable cards retained; selected chip contrast and footer clearance updated. |
+| Profile | 202:17624 | Account-owned values retained; footer clearance and Beta / Version 3 identification updated. |
+| Decide home | 202:17522 | Version 3 choice-card corners and bottom clearance updated; history remains dynamic. |
+| Solo preference choice | 242:19778 / 258:20672 / 258:20990 | One screen renders none/saved/custom states; selected card treatment updated. |
+| Occasion preference editor | 258:21149 / 281:23871 | Shared editor uses Version 3 heading size; occasion edits remain separate from defaults. |
+| Solo recommendations / result | 258:21705 / 258:22394 | Existing generated Version 3 layouts and dynamic restaurant/photo bindings retained; scroll clearance updated. |
+| Create/join / room form | 258:22725 / 281:23049 / 281:23405 | Existing Version 3 layouts retained; create and joined-room states reuse the form with dynamic text. |
+| Group preference choice | 281:23556 / 281:23712 / 281:24168 | Shared none/saved/custom states, including updated selection treatment. |
+| Consensus / recommendations | 281:24327 / 281:24768 | Existing Version 3 layouts and dynamic member/restaurant bindings retained; scroll clearance updated. |
+| Free / random vote confirmations | 312:26427 / 298:25879 | Existing Version 3 layouts retained; current vote and member statuses remain dynamic. |
+| Group result | 312:26834 | Restaurant name/description use latest Figma identity nodes 478:1975 and 478:1978, typography and price range; photo and identity use the same result. |
+| Tie / spin / reveal | 472:1786 / 478:1838 / 491:2421 | Existing Version 3 flow retained; orbit scales on narrow screens and bottom clearance increased. |
+| Split home | 202:17583 | Replaced separate scan/upload cards with Scan/Upload Receipt and Add Manually cards; original Figma icons imported locally. |
+| Scan / recognition progress | 512:1216 / 312:27525 / 312:27692 / 312:27763 | Photos, circular shutter and Auto camera indicator replace stacked primary scan controls. Actual OCR progress, cancel and visible failure recovery retained. An empty frame never implies a sample was scanned. |
+| OCR review | 312:27822 | OCR source / review-required bar added. Original image comparison, editing/removal, missing items and explicit confirmation retained. |
+| Manual setup | 512:1304 | Version 3 circular section icons and bottom action clearance updated. |
+| Manual item states | 514:2005 / 514:2540 / 514:3323 | Add New Item form now precedes Items on This Bill; editing a listed item scrolls back to the form. |
+| Manual review | 514:3059 | Shared review preserves editing and exact shares; Save & Back to Split waits for successful saving. |
+| Bottom navigation | 389:873 variants | Existing three Version 3 variants retained; scrollable page endings reserve clearance for the raised active tab. |
 
-## Limits and remaining acceptance work
+Generated Decide 5–16 views were checked against current frame node identities. Their layouts already represent Version 3, so they were reused rather than duplicated. Group result's newer identity nodes were synchronized explicitly. This structural comparison does not constitute pixel or interactive acceptance.
 
-Update November 1: browser OCR and account-owned receipt persistence are now implemented in source; see [receipt implementation and pending live acceptance](Beta-Receipt-OCR-and-Persistence.md). The original limitations below describe the initial Version 3 UI change. The new receipt migration, deployed save/read-back and browser/photo verification are still pending and are not implied passed by this update.
+## Working behavior retained
 
-This is a UI and local demonstration implementation, not completion of Gate A/B/C. Group drawing is available in Demo preview only. Server-side room coordination, atomic drawing, reconnect recovery and two-device result consistency still need implementation and evidence. Manual drafts and saved bills are session state, not backend persistence. Existing sample receipt preview is labelled as sample data; real OCR remains unconnected.
+- Real Supabase email authentication, protected navigation, account-owned profiles/preferences and receipt history.
+- Browser OCR, original-image comparison, editable drafts, missing items, manual creation and visible failure/retry paths.
+- Integer-cent arithmetic, three-decimal percentages and explicit equal-share remainders. Quantity must be positive even where Figma uses a zero placeholder.
+- Saved bills navigate back only after a successful save; failed requests keep the draft. Fresh manual creation confirms replacement when an existing draft has items.
+- Restaurant/photo identity remains data-driven. Sample menus/perks and local group behavior remain honestly labelled.
+- Camera flash is delegated to the device camera; the Auto indicator is not an implemented custom flash-toggle control. Recognition starts explicitly on the selected image.
 
-Automated validation covers vote completion, original-vote selection, repeat-entry stability, stale/invalid votes, unsupported ties, manual input validation and cent-exact arithmetic. Type checking and production Web export are required before review.
+## Verification and limits
 
-Browser automation failed with `Cannot read properties of undefined (reading 'constraints')`; no completed visual or interactive acceptance is claimed. Review the deployed preview on mobile widths and test the complete manual-bill and tie flows before merging. Accessibility and real-device regression remain pending.
+- Type checking and production Web export pass.
+- 47 application tests pass; local database checks report 48 account isolation, 24 receipt isolation and 8 receipt validation passes. These are automated/local checks, not new live deployment evidence.
+- Browser preview automation still fails with a browser connection error. Full screenshot comparison, touch/keyboard interactions, camera permissions and small-screen visual acceptance remain pending; no pixel-perfect or device acceptance is claimed.
+- Existing live authentication/receipt evidence is recorded in the account and receipt evidence documents. Real-photo OCR accuracy still has known failures; this visual update does not resolve them.
+- Real group lifecycle/synchronization, server-side tie finalization and dining-history persistence remain unfinished. No Gate A/B/C completion is implied.
+- Validate the updated Preview before merging PR #15. This work does not change main or the deployed 1.0 baseline.
