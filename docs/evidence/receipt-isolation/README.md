@@ -75,3 +75,7 @@ The second supplied screenshot shows request blocking disabled, the error no lon
 ## User-operated item removal and recalculation
 
 Following the synthetic saved-bill checklist, screenshots show adding a $2.00 item increases the zero-tax/zero-tip total from $10.01 to $12.01, then removing it restores the $10.01 total and $5.01/$5.00 two-person allocation. The user reported the save/refresh/reopen checklist passed, and the history screenshot still counts four records. This supports the reported item-removal persistence and update-without-new-history-entry sequence. Screenshots alone do not establish every intermediate browser action. Only prescribed synthetic figures and generic results are recorded.
+
+## User-operated receipt Back-arrow regression
+
+Vercel deployment and CI success were verified for fix commit 5de2ca2 before the user was directed to the latest PR Preview. The user reported that opening a saved-history bill and pressing Back now returns to Split. Paired follow-up screenshots show a newly created manual bill review and its item editor with the existing item retained, following the requested Back sequence. This supports entry-specific navigation and in-memory draft retention. Exact screenshot deployment identity was not independently captured; system/browser Back and gestures remain separate checks. No original screenshots or personal bill content are committed.
