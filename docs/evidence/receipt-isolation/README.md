@@ -32,7 +32,7 @@ Following the instruction to reopen the existing synthetic manual bill, save it 
 
 Following the requested mobile offline-save/reconnect/retry sequence, the supplied first screenshot shows the synthetic bill renamed in its restaurant/title field (not its item field), with `Unable to save. Please retry.` and the edited draft still displayed. The second screenshot shows the updated synthetic title in history after recovery, with the record count still two. This supports failure disclosure, draft retention and successful retry without a duplicate in the observed sequence. The screenshot alone does not independently prove the requested final refresh occurred. Neither real personal expenses nor screenshots are committed.
 
-Receipt history failed-read recovery and direct authenticated receipt API tests remain pending. Real-photo observations are recorded separately below; representative accuracy remains pending. Do not mark the whole receipt feature or Gate B passed from these results.
+Receipt history failed-read recovery is recorded below; direct authenticated receipt API tests remain pending. Real-photo observations are recorded separately below; representative accuracy remains pending. Do not mark the whole receipt feature or Gate B passed from these results.
 
 ## Non-synthetic annotated receipt finding
 
@@ -65,3 +65,9 @@ After opening Photos and cancelling selection, the user reported that no bill wa
 The user then supplied a scan-page screenshot of a non-receipt image with the visible no-clear-item-prices error and manual-entry action, followed by the manual setup screen. This supports honest recognition failure and navigation into independent manual creation; it is not a successful receipt recognition case or a blank-image/no-text test.
 
 Using the prescribed synthetic fallback test, the user entered one item totaling $10.01, two diners and zero tax/tip. The exact-share dialog showed $5.01 and $5.00, summing to $10.01. A subsequent screenshot showed the saved history entry. In response to the requested refresh/reopen sequence, the final screenshot again showed the item, diner count and exact shares. This supports the user-operated recognition failure → manual creation → cent-exact split → save → refresh/read-back sequence. Reload attribution follows the requested sequence; the screenshot alone cannot prove the browser refresh action. Only prescribed synthetic arithmetic and generic conclusions are recorded, not source images, personal receipt values or identities. Candidate mapping remains unverified.
+
+## User-operated receipt-history failed-load recovery
+
+Following the receipt-table request-blocking checklist, the first supplied screenshot shows the receipt REST rule enabled, blocked requests, a visible saved-bills load error and Retry loading bills. The initial displayed history count is zero after the requested refresh; this reflects an unloaded client list, not evidence that server records were deleted or that a previously loaded list was retained.
+
+The second supplied screenshot shows request blocking disabled, the error no longer displayed and four saved records counted with history rows restored. In the requested unblock/retry sequence, this supports receipt-history failed-read disclosure and recovery. The screenshots alone do not independently distinguish clicking Retry from another successful reload. No source images, merchant details, personal receipt values or account identifiers are committed. Exact deployment/source mapping remains unverified.
