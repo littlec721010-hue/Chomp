@@ -7,7 +7,7 @@ import type { ChompModuleProps, DiningRoom, Restaurant } from '../contracts';
 import { demoMembers, restaurants } from '../recommendations/data';
 import { asset } from './assets';
 import { recommendationPresentation } from './presentation';
-import { castVote, consensus, pickRandom, validInviteCode, winningRestaurant } from '../group/model';
+import { castVote, consensus, groupOutcome, pickRandom, validInviteCode, winningRestaurant } from '../group/model';
 import { bindView, textBinding, type Binding } from './View';
 import { DinnerTimePicker } from './native/DinnerTimePicker';
 import D5 from './recommendations/views/Decide5';
@@ -41,9 +41,10 @@ export type IntegratedProps = Omit<ChompModuleProps, 'room'> & {
   room?: DiningRoom; selectedId?: string; bookmarks?: string[];
   onBookmark?: (id: string) => void; matches?: Restaurant[];
   onCreateRoom?: () => void; onJoinRoom?: () => void; onBackToPreferences?: () => void; summaryContent?: ReactNode;
+  onTie?: () => void;
 };
 
-export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPreferences,onRestaurantSelected,route:providedRoute,onNavigate,selectedId:providedSelectedId,bookmarks:providedBookmarks,onBookmark,matches=restaurants,onCreateRoom,onJoinRoom,onBackToPreferences,summaryContent}:IntegratedProps){
+export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPreferences,onRestaurantSelected,route:providedRoute,onNavigate,selectedId:providedSelectedId,bookmarks:providedBookmarks,onBookmark,matches=restaurants,onCreateRoom,onJoinRoom,onBackToPreferences,onTie,summaryContent}:IntegratedProps){
   const [saved,setSaved]=useState(defaultState);
   const [internalRoute,setInternalRoute]=useState<Route>('/group');
   const route=providedRoute??internalRoute;
@@ -65,6 +66,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   function go(next:Route){setInternalRoute(next);onNavigate?.(next);setNotice('');panel.current?.scrollTo({y:0,animated:false});}
   function updateRoom(next:DiningRoom){setSaved(s=>({...s,room:next}));onRoomChange?.(next);}
   function vote(restaurant:Restaurant,method:'free'|'random'){
+    if(room.luckyDiner){setNotice('This round is complete. Create a new room to vote again.');return;}
     if(!matches.some(r=>r.id===restaurant.id)){setNotice('This restaurant does not match the current preferences.');return;}
     const updated=castVote(room,{userId:user.id,restaurantId:restaurant.id,method});
     onRoomChange?.(updated);
@@ -152,6 +154,9 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   bindings['312:26949']={props:{style:{flex:1,minWidth:0,flexShrink:1}}};
   ['312:26959','312:26961','312:26960','312:26962'].forEach(id=>bindings[id]={...bindings[id],props:{style:{width:'100%',minWidth:0,flexShrink:1}}});
   text(['312:26859'],`${result.rating} (${result.reviews})`);
+  bindings['478:1975']={children:<Text accessibilityRole="header" style={{fontFamily:'JakartaBold',fontSize:20,lineHeight:28,letterSpacing:-.5,color:'#251e14'}}>{result.name}</Text>};
+  text(['478:1978'],`${result.cuisine} • ${result.category} • ${result.price.join('–')}`);
+  bindings['312:26947']={props:{style:{height:'auto'}}};
   text(['312:26967'],'SAMPLE RESTAURANT PERKS');
   ['312:26973','312:26978','312:26983','312:26988'].forEach((id,i)=>text([id],result.perks[i]??''));
   ['312:26969','312:26974','312:26979','312:26984'].forEach(id=>bindings[id]={props:{style:{height:'auto',minHeight:44,width:'100%',overflow:'hidden'}}});
@@ -187,8 +192,8 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
     [hearts[i],hearts[i+3]].forEach(id=>{action(id,`${bookmarks.includes(r.id)?'Unsave':'Save'} ${r.name}`,()=>{if(onBookmark)onBookmark(r.id);else setSaved(s=>({...s,bookmarks:s.bookmarks.includes(r.id)?s.bookmarks.filter(x=>x!==r.id):[...s.bookmarks,r.id]}));});bindings[id].props={accessibilityState:{selected:bookmarks.includes(r.id)},style:bookmarks.includes(r.id)?{backgroundColor:'#ffd43b'}:undefined};});
   });
   action('294:25235','Spin Between These 3',()=>{if(!matches.length){setNotice('No matching restaurants. Adjust your preferences.');return;}vote(pickRandom(matches),'random');});
-  ['312:26550','312:26389'].forEach(id=>action(id,'View Result',()=>{const winner=winningRestaurant(room,matches);if(!winner){setNotice('Waiting for everyone to vote.');return;}onRestaurantSelected?.(winner,room);go('/group/result');}));
-  ['312:26556','312:26395'].forEach(id=>action(id,'Change My Vote',()=>go('/group/recommendations')));
+  ['312:26550','312:26389'].forEach(id=>action(id,'View Result',()=>{const winner=winningRestaurant(room,matches);if(!winner){const outcome=groupOutcome(room,matches);if(outcome.status==='tie'){onTie?.();return;}setNotice(outcome.status==='unsupported'?'This tie format needs an agreed diner-pool rule.':'Waiting for everyone to vote.');return;}onRestaurantSelected?.(winner,room);go('/group/result');}));
+  ['312:26556','312:26395'].forEach(id=>action(id,'Change My Vote',()=>{if(room.luckyDiner){setNotice('This round is complete. Create a new room to vote again.');return;}go('/group/recommendations');}));
   ['258:22709','312:26918'].forEach(id=>action(id,'Back to Home',()=>onHome?.()));
   bindings['312:26918'].props={style:{position:'relative',top:undefined,left:undefined,right:undefined,marginHorizontal:16,marginTop:32,alignSelf:'stretch'}};
   [['258:22678','312:26888','Directions'],['258:22688','312:26898','Call Table'],['258:22698','312:26908','View Menu']].forEach(([a,b,label])=>{action(a,label,()=>showAction(label as 'Directions',selected));action(b,label,()=>showAction(label as 'Directions',result));});
@@ -230,14 +235,14 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
     const restaurant=route==='/group/result'?result:selected;
     if(src && (src===asset('91d18.png')||src===asset('f37ad.png'))){
       const imageName=src===asset('f37ad.png')?restaurant.voteImage:restaurant.resultImage;
-      return cloneElement(element,{src:asset(imageName),alt:restaurant.name,...(restaurant.id!=='oishii'?{contentFit:'cover' as const,style:{...element.props.style,top:0,left:0,right:0,bottom:0,width:'100%',height:'100%'}}:{})});
+      return cloneElement(element,{key:`${restaurant.id}:${imageName}`,src:asset(imageName),alt:restaurant.name,...(restaurant.id!=='oishii'?{contentFit:'cover' as const,style:{...element.props.style,top:0,left:0,right:0,bottom:0,width:'100%',height:'100%'}}:{})});
     }
     return cloneElement(element,{children:Children.map(element.props.children,dynamicImages)});
   }
   const view=dynamicImages(bindView(screen.view(),bindings));
   const canvasHeight=route==='/group/result'?groupResultHeight:route==='/group/consensus'?consensusHeight:route==='/recommendations'?screen.height-401*(3-displayed.length):screen.height;
   return <View style={{flex:1,alignItems:'center',backgroundColor:['/recommendations/result','/group/result','/group/vote','/group/random-vote'].includes(route)?'transparent':'#fff8f4'}}>
-    <ScrollView ref={panel} style={{width}} contentContainerStyle={{minHeight:777*width/390,paddingBottom:24}} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} accessibilityLabel={screen.label}>
+    <ScrollView ref={panel} style={{width}} contentContainerStyle={{minHeight:777*width/390,paddingBottom:48}} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} accessibilityLabel={screen.label}>
       {route==='/group/consensus'&&summaryContent}
       <View style={{height:(canvasHeight-33)*width/390,width,overflow:'hidden'}}><View style={{width:390,height:route==='/group/consensus'||route==='/group/result'?undefined:canvasHeight,top:-33*width/390,transform:[{scale:width/390}],transformOrigin:'top left'}}>{view}</View></View>
     </ScrollView>

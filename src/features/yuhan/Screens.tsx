@@ -5,15 +5,17 @@ import type { RootStackParamList } from '../../navigation/types';
 import { useDining } from '../DiningProvider';
 import { diningPreferences } from '../preferencesAdapter';
 import { restaurants } from '../recommendations/data';
-import { castVote, pickRandom, rankRestaurants, winningRestaurant } from '../group/model';
+import { castVote, groupOutcome, pickRandom, rankRestaurants, winningRestaurant } from '../group/model';
 import { ChompModule, type Route } from './ChompModule';
 import { Page, Action, s } from '../decide/ui';
 import { T } from '../../components/ui';
 import { photos } from '../decide/assets';
+import { useAccount } from '../../state/AccountProvider';
 
 type Props = NativeStackScreenProps<RootStackParamList>;
 function IntegratedScreen({ navigation, route }: Props) {
   const d = useDining();
+  const account=useAccount();
   const params = route.params as { group?: boolean; id?: string; joined?: boolean; method?: 'free' | 'random' } | undefined;
   const group = route.name.startsWith('Group') || !!params?.group;
   const selected = useRef(params?.id ?? d.history[0]?.id ?? restaurants[0].id);
@@ -27,6 +29,8 @@ function IntegratedScreen({ navigation, route }: Props) {
     GroupConsensus: '/group/consensus', GroupVote: params?.method === 'random' ? '/group/random-vote' : '/group/vote',
   };
   if (group && route.name !== 'Group' && !d.room) return <Page title="No active room"><Action title="Create or join a room" onPress={() => navigation.replace('Group')} /></Page>;
+  if(route.name==='Restaurant'&&!restaurants.some(r=>r.id===params?.id))return <Page title="This restaurant is unavailable"><T>This restaurant no longer exists or is currently unavailable.</T><T>Try a wider budget, distance or cuisine preference while keeping your allergy and dietary restrictions.</T><Action title="Back to recommendations" onPress={()=>navigation.replace('Recommendations',{group})}/></Page>;
+  if(route.name==='Restaurant'&&group&&d.room&&!winningRestaurant(d.room,matches))return <Page title="No final restaurant yet"><T>Complete the room’s votes and resolve any tie first.</T><Action title="Back to group vote" onPress={()=>navigation.replace('GroupVote',{method:'free'})}/></Page>;
   function navigate(next: Route) {
     switch (next) {
       case '/group': navigation.navigate('Group'); break;
@@ -41,7 +45,7 @@ function IntegratedScreen({ navigation, route }: Props) {
       case '/group/result': navigation.navigate('Restaurant', { id: selected.current, group: true }); break;
     }
   }
-  const pending = route.name === 'GroupVote' && d.room && !winningRestaurant(d.room, matches);
+  const pending = route.name === 'GroupVote' && d.room && groupOutcome(d.room,matches).status==='pending';
   return <View style={{ flex: 1 }}>
     {route.name === 'Recommendations' && !matches.length && <View style={{ padding: 12, gap: 8, backgroundColor: '#FFF2C4' }}>
       <T style={{ fontSize: 12 }}>No sample restaurants match all your preferences. The cards below are a HiFi preview; selection is unavailable.</T>
@@ -51,7 +55,8 @@ function IntegratedScreen({ navigation, route }: Props) {
     selectedId={route.name === 'Restaurant' ? params?.id : undefined} bookmarks={d.bookmarks} onBookmark={d.bookmark}
     onRoomChange={d.setRoom} onCreateRoom={() => d.startRoom(false)} onJoinRoom={() => d.startRoom(true)}
     onHome={() => navigation.navigate('Main', { screen: 'Decide' })} onNavigate={navigate}
-    onBackToPreferences={() => navigation.navigate('DecidePreferences', { group: false })}
+    onBackToPreferences={() => navigation.navigate('DecidePreferences', { group })}
+    onTie={()=>navigation.navigate('GroupTie')}
     onRestaurantSelected={restaurant => { selected.current = restaurant.id; d.select(restaurant); }}
     onPreferences={room => { d.setRoom(room); navigation.navigate('DecidePreferences', { group: true }); }} />
     {pending && <View style={{ padding: 12, paddingBottom: 24 }}><Action title="Simulate sample members’ votes" variant="beige" disabled={!matches.length} onPress={() => {
@@ -59,6 +64,7 @@ function IntegratedScreen({ navigation, route }: Props) {
       for (const member of room.members.filter(m => m.id !== d.user.id)) room = castVote(room, { userId: member.id, restaurantId: pickRandom(matches).id, method: 'random' });
       d.setRoom(room);
     }} /></View>}
+    {route.name==='GroupVote'&&account.preview&&d.room?.members.length===4&&matches.length>=2&&!d.room.luckyDiner&&<View style={{padding:12}}><Action title="Simulate a 2–2 demo tie" variant="beige" onPress={()=>{let room=d.room!;const first=room.votes.find(v=>v.userId===d.user.id)?.restaurantId??matches[0].id;const second=matches.find(r=>r.id!==first)!.id;for(const [i,member] of room.members.entries())room=castVote(room,{userId:member.id,restaurantId:i<2?first:second,method:'free'});d.setRoom(room);}}/></View>}
   </View>;
 }
 export const RecommendationsScreen = IntegratedScreen;
