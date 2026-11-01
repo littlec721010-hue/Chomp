@@ -12,6 +12,7 @@ await db.exec(fs.readFileSync(root+'supabase/migrations/202611010001_split_recei
 await db.exec(`insert into auth.users(id) values('11111111-1111-4111-8111-111111111111'),('22222222-2222-4222-8222-222222222222');
 insert into public.dining_preferences(user_id) select id from auth.users;`);
 for(const [file,expected] of [['account-isolation.sql',48],['receipt-isolation.sql',24]]){
+  if(file==='receipt-isolation.sql')await db.exec(`insert into auth.users(id) values('33333333-3333-4333-8333-333333333333'); insert into public.dining_preferences(user_id) values('33333333-3333-4333-8333-333333333333');`);
   const results=await db.exec(fs.readFileSync(root+'supabase/checks/'+file,'utf8'));
   const rows=results.flatMap(r=>r.rows).filter(r=>'result' in r);
   assert.equal(rows.length,expected);assert.ok(rows.every(r=>r.result==='PASS'),JSON.stringify(rows.filter(r=>r.result!=='PASS')));

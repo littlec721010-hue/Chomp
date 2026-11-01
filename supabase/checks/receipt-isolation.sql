@@ -1,10 +1,14 @@
 -- Run this COMPLETE query after the receipt migration. All fixture rows roll back.
+-- Uses the earliest two confirmed accounts with saved profiles/preferences.
 begin;
 set local statement_timeout = '30s';
 create temporary table receipt_test_accounts on commit drop as
-select id,row_number() over(order by created_at,id) as ordinal from auth.users
-where email_confirmed_at is not null;
-do $$ begin if (select count(*) from receipt_test_accounts) <> 2 then raise exception 'Requires exactly two confirmed test accounts'; end if; end $$;
+select u.id,row_number() over(order by u.created_at,u.id) as ordinal from auth.users u
+join public.profiles p on p.id=u.id
+join public.dining_preferences d on d.user_id=u.id
+where u.email_confirmed_at is not null
+order by u.created_at,u.id limit 2;
+do $$ begin if (select count(*) from receipt_test_accounts) <> 2 then raise exception 'Requires at least two confirmed accounts with saved profiles and preferences'; end if; end $$;
 create temporary table receipt_test_results(actor text,operation text,result text,detail text) on commit drop;
 create temporary table receipt_test_fixture on commit drop as
 select 'rls-check-' || gen_random_uuid()::text as id;
