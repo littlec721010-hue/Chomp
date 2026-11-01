@@ -1,10 +1,44 @@
-import { emptyReceipt, parsePrice, type SplitReceipt } from './model';
+import { emptyReceipt, parsePrice, validReceiptDate, type SplitReceipt } from './model';
+
+function receiptDate(text:string):string|undefined {
+  const dates=new Set<string>();
+  for(const match of text.matchAll(/\b(?:(\d{4})[-/](\d{1,2})[-/](\d{1,2})|(\d{1,2})[/-](\d{1,2})[/-](\d{4}|\d{2}))\b/g)){
+    const year=match[1]??(match[6].length===2?`20${match[6]}`:match[6]);
+    // English/USD receipts use month/day/year. Do not guess day-first dates.
+    const month=match[2]??match[4],day=match[3]??match[5];
+    const value=`${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+    if(validReceiptDate(value))dates.add(value);
+  }
+  return dates.size===1?[...dates][0]:undefined;
+}
+
+function receiptGuests(text:string):number|null {
+  const counts=new Set<number>();
+  for(const match of text.matchAll(/\b(?:guests?|diners?|covers?|party\s*(?:size|of)|pax)\s*[:#=]?\s*(\d{1,3})\b/gi)){
+    const count=Number(match[1]);if(count>=1&&count<=100)counts.add(count);
+  }
+  return counts.size===1?[...counts][0]:null;
+}
+
+function receiptTime(text:string):string|undefined {
+  const times=new Set<string>();
+  for(const line of text.split(/\r?\n/)){
+    if(!/\b\d{1,4}[/-]\d{1,2}[/-]\d{1,4}\b|\b(?:time|ordered|opened)\b/i.test(line))continue;
+    for(const match of line.matchAll(/\b(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?\b/gi)){
+      let hour=Number(match[1]);const minute=Number(match[2]),period=match[3]?.toUpperCase();
+      if(minute>59||(period?(hour<1||hour>12):hour>23))continue;
+      if(period)hour=hour%12+(period==='PM'?12:0);
+      times.add(`${String(hour).padStart(2,'0')}:${match[2]}`);
+    }
+  }
+  return times.size===1?[...times][0]:undefined;
+}
 
 /** Conservative English/USD parser. Text without a clear price is never invented. */
 export function parseReceiptText(text:string):SplitReceipt {
   const lines=text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
   if(!lines.length)throw new Error('No readable text found. Try a clearer photo or create the bill manually.');
-  const receipt:SplitReceipt={...emptyReceipt(),source:'ocr',taxRate:0,tipRate:0,items:[],reviewNotes:[
+  const receipt:SplitReceipt={...emptyReceipt(),source:'ocr',date:receiptDate(text)??'',time:receiptTime(text),guestCount:receiptGuests(text),taxRate:0,tipRate:0,items:[],reviewNotes:[
     'OCR is a draft. Check every item, quantity, price, date and diner count before confirming.',
     'Prices at the end of item lines are treated as line totals; verify quantities and unit prices.',
   ]};
@@ -51,6 +85,8 @@ export function parseReceiptText(text:string):SplitReceipt {
     if(receipt.importedTaxCents!==undefined)receipt.taxRate=Math.min(100,Math.round(receipt.importedTaxCents/itemsTotal*100000)/1000);
     if(receipt.importedTipCents!==undefined)receipt.tipRate=Math.min(100,Math.round(receipt.importedTipCents/itemsTotal*100000)/1000);
   }
-  receipt.reviewNotes!.push('Date defaults to today. Tax/tip default to zero unless a printed amount was recognized.');
+  if(!receipt.date)receipt.reviewNotes!.push('Receipt date was not recognized unambiguously. Enter the dining date before saving.');
+  if(receipt.guestCount===null)receipt.reviewNotes!.push('Diner count was not recognized. Enter the number of diners before splitting or saving.');
+  receipt.reviewNotes!.push('Tax/tip default to zero unless a printed amount was recognized.');
   return receipt;
 }

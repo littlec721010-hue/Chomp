@@ -34,7 +34,7 @@ Generated Decide 5–16 views were checked against current frame node identities
 ## Working behavior retained
 
 - Real Supabase email authentication, protected navigation, account-owned profiles/preferences and receipt history.
-- Browser OCR, original-image comparison, editable drafts, missing items, manual creation and visible failure/retry paths.
+- Browser OCR, original-image comparison, editable drafts, missing items, manual creation and visible failure/retry paths. Printed date/time are recognized; missing dates and diner counts require explicit completion rather than defaulting to today/four guests.
 - Integer-cent arithmetic, three-decimal percentages and explicit equal-share remainders. Quantity must be positive even where Figma uses a zero placeholder.
 - Saved bills navigate back only after a successful save; failed requests keep the draft. Fresh manual creation confirms replacement when an existing draft has items.
 - Restaurant/photo identity remains data-driven. Sample menus/perks and local group behavior remain honestly labelled.
@@ -43,7 +43,7 @@ Generated Decide 5–16 views were checked against current frame node identities
 ## Verification and limits
 
 - Type checking and production Web export pass.
-- 47 application tests pass; local database checks report 48 account isolation, 24 receipt isolation and 8 receipt validation passes. These are automated/local checks, not new live deployment evidence.
+- 50 application tests pass; local database checks report 48 account isolation, 24 receipt isolation and 8 receipt validation passes. These are automated/local checks, not new live deployment evidence.
 - Browser preview automation still fails with a browser connection error. Full screenshot comparison, touch/keyboard interactions, camera permissions and small-screen visual acceptance remain pending; no pixel-perfect or device acceptance is claimed.
 - Existing live authentication/receipt evidence is recorded in the account and receipt evidence documents. Real-photo OCR accuracy still has known failures; this visual update does not resolve them.
 - Real group lifecycle/synchronization, server-side tie finalization and dining-history persistence remain unfinished. No Gate A/B/C completion is implied.
