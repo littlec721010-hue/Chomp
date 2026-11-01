@@ -30,6 +30,31 @@ test('links respect signed-out, onboarding and signed-in navigation', () => {
   assert.equal(linkFallback('SignIn', true, true, true),undefined);
   assert.equal(linkFallback('SplitScan', true, true, false),undefined);
 });
+
+test('protected deep links, including V3 screens, reject guests and unfinished onboarding', () => {
+  const urls = ['/decide', '/profile', '/profile/preferences', '/history', '/recommendations',
+    '/restaurants/oishii', '/group', '/group/room', '/group/consensus', '/group/vote/free',
+    '/group/tie', '/group/tie/spin', '/group/tie/reveal', '/split', '/split/scan',
+    '/split/receipt', '/split/manual', '/split/manual/items'];
+  for (const url of urls) {
+    const state = getStateFromPath(url, linkConfig)!;
+    const name = state.routes.at(-1)!.name;
+    assert.notEqual(name, 'NotFound', url);
+    assert.equal(linkFallback(name, false, false, false), 'Welcome', `guest: ${url}`);
+    assert.equal(linkFallback(name, true, false, false), 'Preferences', `onboarding: ${url}`);
+    assert.equal(linkFallback(name, true, true, false), undefined, `account: ${url}`);
+  }
+});
+
+test('V3 tie and manual-bill URLs retain their distinct screens when refreshed', () => {
+  for (const [url, name] of [['/group/tie', 'GroupTie'], ['/group/tie/spin', 'GroupTieSpin'],
+    ['/group/tie/reveal', 'GroupTieReveal'], ['/split/manual', 'SplitManualSetup'],
+    ['/split/manual/items', 'SplitManualItems']] as const) {
+    const state = getStateFromPath(url, linkConfig)!;
+    assert.equal(state.routes.at(-1)?.name, name);
+    assert.equal(getPathFromState(state, linkConfig), url);
+  }
+});
 test('homepage and history use the same unique list with selected restaurants first', () => {
   const samples=[restaurants[0],restaurants[2],restaurants[1]];
   assert.equal(recentChomps([],samples).length,3);
