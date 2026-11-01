@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import readline from 'node:readline/promises';
-import { Writable } from 'node:stream';
+import { emitKeypressEvents } from 'node:readline';
 
 // Interactive only: never pass credentials as command-line arguments.
 if (!process.stdin.isTTY) throw new Error('Run this script in your own interactive terminal.');
@@ -12,14 +12,41 @@ for (const line of fs.readFileSync(new URL('../.env.local', import.meta.url), 'u
 const base = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const key = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 if (!base?.startsWith('https://') || !key?.startsWith('sb_publishable_')) throw new Error('Missing public Supabase configuration.');
-let muted = false;
-const output = new Writable({ write(chunk, encoding, callback) { if (!muted) process.stdout.write(chunk); callback(); } });
-const input = readline.createInterface({ input: process.stdin, output, terminal: true });
 async function prompt(label, secret = false) {
+  if (!secret) {
+    const input = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true });
+    try { return await input.question(label); } finally { input.close(); }
+  }
   process.stdout.write(label);
-  muted = secret;
-  try { return await input.question(''); }
-  finally { muted = false; if (secret) process.stdout.write('\n'); }
+  emitKeypressEvents(process.stdin);
+  const previousRaw = process.stdin.isRaw;
+  process.stdin.setRawMode(true);
+  process.stdin.resume();
+  return await new Promise((resolve, reject) => {
+    let value = '';
+    function finish(error) {
+      process.stdin.removeListener('keypress', onKey);
+      process.stdin.setRawMode(previousRaw);
+      process.stdin.pause();
+      process.stdout.write('\n');
+      if (error) reject(error); else resolve(value);
+    }
+    function onKey(text, key = {}) {
+      if (key.ctrl && key.name === 'c') { finish(new Error('Cancelled by user.')); return; }
+      if (key.name === 'return' || key.name === 'enter') { finish(); return; }
+      if (key.name === 'backspace') {
+        if (value.length) { value = Array.from(value).slice(0,-1).join(''); process.stdout.write('\b \b'); }
+        return;
+      }
+      if (key.ctrl && key.name === 'u') {
+        process.stdout.write('\b \b'.repeat(Array.from(value).length)); value = ''; return;
+      }
+      if (text && !key.ctrl && !key.meta && !/[\u0000-\u001f\u007f]/.test(text)) {
+        value += text; process.stdout.write('*'.repeat(Array.from(text).length));
+      }
+    }
+    process.stdin.on('keypress', onKey);
+  });
 }
 const results = [];
 const sessions = [];
@@ -50,9 +77,20 @@ try {
   console.log('Use the two Beta test accounts. Press Ctrl+C to cancel.');
   for (const label of ['A', 'B']) {
     const email = (await prompt(`Account ${label} email: `)).trim();
-    let password = await prompt(`Account ${label} password (hidden): `, true);
+    let password = await prompt(`Account ${label} password (* masked): `, true);
     const r = await request('/auth/v1/token?grant_type=password', null, 'POST', { email, password });
     password = '';
+    if (r.status !== 200) {
+      const reasons = {
+        invalid_credentials: 'Email or password was rejected. Use the App account password, not your email-provider password.',
+        email_not_confirmed: 'Confirm this account email before testing.',
+        over_request_rate_limit: 'Too many requests. Wait before trying again.',
+        over_email_send_rate_limit: 'Email rate limit reached. Wait before trying again.',
+      };
+      const reason = reasons[r.data?.error_code] ?? reasons[r.data?.code] ?? `Login request rejected (HTTP ${r.status}).`;
+      console.log(reason);
+      results.push({ name: `${label}: login diagnostic`, result: 'INFO', detail: reason });
+    }
     check(`${label}: real password login`, r.status === 200 && !!r.data?.access_token && !!r.data?.user?.email_confirmed_at, r.status);
     sessions.push({ label, id: r.data.user.id, token: r.data.access_token });
   }
@@ -86,7 +124,6 @@ try {
   }
 } catch (e) { failure = e.message; console.error(failure); process.exitCode = 1; }
 finally {
-  input.close();
   // Log out only sessions created by this script, preserving the app's sessions.
   for (const s of sessions) {
     try { const r = await request('/auth/v1/logout?scope=local', s, 'POST'); results.push({ name: `${s.label}: close test session`, result: r.status === 204 ? 'PASS' : 'FAIL', httpStatus: r.status }); }
