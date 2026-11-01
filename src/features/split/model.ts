@@ -3,7 +3,7 @@ export interface SplitReceipt {
   id: string; restaurantName: string; date: string; guestCount: number | null
   items: ReceiptItem[]; taxRate: number; tipRate: number
   importedTipCents?: number; importedTaxCents?: number; source: 'sample' | 'manual' | 'ocr'; edited?: boolean
-  printedTotalCents?: number; reviewNotes?: string[]; time?: string
+  tipMode?: 'fixed' | 'percent'; printedTotalCents?: number; reviewNotes?: string[]; time?: string
 }
 export const sampleReceipt: SplitReceipt = {
   id:'oishii',restaurantName:'Oishii Ramen & Izakaya',date:'2026-09-26',guestCount:4,
@@ -29,6 +29,8 @@ export function calculateReceipt(receipt:SplitReceipt) {
   if(receipt.guestCount!==null&&(!Number.isInteger(receipt.guestCount)||receipt.guestCount<1||receipt.guestCount>100))throw new Error('Guest count must be between 1 and 100.')
   for(const item of receipt.items)if(!Number.isInteger(item.quantity)||item.quantity<1||!Number.isInteger(item.unitPriceCents)||item.unitPriceCents<0)throw new Error('Invalid receipt item.')
   if([receipt.taxRate,receipt.tipRate].some(rate=>!Number.isFinite(rate)||rate<0||rate>100))throw new Error('Rates must be between 0 and 100.')
+  if(receipt.tipMode==='fixed'&&receipt.importedTipCents===undefined)throw new Error('Enter the fixed tip amount.');
+  if(receipt.tipMode!==undefined&&!['fixed','percent'].includes(receipt.tipMode))throw new Error('Invalid tip unit.');
   const subtotalCents=receipt.items.reduce((sum,item)=>sum+item.quantity*item.unitPriceCents,0)
   const taxCents=receipt.importedTaxCents??Math.round(subtotalCents*Math.round(receipt.taxRate*1000)/100000)
   // Preserve the amount printed on an imported receipt. Editing prices or rates recomputes it.

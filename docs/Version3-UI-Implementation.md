@@ -43,7 +43,7 @@ Generated Decide 5–16 views were checked against current frame node identities
 ## Verification and limits
 
 - Type checking and production Web export pass.
-- 55 application tests pass; local database checks report 48 account isolation, 24 receipt isolation and 8 receipt validation passes. These are automated/local checks, not new live deployment evidence.
+- 57 application tests pass; local database checks report 48 account isolation, 24 receipt isolation and 8 receipt validation passes. These are automated/local checks, not new live deployment evidence.
 - Browser preview automation still fails with a browser connection error. Full screenshot comparison, touch/keyboard interactions, camera permissions and small-screen visual acceptance remain pending; no pixel-perfect or device acceptance is claimed.
 - Existing live authentication/receipt evidence is recorded in the account and receipt evidence documents. Real-photo OCR accuracy still has known failures; this visual update does not resolve them.
 - Real group lifecycle/synchronization, server-side tie finalization and dining-history persistence remain unfinished. No Gate A/B/C completion is implied.
@@ -66,3 +66,9 @@ Repeated Supabase SIGNED_IN events on browser focus previously called account lo
 Web bills additionally back up their structured draft, unfinished item fields, setup fields, open receipt-editor inputs and per-step scroll positions in sessionStorage, keyed by account (Demo uses a separate key). The backup is written on changes and page hide/visibility changes; a valid backup is read before the bill provider's first render. It expires after 24 hours and is local to the same origin/browser tab; it is not cross-browser/device draft synchronization. Closing the tab, clearing/denying storage or using a different Vercel deployment origin can make a backup unavailable. Storage failure is disclosed in the bill UI. Raw photos, passwords and auth tokens are not included. New bill identity resets prior form fields; saving remains an explicit backend action and does not auto-create history entries. Full reload restores structured edits but resets OCR review acknowledgement; the original photo remains memory-only.
 
 Regression coverage verifies account separation, expiry, corrupt/invalid snapshots, unavailable storage, partial input and scroll round trips, and same-account focus events versus account changes. Typecheck and Web build pass. Deployed acceptance remains pending: modify a bill without confirming, leave/return to the same tab, verify the same route and values; refresh the exact URL and verify unfinished form/scroll recovery. Do not claim recovery of data already lost before this fix.
+
+## Explicit custom tax and tip units
+
+Per the user's clarified input contract, custom sales tax is a percentage with a visible % suffix and labelled field. Custom tip is a fixed USD amount with a $ prefix, USD suffix and Custom $ choice; the 15%/18%/20% presets remain percentages. Choosing Custom $ clears an existing percentage input rather than reinterpreting its number as dollars. Both raw fields retain the session draft backup.
+
+Fixed tips use integer cents in the existing validated amount field, with a fixed-unit marker. Item additions, edits and removals preserve that amount; percentage tips still recalculate. The review badge/editor shows the selected unit and permits editing a fixed amount as USD. Re-selecting a percentage preset removes the fixed amount. Existing OCR printed-tip behavior remains unchanged. Added tests cover fixed-dollar arithmetic, item changes, payload round trips and invalid amounts. Deployed unit/interaction acceptance remains pending.
