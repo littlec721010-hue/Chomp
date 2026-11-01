@@ -20,4 +20,8 @@ Following the prescribed editing test, the user renamed the tea line and added a
 
 Only prescribed synthetic test inputs and conclusions are recorded; original screenshots are not uploaded. The exact candidate URL/commit still needs to be attached before final release sign-off.
 
-Cross-device history, write/read failure recovery and real-photo browser recognition remain pending. Do not mark the whole receipt feature or Gate B passed from these results.
+## User-operated mobile history and account switch
+
+Following the requested A-to-B sequence on iPhone Safari, the user supplied one screenshot with the two prescribed synthetic bills restored and another showing an empty history after account switching. This supports the observed desktop-to-mobile history read-back and the UI-level isolation sequence. The screenshots themselves do not independently show login identities; account attribution follows the requested user-operated sequence. Original screenshots and personal account information are not uploaded. The mobile address bar shows the deployment hostname `chomp-mtnihzytt-chomp4.vercel.app`; its exact source commit has not yet been independently mapped.
+
+Receipt write/read failure recovery, duplicate-save checks, direct authenticated receipt API tests and real-photo browser recognition remain pending. Do not mark the whole receipt feature or Gate B passed from these results.
