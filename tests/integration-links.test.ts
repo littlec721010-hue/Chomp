@@ -23,6 +23,17 @@ test('restaurant ids and group flags survive links', () => {
   assert.equal(confirmation.routes.at(-1)?.name, 'DecidePreferences');
   assert.deepEqual(confirmation.routes.at(-1)?.params, { customized: true, group: false });
 });
+
+test('saved bill links retain receipt identity and entry point across reopen',()=>{
+  const url='/split/receipt?receiptId=receipt-test-a&returnTo=Split';
+  const state=getStateFromPath(url,linkConfig)!;
+  assert.equal(state.routes.at(-1)?.name,'SplitReceipt');
+  assert.deepEqual(state.routes.at(-1)?.params,{receiptId:'receipt-test-a',returnTo:'Split'});
+  const reopened=getStateFromPath(getPathFromState(state,linkConfig),linkConfig)!;
+  assert.deepEqual(reopened.routes.at(-1)?.params,state.routes.at(-1)?.params);
+  // A legacy bare detail URL cannot identify a bill; never guess the newest one.
+  assert.equal((getStateFromPath('/split/receipt',linkConfig)!.routes.at(-1)?.params as {receiptId?:string}|undefined)?.receiptId,undefined);
+});
 test('links respect signed-out, onboarding and signed-in navigation', () => {
   assert.equal(linkFallback('SplitScan', false, false, false),'Welcome');
   assert.equal(linkFallback('Main', true, false, false),'Preferences');

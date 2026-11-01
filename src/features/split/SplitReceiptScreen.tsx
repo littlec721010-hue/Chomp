@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import type { RootStackParamList } from '../../navigation/types'
@@ -6,6 +6,8 @@ import type { ReceiptItem } from '../../types'
 import { SplitFrame, SplitAction } from './components'
 import { calculateReceipt, money, parsePrice, parseRate, validReceiptDate } from './model'
 import { useSplit } from './store'
+import { loadReceipt } from './repository'
+import { errorMessage, useAccount } from '../../state/AccountProvider'
 import { theme } from '../../styles/theme'
 import Bowl from '../../assets/split/36f8a.svg'
 import Calendar from '../../assets/split/e3830.svg'
@@ -27,7 +29,25 @@ const icons:Record<string,typeof Edamame>={edamame:Edamame,gyoza:Gyoza,tofu:Tofu
 const iconColors:Record<string,string>={edamame:'#dff4df',gyoza:'#ffdad2',tofu:'#ffe17c',spicy:'#ffdad2',vegan:'#dff4df',chicken:'#ffe17c',classic:'#ffdad2',tea:'#dff4df'}
 type Editor={kind:'item';item?:ReceiptItem}|{kind:'info'}|{kind:'rates'}|{kind:'shares'}
 export function SplitReceiptScreen({navigation,route}:NativeStackScreenProps<RootStackParamList,'SplitReceipt'>) {
-  const {draft,setDraft,save,saving,photoUri}=useSplit(),totals=calculateReceipt(draft)
+  const {draft,setDraft,save,saving,photoUri,recent}=useSplit()
+  const account=useAccount(),userId=account.session?.user.id,receiptId=route.params?.receiptId
+  const hadDraft=useRef(draft.items.length>0)
+  if(draft.items.length)hadDraft.current=true
+  const [restoreError,setRestoreError]=useState(''),[restoreAttempt,setRestoreAttempt]=useState(0)
+  useEffect(()=>{
+    let active=true;setRestoreError('')
+    if(!receiptId||draft.id===receiptId)return
+    async function restore(){
+      try{
+        const receipt=account.preview?recent.find(r=>r.id===receiptId):userId?await loadReceipt(userId,receiptId!):null
+        if(!active)return
+        if(!receipt)throw new Error('This bill is unavailable for the current account. Return to Split to choose a saved bill.')
+        setDraft(receipt)
+      }catch(e){if(active)setRestoreError(errorMessage(e))}
+    }
+    void restore()
+    return()=>{active=false}
+  },[receiptId,userId,account.preview,restoreAttempt])
   const [reviewed,setReviewed]=useState(false)
   useEffect(()=>setReviewed(false),[draft])
   const [editor,setEditor]=useState<Editor|null>(null),[name,setName]=useState(''),[quantity,setQuantity]=useState('1'),[price,setPrice]=useState(''),[date,setDate]=useState(''),[time,setTime]=useState(''),[guests,setGuests]=useState('4'),[tax,setTax]=useState('9'),[tip,setTip]=useState('18'),[error,setError]=useState('')
@@ -39,6 +59,8 @@ export function SplitReceiptScreen({navigation,route}:NativeStackScreenProps<Roo
     setError('');setEditor(null)
   }
   async function done(){if(saving)return;if(!validReceiptDate(draft.date)||draft.guestCount===null){open({kind:'info'});setError('Enter the receipt date and number of diners before saving.');return;}if(!draft.items.length){setError('Add at least one line item before saving.');return}if(draft.source==='ocr'&&!reviewed){setError('Review the original receipt and confirm the corrected bill before saving.');return}setError('');try{if(await save())navigation.navigate('Main',{screen:'Split'})}catch(e){setError(e instanceof Error?e.message:'Unable to save. Please retry.')}}
+  if((receiptId&&draft.id!==receiptId)||(!receiptId&&!hadDraft.current))return <SplitFrame onBack={()=>navigation.popTo('Main',{screen:'Split'})}><View style={{gap:16,paddingTop:24}}><Text accessibilityRole="header" style={s.breakdownTitle}>{receiptId?(restoreError?'Unable to open saved bill':'Loading saved bill…'):'This unsaved draft is no longer available'}</Text>{!!restoreError&&<Text accessibilityRole="alert" style={s.error}>{restoreError}</Text>}{!receiptId&&<Text style={s.helper}>The page reopened without a saved bill ID. Open a saved bill from Split history, or create a new bill. No saved bills have been changed.</Text>}{receiptId&&!!restoreError&&<SplitAction label="Retry opening bill" onPress={()=>setRestoreAttempt(n=>n+1)}/>}<SplitAction label="Back to Split" onPress={()=>navigation.popTo('Main',{screen:'Split'})}/></View></SplitFrame>
+  const totals=calculateReceipt(draft)
   const formattedDate=validReceiptDate(draft.date)?new Date(`${draft.date}T12:00:00Z`).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}):'Enter receipt date'
   return <SplitFrame onBack={()=>{if(saving)return;route.params?.returnTo==='SplitManualItems'?navigation.navigate('SplitManualItems'):navigation.popTo('Main',{screen:'Split'});}}>
     <View style={s.restaurantCard}><View style={s.headerRow}><View style={s.bowl}><Bowl/></View><View style={{flex:1}}><Text style={s.restaurantName}>{draft.restaurantName}</Text><View style={s.metadata}><Calendar/><Text style={s.metaText}>{formattedDate}{draft.time?` · ${draft.time}`:''}</Text><Text style={s.metaText}>•</Text><Guests/><Text style={s.metaText}>{draft.guestCount===null?'Enter diner count':`${draft.guestCount} Guests`}</Text></View></View><Pressable accessibilityRole="button" accessibilityLabel="Edit restaurant information" style={[s.edit,{position:'absolute',right:0,top:0}]} onPress={()=>open({kind:'info'})}><Edit/></Pressable></View>{(draft.source==='sample'||draft.source==='ocr')&&<View style={s.source}><View style={s.inline}><ReceiptIcon/><Text style={s.sourceText}>{draft.source==='ocr'?'OCR Receipt':'Sample Receipt'}</Text></View><View style={s.inline}><View style={{width:8,height:8,borderRadius:4,backgroundColor:'#326a38'}}/><Text style={s.matched}>{draft.source==='ocr'?'Review required':draft.edited?'Edited':'Sample data'}</Text></View></View>}<View pointerEvents="none" style={s.headerGlow}/></View>

@@ -43,7 +43,7 @@ Generated Decide 5–16 views were checked against current frame node identities
 ## Verification and limits
 
 - Type checking and production Web export pass.
-- 50 application tests pass; local database checks report 48 account isolation, 24 receipt isolation and 8 receipt validation passes. These are automated/local checks, not new live deployment evidence.
+- 51 application tests pass; local database checks report 48 account isolation, 24 receipt isolation and 8 receipt validation passes. These are automated/local checks, not new live deployment evidence.
 - Browser preview automation still fails with a browser connection error. Full screenshot comparison, touch/keyboard interactions, camera permissions and small-screen visual acceptance remain pending; no pixel-perfect or device acceptance is claimed.
 - Existing live authentication/receipt evidence is recorded in the account and receipt evidence documents. Real-photo OCR accuracy still has known failures; this visual update does not resolve them.
 - Real group lifecycle/synchronization, server-side tie finalization and dining-history persistence remain unfinished. No Gate A/B/C completion is implied.
@@ -52,3 +52,9 @@ Generated Decide 5–16 views were checked against current frame node identities
 ## Receipt back-navigation correction
 
 A user-operated history check found that opening a saved manual bill and using its Back arrow incorrectly entered the new manual-item form. The receipt source was being mistaken for its navigation entry point. History and OCR entries now explicitly return to Split; only a new manual draft's review entry returns to the manual-item editor. A receipt opened directly without entry parameters also returns to Split. Returning to Split uses stack pop-to rather than adding another home route. This fix passes type checking and the existing regression suite. In the subsequent user-operated Preview test, the user confirmed that Back from a saved-history receipt returns to Split. Paired screenshots then showed a new manual draft review returning to its item editor with its added item/quantity/price retained. This supports both requested Back-arrow routes; browser Back, native gestures and hardware-back variants are not independently verified.
+
+## Reopening saved receipt links
+
+A reported revisit/reload defect restored the receipt route while its in-memory draft had reset. Saved-history entry links now carry receiptId and returnTo. On reopening, the detail screen loads that exact ID for the authenticated owner (independent of the 100-entry history limit), validates the returned payload/identity, and shows loading, unavailable or retry states instead of rendering a different/empty bill. Account RLS remains in force. Invalid or another account's IDs do not select a default bill.
+
+Unsaved drafts remain in-memory only. A bare legacy detail link after a full page reload cannot recover their identity and now explains that the draft is unavailable with Back to Split. It does not pretend that the saved amount has become zero. Existing saved bills are unaffected. Regression: open a saved bill through history, retain the resulting URL, leave/reopen or refresh it, and verify the same items/count/amount; test blocked loading/retry and another-account/unavailable identity separately. Automated URL round-trip coverage, typecheck and Web build pass; deployed UI acceptance of this correction remains pending.

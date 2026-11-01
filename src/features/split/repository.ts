@@ -1,6 +1,15 @@
 import { requireSupabase } from '../../lib/supabase';
 import { validateReceipt, type SplitReceipt } from './model';
 
+export async function loadReceipt(userId:string,receiptId:string):Promise<SplitReceipt|null> {
+  const {data,error}=await requireSupabase().from('split_receipts').select('receipt_id,receipt').eq('user_id',userId).eq('receipt_id',receiptId).maybeSingle();
+  if(error)throw error;
+  if(!data)return null;
+  validateReceipt(data.receipt);
+  if(data.receipt.id!==receiptId||data.receipt_id!==receiptId)throw new Error('Saved receipt ID mismatch.');
+  return data.receipt;
+}
+
 export async function loadReceipts(userId:string):Promise<SplitReceipt[]> {
   const {data,error}=await requireSupabase().from('split_receipts').select('receipt_id,receipt').eq('user_id',userId).order('updated_at',{ascending:false}).limit(100);
   if(error)throw error;

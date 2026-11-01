@@ -10,6 +10,6 @@ export type RootStackParamList = {
   Group: undefined; GroupRoom: { joined?: boolean } | undefined; GroupConsensus: undefined; GroupVote: { method: 'free' | 'random' };
   GroupTie: undefined; GroupTieSpin: undefined; GroupTieReveal: undefined;
   History: undefined;
-  SplitScan: { imageUri?: string } | undefined; SplitReceipt: { returnTo?: 'Split' | 'SplitManualItems' } | undefined; NotFound: undefined;
+  SplitScan: { imageUri?: string } | undefined; SplitReceipt: { returnTo?: 'Split' | 'SplitManualItems'; receiptId?: string } | undefined; NotFound: undefined;
   SplitManualSetup: undefined; SplitManualItems: undefined;
 };
