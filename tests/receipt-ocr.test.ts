@@ -72,3 +72,12 @@ test('unknown paid-footer text after subtotal never becomes an additional item',
   assert.equal(r.restaurantName,'TEST MARKET');assert.equal(r.items.length,1);
   assert.equal(calculateReceipt(r).totalCents,300);
 });
+
+test('explicitly quantified promotional items can have zero prices',()=>{
+  const r=parseReceiptText('TEST CAFE\n1 Hash Brown 0.00\n1 M Coffee 0.00\nSubtotal 0.00\nTotal 0.00');
+  assert.equal(r.items.length,2);assert.equal(calculateReceipt(r).totalCents,0);validateReceipt(r);
+});
+
+test('ambiguous all-zero OCR output produces an actionable error',()=>{
+  assert.throws(()=>parseReceiptText('TEST CAFE\n(Ela 0.00\nSubtotal 0.00'),/ambiguous zero-price/);
+});

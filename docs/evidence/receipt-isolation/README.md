@@ -39,3 +39,9 @@ Receipt history failed-read recovery, direct authenticated receipt API tests and
 The user supplied screenshots of an annotated photographed receipt and its browser recognition output. Recognition omitted item lines and classified a payment/footer as an item. This attempt is a FAIL for accurate automatic draft population, not evidence that real-photo OCR acceptance passed. The image also contains non-USD format hints, outside the currently validated English/USD template. No merchant details, real amounts or images are retained here.
 
 Parser changes filter EFTPOS/payment labels and included-tax metadata, reject ambiguous zero-value OCR lines, keep unclassified post-subtotal footer lines out of items, improve heading selection, and flag recognized item-count differences/non-USD hints. Regression fixtures use synthetic text only. These are targeted parser fixes, not proof that the omitted source text can now be recognized; the photo needs a fresh deployed retest, and supported-format real-photo accuracy remains pending.
+
+## Scan-page feedback finding
+
+The user reported remaining on the scan page with another photo; the screenshot showed the idle Recognize Receipt button rather than an active progress state. The exact cause was not established from the screenshot alone. Source inspection found recognition errors below the controls, potentially outside the viewport, and zero-value candidate lines were excluded by the parser.
+
+The error panel/manual fallback and progress status are now above the preview, errors label the action Retry recognition, and a newly selected image clears stale messages. Explicitly quantified zero-price item lines are allowed; ambiguous zero-only text produces a specific manual-entry/retry error. Synthetic regression checks pass, but no successful deployed retest of the user's image is claimed. No receipt details or images are committed.

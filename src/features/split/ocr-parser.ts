@@ -9,7 +9,7 @@ export function parseReceiptText(text:string):SplitReceipt {
     'Prices at the end of item lines are treated as line totals; verify quantities and unit prices.',
   ]};
   receipt.restaurantName=lines.find(s=>/[a-z]/i.test(s)&&!/[\d$]/.test(s)&&s.length<=80&&!/^(?:tax\s+invoice|receipt|invoice|welcome\b|thank\s+you\b)/i.test(s))?.slice(0,100)??'Receipt — enter restaurant name';
-  let subtotal:number|undefined,unparsed=0,statedItems:number|undefined,itemsFinished=false;
+  let subtotal:number|undefined,unparsed=0,statedItems:number|undefined,itemsFinished=false,zeroCandidates=0;
   const nonUsdHint=lines.some(line=>/\bABN\b|\bAUD\b|\bA\$|\bNZD\b|\bCAD\b/i.test(line));
   for(const [index,line] of lines.entries()) {
     const count=line.match(/^\s*(?:items|item\s+count|total\s+items)\s*[:=]?\s*(\d{1,3})\s*$/i);
@@ -28,11 +28,11 @@ export function parseReceiptText(text:string):SplitReceipt {
     if(/^(tip|gratuity)\b/i.test(name)){receipt.importedTipCents=(receipt.importedTipCents??0)+amount;continue;}
     if(itemsFinished){unparsed++;continue;}
     if(/\b(cash|change|visa|mastercard|amex|payment|paid|tender|card|suggested|discount|refund|service\s+charge)\b/i.test(name)||/[-−]/.test(name.slice(-1))){unparsed++;continue;}
-    // A garbled zero-value footer must not become a free item silently.
-    if(amount===0){unparsed++;continue;}
     let quantity=1;
     const qty=name.match(/^(\d{1,3})\s*(?:[x×]\s*|\s+)(.+)$/i);
     if(qty){quantity=Number(qty[1]);name=qty[2].trim();}
+    // Keep explicitly quantified free items, but never turn a garbled footer into one.
+    if(amount===0&&!qty){zeroCandidates++;unparsed++;continue;}
     const explicitUnit=name.match(/^(.*?)\s+@\s*\$?(\d+\.\d{2})$/);
     const unit=explicitUnit?parsePrice(explicitUnit[2]):amount/quantity;
     if(explicitUnit)name=explicitUnit[1].trim();
@@ -40,7 +40,7 @@ export function parseReceiptText(text:string):SplitReceipt {
     receipt.items.push({id:`ocr-${index}`,name,quantity,unitPriceCents:unit});
   }
   if(receipt.items.length>200)throw new Error('Too many lines. Use a shorter receipt or enter it manually.');
-  if(!receipt.items.length)throw new Error('Text was recognized but no clear item prices were found. Retry or enter items manually.');
+  if(!receipt.items.length)throw new Error(zeroCandidates?'Only ambiguous zero-price lines were recognized. Use manual entry for this receipt, or retry with a clearer photo.':'Text was recognized but no clear item prices were found. Retry or enter items manually.');
   const itemsTotal=receipt.items.reduce((n,i)=>n+i.quantity*i.unitPriceCents,0);
   if(statedItems!==undefined&&statedItems!==receipt.items.length&&statedItems!==receipt.items.reduce((n,i)=>n+i.quantity,0))receipt.reviewNotes!.push('The receipt item count differs from recognized items. Check for missing lines.');
   if(nonUsdHint)receipt.reviewNotes!.push('Possible non-USD receipt: this Beta only validates USD. No currency conversion is performed; use a supported receipt for USD acceptance.');
