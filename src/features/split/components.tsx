@@ -1,4 +1,5 @@
-import { useRef, type ReactNode, type RefObject } from 'react'
+import { useCallback, useRef, type ReactNode, type RefObject } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { theme } from '../../styles/theme'
@@ -9,7 +10,8 @@ import Cellular from '../../../public/assets/navigation/cellular.svg'
 import { useBillField } from './useBillField'
 import { useSplit } from './store'
 export function SplitFrame({children,onBack,bottomPadding=44,footer,scrollRef,persistKey='home'}:{children:ReactNode;onBack?:()=>void;bottomPadding?:number;footer?:ReactNode;scrollRef?:RefObject<ScrollView|null>;persistKey?:string}) {
-  const {draft,backupUnavailable}=useSplit()
+  const {draft,backupUnavailable,setForms}=useSplit()
+  useFocusEffect(useCallback(()=>{if(['setup','items','receipt'].includes(persistKey))setForms(current=>current.resumeStep===persistKey?current:{...current,resumeStep:persistKey})},[persistKey,draft.id,setForms]))
   const localRef=useRef<ScrollView>(null),ref=scrollRef??localRef
   const [position,setPosition]=useBillField('scroll',persistKey,0)
   const restored=useRef(false),initialPosition=useRef(position),identity=useRef(draft.id+persistKey)
