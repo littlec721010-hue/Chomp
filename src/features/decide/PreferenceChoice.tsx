@@ -28,11 +28,11 @@ export function PreferenceChoice({route,navigation}:NativeStackScreenProps<RootS
  const customized=route.params?.customized??false;
  const [choice,setChoice]=useState<'saved'|'custom'|null>(customized?'custom':null),[error,setError]=useState<string|null>(null);
  useEffect(()=>{if(customized){setChoice('custom');setError(null);}},[customized,d.meal]);
- function submit(surprise=false) {
+ async function submit(surprise=false) {
   if(!choice){setError('Choose saved preferences or customize for this time.');return;}
   if(choice==='custom'&&!customized){navigation.navigate('DecideEditPreferences',{group});return;}
   const preferences=choice==='custom'?d.meal:account.preferences;
-  d.saveMeal(preferences,group);
+  try { await d.saveMeal(preferences,group); } catch(e) { setError(e instanceof Error?e.message:'Could not save preferences.'); return; }
   if(group){if(!d.room){navigation.replace('Group');return;}navigation.navigate('GroupConsensus');return;}
   if(surprise){const matches=rankRestaurants(restaurants,[{...d.user,preferences:diningPreferences(preferences)}]);if(!matches.length){setError('No sample restaurants match these preferences. Customize your preferences to try again.');return;}const r=pickRandom(matches);d.select(r);navigation.navigate('Restaurant',{id:r.id});}
   else navigation.navigate('Recommendations',{group:false});

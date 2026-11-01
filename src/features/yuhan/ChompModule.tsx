@@ -9,6 +9,7 @@ import { asset } from './assets';
 import { recommendationPresentation } from './presentation';
 import { castVote, consensus, groupOutcome, pickRandom, validInviteCode, winningRestaurant } from '../group/model';
 import { bindView, textBinding, type Binding } from './View';
+import { RoomDetailsCard, type RoomDetails } from '../group/RoomDetailsCard';
 import { DinnerTimePicker } from './native/DinnerTimePicker';
 import D5 from './recommendations/views/Decide5';
 import D6 from './recommendations/views/Decide6';
@@ -37,27 +38,29 @@ const initialRoom=():DiningRoom=>({id:'demo-room',code:'EAT-404',name:'Friday Di
 type Saved={room:DiningRoom;selectedId:string;bookmarks:string[];method:'free'|'random'};
 const defaultState=():Saved=>({room:initialRoom(),selectedId:'oishii',bookmarks:[],method:'free'});
 export type IntegratedProps = Omit<ChompModuleProps, 'room'> & {
-  route?: Route; onNavigate?: (route: Route) => void;
+  catalog?: Restaurant[]; route?: Route; onNavigate?: (route: Route) => void;
   room?: DiningRoom; selectedId?: string; bookmarks?: string[];
   onBookmark?: (id: string) => void; matches?: Restaurant[];
-  onCreateRoom?: () => void; onJoinRoom?: () => void; onBackToPreferences?: () => void; summaryContent?: ReactNode;
-  onTie?: () => void;
+  onCreateRoom?: () => void | Promise<void>; onJoinRoom?: (code: string) => void | Promise<void>;
+  live?: boolean; busy?: boolean; onVote?: (id: string, method: 'free'|'random') => Promise<void>; onBackToPreferences?: () => void; summaryContent?: ReactNode;
+  onTie?: () => void; hostVoting?:boolean; votingContent?: ReactNode; onSaveRoomDetails?: (details:RoomDetails)=>Promise<void>;
 };
 
-export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPreferences,onRestaurantSelected,route:providedRoute,onNavigate,selectedId:providedSelectedId,bookmarks:providedBookmarks,onBookmark,matches=restaurants,onCreateRoom,onJoinRoom,onBackToPreferences,onTie,summaryContent}:IntegratedProps){
+export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPreferences,onRestaurantSelected,route:providedRoute,onNavigate,selectedId:providedSelectedId,bookmarks:providedBookmarks,onBookmark,matches=restaurants,onCreateRoom,onJoinRoom,onBackToPreferences,onTie,summaryContent,live=false,busy=false,onVote,votingContent,hostVoting=false,onSaveRoomDetails,catalog=restaurants}:IntegratedProps){
   const [saved,setSaved]=useState(defaultState);
   const [internalRoute,setInternalRoute]=useState<Route>('/group');
   const route=providedRoute??internalRoute;
   const [inviteCode,setInviteCode]=useState('');
   const [notice,setNotice]=useState('');
   const [consensusHeight,setConsensusHeight]=useState(1061);
+  const [roomHeight,setRoomHeight]=useState(844);
   const [groupResultHeight,setGroupResultHeight]=useState(844);
   const [modal,setModal]=useState<{title:string;body:ReactNode}|null>(null);
   const panel=useRef<ScrollView>(null);
   const width=Math.min(390,useWindowDimensions().width);
   const room=providedRoom??saved.room;
   const selectedId=providedSelectedId??(route.startsWith('/group')?(room.votes.find(v=>v.userId===user.id)?.restaurantId??saved.selectedId):saved.selectedId);
-  const selected=restaurants.find(r=>r.id===selectedId)??restaurants[0];
+  const selected=catalog.find(r=>r.id===selectedId)??catalog[0]??restaurants[0];
   const result=winningRestaurant(room,matches)??selected;
   const bookmarks=providedBookmarks??saved.bookmarks;
   const screen=screens[route];
@@ -65,7 +68,9 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(''),3500);return()=>clearTimeout(timer);},[notice]);
   function go(next:Route){setInternalRoute(next);onNavigate?.(next);setNotice('');panel.current?.scrollTo({y:0,animated:false});}
   function updateRoom(next:DiningRoom){setSaved(s=>({...s,room:next}));onRoomChange?.(next);}
-  function vote(restaurant:Restaurant,method:'free'|'random'){
+  async function vote(restaurant:Restaurant,method:'free'|'random'){
+    if(busy)return;
+    if(live&&onVote){try{await onVote(restaurant.id,method);go(method==='random'?'/group/random-vote':'/group/vote');}catch(e){setNotice(e instanceof Error?e.message:'Vote failed.');}return;}
     if(room.luckyDiner){setNotice('This round is complete. Create a new room to vote again.');return;}
     if(!matches.some(r=>r.id===restaurant.id)){setNotice('This restaurant does not match the current preferences.');return;}
     const updated=castVote(room,{userId:user.id,restaurantId:restaurant.id,method});
@@ -81,11 +86,13 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
     if(onPreferences)onPreferences(room,preferences=>{updateRoom({...room,members:room.members.map(m=>m.id===user.id?{...m,preferences}:m)});go('/group/consensus');});
     else go('/group/consensus');
   }
-  function join(){
+  async function join(){
+    if(busy)return;
     const code=inviteCode.trim().toUpperCase();
     if(!validInviteCode(code)){setNotice('Use a code like EAT-404 (three letters and three digits).');return;}
+    if(live&&onJoinRoom){try{await onJoinRoom(code);go('/group/join');}catch(e){setNotice(e instanceof Error?e.message:'Could not join.');}return;}
     if(code!==room.code){setNotice('Room not found. Try the demo invite EAT-404.');return;}
-    onJoinRoom?.();go('/group/join');
+    onJoinRoom?.(code);go('/group/join');
   }
   const bindings:Record<string,Binding>={};
   const action=(id:string,label:string,fn:()=>void)=>bindings[id]={label,action:fn};
@@ -94,7 +101,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   action('281:22980','Back to home',()=>onHome?.());
   action('281:24778','Back to consensus',()=>go('/group/consensus'));
   action('281:23257','Back to group options',()=>go('/group'));
-  action('281:23013','Create Room',()=>{if(onCreateRoom)onCreateRoom();else updateRoom(initialRoom());go('/group/create');});
+  action('281:23013','Create Room',async()=>{if(busy)return;try{if(onCreateRoom)await onCreateRoom();else updateRoom(initialRoom());go('/group/create');}catch(e){setNotice(e instanceof Error?e.message:'Could not create room.');}});
   action('281:23040','Join Room',join);
   bindings['281:23034']={props:{style:{backgroundColor:'white',height:52}},children:<TextInput style={[ui.input,{height:25,fontFamily:'JakartaBold',fontSize:20,lineHeight:25,includeFontPadding:false,backgroundColor:'transparent',borderWidth:0,outlineWidth:0}]} accessibilityLabel="Invite code" placeholder="e.g. EAT-404" placeholderTextColor="#d0c6ad" value={inviteCode} maxLength={7} autoCapitalize="characters" autoCorrect={false} onChangeText={value=>setInviteCode(value.toUpperCase())} onSubmitEditing={join} returnKeyType="go"/>};
   bindings['281:23269']={children:<TextInput style={[ui.input,{fontSize:16,fontFamily:'Jakarta'}]} accessibilityLabel="Group name" value={room.name} maxLength={40} onChangeText={name=>updateRoom({...room,name})}/>};
@@ -148,7 +155,17 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   });
   text(['298:25553'],shared.budgetOverlap?`$${shared.budget[0]}–$${shared.budget[1]}`:'No overlap');
   text(['298:25555'],shared.budgetOverlap?'Shared budget range':'Review group budgets');
-  text(['298:25565'],`≤ ${shared.distanceMiles} mi`);text(['298:25567'],room.scope);
+  text(['298:25565'],shared.distanceMiles>=100000||!Number.isFinite(shared.distanceMiles)?'No distance limit':`≤ ${shared.distanceMiles} mi`);text(['298:25567'],room.scope);
+  text(['281:24785'],matches.length?`${matches.length} test matches for ${count} diners`:`No matches for ${count} diners`);
+  text(['281:24951'],matches.length?'Fictional menu matches recorded restrictions':'Test fixture · Not a matching option');
+  text(['281:24954'],'Test data only · Photos are illustrative');
+  text(['281:24962'],'Fictional vegetarian menu · No fish or seafood');
+  text(['281:24959'],'No dragon fruit in the test menu');
+  text(['281:24967'],'Fictional plant-based test menu');
+  text(['281:24971'],'Test data only · Photos are illustrative');
+  [['281:24814',restaurants[0]],['281:24859',restaurants[1]],['281:24904',restaurants[2]]].forEach(([id,r])=>{const restaurant=r as Restaurant;text([id as string],`${restaurant.cuisine} • $${restaurant.price.join('–')} • Test restaurant`);});
+  text(['294:25234'],`Let Chomp pick from ${matches.length} matching test restaurants.`);
+  text(['294:25240'],`Random test pick (${matches.length})`);
   text(['312:26960'],`${count} Feasters Attending`);text(['312:26962'],room.members.map(m=>m.name).join(', '));
   bindings['312:26958']={props:{style:{flex:1,minWidth:0,flexShrink:1}}};
   bindings['312:26949']={props:{style:{flex:1,minWidth:0,flexShrink:1}}};
@@ -184,6 +201,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
     bindings[groupCards[i]]={props:{style:index<0?{display:'none'}:{top:groupTops[index]}}};
     action(soloCtas[i],`Chomp at ${r.name}`,()=>{setSaved(s=>({...s,selectedId:r.id}));onRestaurantSelected?.(r);go('/recommendations/result');});
     action(groupCtas[i],`Vote for ${r.name}`,()=>vote(r,'free'));
+    text([['281:24790','281:24834','281:24879'][i]],'Test fixture');
     if(!matches.length){
       text([['258:22239','258:22290','258:22340'][i],['281:24790','281:24834','281:24879'][i]],'Sample');
       bindings[soloCtas[i]].props={disabled:true,style:{opacity:0.45}};
@@ -193,7 +211,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   });
   action('294:25235','Spin Between These 3',()=>{if(!matches.length){setNotice('No matching restaurants. Adjust your preferences.');return;}vote(pickRandom(matches),'random');});
   ['312:26550','312:26389'].forEach(id=>action(id,'View Result',()=>{const winner=winningRestaurant(room,matches);if(!winner){const outcome=groupOutcome(room,matches);if(outcome.status==='tie'){onTie?.();return;}setNotice(outcome.status==='unsupported'?'This tie format needs an agreed diner-pool rule.':'Waiting for everyone to vote.');return;}onRestaurantSelected?.(winner,room);go('/group/result');}));
-  ['312:26556','312:26395'].forEach(id=>action(id,'Change My Vote',()=>{if(room.luckyDiner){setNotice('This round is complete. Create a new room to vote again.');return;}go('/group/recommendations');}));
+  ['312:26556','312:26395'].forEach(id=>action(id,'Change My Vote',()=>{if(live&&room.status!=='voting'){setNotice('All diners have voted. This round is locked; view the result or resolve the tie.');return;}if(room.luckyDiner){setNotice('This round is complete. Create a new room to vote again.');return;}go('/group/recommendations');}));
   ['258:22709','312:26918'].forEach(id=>action(id,'Back to Home',()=>onHome?.()));
   bindings['312:26918'].props={style:{position:'relative',top:undefined,left:undefined,right:undefined,marginHorizontal:16,marginTop:32,alignSelf:'stretch'}};
   [['258:22678','312:26888','Directions'],['258:22688','312:26898','Call Table'],['258:22698','312:26908','View Menu']].forEach(([a,b,label])=>{action(a,label,()=>showAction(label as 'Directions',selected));action(b,label,()=>showAction(label as 'Directions',result));});
@@ -218,7 +236,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   // Images supplied by restaurant data stay dynamic, with each design's crop retained.
   function dynamicImages(node:ReactNode):ReactNode{
     if(typeof node==='string')return node
-      .replace(/Oishii Ramen & Izakaya/g,restaurants[0].name)
+      .replace(/Oishii Ramen & Izakaya/g,['/group/vote','/group/random-vote'].includes(route)?selected.name:(catalog[0]?.name??restaurants[0].name))
       .replace(/Taqueria El Sol Dorado/g,restaurants[1].name)
       .replace(/Pasta Fresca Handcrafted/g,restaurants[2].name)
       .replace(/Mexican/g,restaurants[1].cuisine)
@@ -239,12 +257,32 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
     }
     return cloneElement(element,{children:Children.map(element.props.children,dynamicImages)});
   }
-  const view=dynamicImages(bindView(screen.view(),bindings));
-  const canvasHeight=route==='/group/result'?groupResultHeight:route==='/group/consensus'?consensusHeight:route==='/recommendations'?screen.height-401*(3-displayed.length):screen.height;
+  if(live){
+    bindings['281:23260']={children:<RoomDetailsCard key={room.id} room={room} editable={room.hostId===user.id&&room.status==='lobby'} busy={busy} onSave={onSaveRoomDetails??(async()=>{})}/>,props:{style:{position:'relative',top:undefined,left:undefined,right:undefined,width:'100%',padding:0,marginBottom:16}}};
+    bindings['281:23049']={props:{style:{height:'auto',paddingTop:44,paddingHorizontal:20,paddingBottom:24},onLayout:(e:{nativeEvent:{layout:{height:number}}})=>setRoomHeight(e.nativeEvent.layout.height)}};
+    ['281:23257','281:23290','281:23292','281:23397'].forEach(id=>bindings[id]={...bindings[id],props:{...bindings[id]?.props,style:{position:'relative',top:undefined,bottom:undefined,left:undefined,right:undefined,width:id==='281:23257'?20:'100%',transform:[],marginBottom:id==='281:23257'?4:16}}});
+    bindings['281:23322']={children:<View style={{gap:8}}><Text style={ui.buttonText}>Joined diners ({room.members.length})</Text>{room.members.map(m=><View key={m.id} style={{flexDirection:'row',alignItems:'center',gap:8,paddingVertical:7}}><Text style={[ui.body,{flex:1}]}>{m.name}{m.id===user.id?' (You)':''}</Text><Text style={ui.body}>{m.ready?'Ready':'Setting preferences'}</Text></View>)}<Text style={[ui.body,{fontSize:12}]}>Share the code with another signed-in diner. Members update automatically.</Text></View>};
+    const memberRows=<View style={{gap:12}}>{room.members.map(m=>{const v=room.votes.find(v=>v.userId===m.id);return <View key={m.id} style={{flexDirection:'row',gap:8,alignItems:'center',paddingVertical:8}}><Text style={[ui.body,{flex:1}]}>{m.name}{m.id===user.id?' (You)':''}</Text><Text style={[ui.body,{fontSize:12}]}>{v?'Vote received':'Waiting…'}</Text></View>;})}</View>;
+    ['312:26485','312:26260'].forEach(id=>bindings[id]={children:<ScrollView style={{maxHeight:240}} nestedScrollEnabled>{memberRows}</ScrollView>});
+    text(['298:25430'],`${room.members.filter(m=>m.ready).length} of ${room.members.length} Submitted`);
+    if(room.status!=='voting'){
+      [...groupCtas,'294:25235'].forEach(id=>bindings[id]={...bindings[id],props:{...bindings[id]?.props,disabled:true,style:{opacity:.45}}});
+    }
+    if(room.status!=='lobby')bindings['281:23397']={label:'View Group Summary',action:()=>go('/group/consensus'),children:<Text style={ui.buttonText}>View Group Summary</Text>};
+    for(const binding of Object.values(bindings))if(binding.action&&busy)binding.props={...binding.props,disabled:true};
+  }
+  let rawView=screen.view();
+  const roomPage=live&&(route==='/group/create'||route==='/group/join');
+  if(roomPage){const order=['281:23257','281:23290','281:23260','281:23292','281:23397'];const children=Children.toArray(rawView.props.children);rawView=cloneElement(rawView,{children:order.map(id=>children.find(c=>typeof c==='object'&&'props' in c&&(c.props as {'data-node-id'?:string})['data-node-id']===id))});}
+  if(hostVoting&&route==='/group/consensus')bindings['298:25569']={props:{style:{display:'none'}}};
+  const view=dynamicImages(bindView(rawView,bindings));
+  const canvasHeight=roomPage?roomHeight:route==='/group/result'?groupResultHeight:route==='/group/consensus'?consensusHeight:route==='/recommendations'?screen.height-401*(3-displayed.length):screen.height;
   return <View style={{flex:1,alignItems:'center',backgroundColor:['/recommendations/result','/group/result','/group/vote','/group/random-vote'].includes(route)?'transparent':'#fff8f4'}}>
     <ScrollView ref={panel} style={{width}} contentContainerStyle={{minHeight:777*width/390,paddingBottom:24}} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} accessibilityLabel={screen.label}>
+      {!hostVoting&&votingContent}
       {route==='/group/consensus'&&summaryContent}
-      <View style={{height:(canvasHeight-33)*width/390,width,overflow:'hidden'}}><View style={{width:390,height:route==='/group/consensus'||route==='/group/result'?undefined:canvasHeight,top:-33*width/390,transform:[{scale:width/390}],transformOrigin:'top left'}}>{view}</View></View>
+      <View style={{height:(canvasHeight-33)*width/390,width,overflow:'hidden'}}><View style={{width:390,height:roomPage||route==='/group/consensus'||route==='/group/result'?undefined:canvasHeight,top:-33*width/390,transform:[{scale:width/390}],transformOrigin:'top left'}}>{view}</View></View>
+      {hostVoting&&votingContent}
     </ScrollView>
     {!!notice&&<View accessibilityLiveRegion="polite" style={nativeStyles.toast}><Text style={{color:'#fff',fontFamily:'JakartaMedium',textAlign:'center'}}>{notice}</Text></View>}
     <Sheet visible={!!modal} title={modal?.title??''} onClose={()=>setModal(null)}>{modal?.body}</Sheet>

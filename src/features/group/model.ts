@@ -26,6 +26,7 @@ export function pickRandom(list: Restaurant[], random=Math.random): Restaurant {
   return list[Math.min(list.length-1,Math.floor(random()*list.length))];
 }
 export function winningRestaurant(room: DiningRoom,list: Restaurant[]): Restaurant|undefined {
+  if(room.remote)return room.status==='complete'?list.find(r=>r.id===room.winnerId):undefined;
   const outcome=groupOutcome(room,list);
   if(outcome.status==='winner')return outcome.leaders[0];
   if(outcome.status==='tie'&&room.luckyDiner?.voteSignature===voteSignature(room)){
@@ -49,8 +50,8 @@ export function groupOutcome(room:DiningRoom,list:Restaurant[]) {
   const leaders=list.filter(r=>counts.get(r.id)===highest&&highest>0);
   if(leaders.length===1)return {status:'winner' as const,leaders,nominees:[] as User[],counts};
   // V3 illustrates a completely split pool (2–2). Do not invent 2–2–1 rules.
-  if(votes.some(v=>!leaders.some(r=>r.id===v.restaurantId)))return {status:'unsupported' as const,leaders,nominees:[] as User[],counts};
-  return {status:'tie' as const,leaders,nominees:room.members,counts};
+  if(!room.remote&&votes.some(v=>!leaders.some(r=>r.id===v.restaurantId)))return {status:'unsupported' as const,leaders,nominees:[] as User[],counts};
+  return {status:'tie' as const,leaders,nominees:room.members.filter(m=>votes.some(v=>v.userId===m.id&&leaders.some(r=>r.id===v.restaurantId))),counts};
 }
 export function pickLuckyDiner(room:DiningRoom,list:Restaurant[],random=Math.random):DiningRoom {
   if(winningRestaurant(room,list)&&room.luckyDiner?.voteSignature===voteSignature(room))return room;

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Button, ui } from './Controls';
 
@@ -28,13 +28,14 @@ function parseTime(value: string) {
   const time = value.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
   return { date, hour: time?.[1] ?? '7', minute: time?.[2] ?? '30', period: time?.[3].toUpperCase() ?? 'PM' };
 }
-export function DinnerTimePicker({ initial, onConfirm }: { initial: string; onConfirm: (value: string) => void }) {
+export function DinnerTimePicker({ initial, onConfirm, onChange }: { initial: string; onConfirm: (value: string) => void; onChange?: (value:string)=>void }) {
   const [start] = useState(() => parseTime(initial));
   const [date, setDate] = useState(start.date), [month, setMonth] = useState(new Date(start.date.getFullYear(), start.date.getMonth(), 1));
   const [hour, setHour] = useState(start.hour), [minute, setMinute] = useState(start.minute), [period, setPeriod] = useState(start.period);
   const y = month.getFullYear(), m = month.getMonth(), first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
   const cells = Array.from({ length: Math.ceil((first + days) / 7) * 7 }, (_, i) => i - first + 1);
   const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${hour}:${minute} ${period}`;
+  useEffect(()=>{onChange?.(formatted);},[formatted,onChange]);
   return <View style={{ gap: 14 }}>
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
       <Pressable accessibilityRole="button" accessibilityLabel="Previous month" onPress={() => setMonth(new Date(y, m - 1, 1))} style={{ padding: 10 }}><Text style={ui.title}>‹</Text></Pressable>
