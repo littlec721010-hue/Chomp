@@ -17,6 +17,8 @@ Turn the integrated Alpha into a Beta candidate with trustworthy account isolati
 
 ## Scope
 
+Implementation/evidence update — November 1: real account Profile/preference verification is recorded in [account isolation evidence](evidence/account-isolation/README.md). Browser OCR and account-owned receipt history source changes are described in [receipt implementation](Beta-Receipt-OCR-and-Persistence.md); the receipt migration and live end-to-end acceptance remain pending. These partial results do not mark all criteria below passed or change the agreed platform/scope requirements.
+
 Mandatory live integrations: real authentication and account isolation, shared multi-client rooms and voting, and persistent account-owned data. Demo mode and simulated votes cannot count as evidence for these requirements.
 
 Confirmed Split scope: real OCR with editable results/missing-item addition and independent no-OCR manual creation are both required. Manual setup → add/edit/remove items → review/confirm → exact-cent equal split → save. Both paths use the same bill model and account-owned storage; item ownership splitting is outside scope.

@@ -14,6 +14,8 @@ Reference frames: 472:1786, 478:1838, 491:2421 (tie flow); 512:1304, 514:2005, 5
 
 ## Limits and remaining acceptance work
 
+Update November 1: browser OCR and account-owned receipt persistence are now implemented in source; see [receipt implementation and pending live acceptance](Beta-Receipt-OCR-and-Persistence.md). The original limitations below describe the initial Version 3 UI change. The new receipt migration, deployed save/read-back and browser/photo verification are still pending and are not implied passed by this update.
+
 This is a UI and local demonstration implementation, not completion of Gate A/B/C. Group drawing is available in Demo preview only. Server-side room coordination, atomic drawing, reconnect recovery and two-device result consistency still need implementation and evidence. Manual drafts and saved bills are session state, not backend persistence. Existing sample receipt preview is labelled as sample data; real OCR remains unconnected.
 
 Automated validation covers vote completion, original-vote selection, repeat-entry stability, stale/invalid votes, unsupported ties, manual input validation and cent-exact arithmetic. Type checking and production Web export are required before review.
