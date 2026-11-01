@@ -32,7 +32,7 @@ Following the instruction to reopen the existing synthetic manual bill, save it 
 
 Following the requested mobile offline-save/reconnect/retry sequence, the supplied first screenshot shows the synthetic bill renamed in its restaurant/title field (not its item field), with `Unable to save. Please retry.` and the edited draft still displayed. The second screenshot shows the updated synthetic title in history after recovery, with the record count still two. This supports failure disclosure, draft retention and successful retry without a duplicate in the observed sequence. The screenshot alone does not independently prove the requested final refresh occurred. Neither real personal expenses nor screenshots are committed.
 
-Receipt history failed-read recovery, direct authenticated receipt API tests and real-photo browser recognition remain pending. Do not mark the whole receipt feature or Gate B passed from these results.
+Receipt history failed-read recovery and direct authenticated receipt API tests remain pending. Real-photo observations are recorded separately below; representative accuracy remains pending. Do not mark the whole receipt feature or Gate B passed from these results.
 
 ## Non-synthetic annotated receipt finding
 
@@ -50,4 +50,10 @@ The error panel/manual fallback and progress status are now above the preview, e
 
 After the metadata fix was pushed in commit 239a959, the user supplied a browser review screenshot showing the printed receipt date/time recognized and item rows populated. The user explicitly confirmed that the diner count was manually entered, then confirmed that the saved bill remained after refresh. This supports the user-operated real-photo recognition → manual diner completion → save → refresh/read-back sequence for this one receipt. Original images, merchant details, printed date/time, prices and account information are not committed.
 
-The screenshot's exact deployment URL/source commit was not independently captured. It does not independently establish that every item, tax/tip and total was accurate, or that an empty diner count was blocked before completion. Treat this as one successful observed workflow, not an overall OCR accuracy pass. Earlier real-photo failures remain open. Missing-diner save prevention, cancelled image selection and representative camera/recognition failure recovery still need deployed interactive evidence.
+The screenshot's exact deployment URL/source commit was not independently captured. It does not independently establish that every item, tax/tip and total was accurate, or that an empty diner count was blocked before completion. Treat this as one successful observed workflow, not an overall OCR accuracy pass. Earlier real-photo failures remain open. The subsequent missing-diner validation check is recorded below. Cancelled image selection and representative camera/recognition failure recovery still need deployed interactive evidence.
+
+## User-operated missing/invalid diner validation and recovery
+
+Following the missing-diner save checklist, the user supplied a screenshot of the information editor with an empty Guests field and a visible completion error after attempting to save the bill. A second screenshot shows a zero guest count rejected with a 1–100 validation message. These support the observed empty/zero diner-count save prevention; they do not establish every invalid-input boundary or independently show the earlier per-person estimate state.
+
+The user then supplied a saved-history screenshot after entering a valid count and confirming the bill, and explicitly confirmed that date, time, diner count and amount remained after refresh/reopening. This supports recovery from validation errors → valid metadata completion → confirmation/save → refresh/read-back for this receipt. No original screenshots, merchant information, personal receipt amounts or account identifiers are committed. Exact candidate mapping remains unverified. No full-feature or Gate completion is claimed.
