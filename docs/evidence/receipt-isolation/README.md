@@ -33,3 +33,9 @@ Following the instruction to reopen the existing synthetic manual bill, save it 
 Following the requested mobile offline-save/reconnect/retry sequence, the supplied first screenshot shows the synthetic bill renamed in its restaurant/title field (not its item field), with `Unable to save. Please retry.` and the edited draft still displayed. The second screenshot shows the updated synthetic title in history after recovery, with the record count still two. This supports failure disclosure, draft retention and successful retry without a duplicate in the observed sequence. The screenshot alone does not independently prove the requested final refresh occurred. Neither real personal expenses nor screenshots are committed.
 
 Receipt history failed-read recovery, direct authenticated receipt API tests and real-photo browser recognition remain pending. Do not mark the whole receipt feature or Gate B passed from these results.
+
+## Non-synthetic annotated receipt finding
+
+The user supplied screenshots of an annotated photographed receipt and its browser recognition output. Recognition omitted item lines and classified a payment/footer as an item. This attempt is a FAIL for accurate automatic draft population, not evidence that real-photo OCR acceptance passed. The image also contains non-USD format hints, outside the currently validated English/USD template. No merchant details, real amounts or images are retained here.
+
+Parser changes filter EFTPOS/payment labels and included-tax metadata, reject ambiguous zero-value OCR lines, keep unclassified post-subtotal footer lines out of items, improve heading selection, and flag recognized item-count differences/non-USD hints. Regression fixtures use synthetic text only. These are targeted parser fixes, not proof that the omitted source text can now be recognized; the photo needs a fresh deployed retest, and supported-format real-photo accuracy remains pending.

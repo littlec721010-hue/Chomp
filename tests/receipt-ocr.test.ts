@@ -47,3 +47,28 @@ test('saved receipt validation rejects malformed payloads and unsafe imported am
     assert.throws(()=>validateReceipt({...r,...changes}));
   }
 });
+
+test('payment and included-tax footers cannot inflate recognized item totals',()=>{
+  const r=parseReceiptText('TEST SHOP\nNoodles 4.50\nMushrooms 4.80\nITEMS 6\nSUBTOTAL 25.10\nEFTPOS 25.10\nG.S.T 0.00\n(Ela 0.00');
+  assert.deepEqual(r.items.map(i=>i.name),['Noodles','Mushrooms']);
+  assert.equal(calculateReceipt(r).subtotalCents,930);
+  assert.ok(r.reviewNotes?.some(s=>s.includes('item count differs')));
+  assert.ok(r.reviewNotes?.some(s=>s.includes('printed subtotal')));
+});
+
+test('EFTPOS is not a printed total and inclusive tax is not added as sales tax',()=>{
+  const r=parseReceiptText('TEST SHOP\nTea 10.00\nGST 0.91\nE.F.T.P.O.S 10.00');
+  assert.equal(r.items.length,1);assert.equal(calculateReceipt(r).totalCents,1000);
+  assert.equal(r.printedTotalCents,undefined);
+});
+
+test('possible non-USD identifiers are flagged without claiming conversion',()=>{
+  const r=parseReceiptText('TEST SHOP\nABN 00 000 000 000\nTea 3.00\nTOTAL 3.00');
+  assert.ok(r.reviewNotes?.some(s=>s.includes('Possible non-USD')));
+});
+
+test('unknown paid-footer text after subtotal never becomes an additional item',()=>{
+  const r=parseReceiptText('TAX INVOICE\nWELCOME TO A TEST SHOP\nTEST MARKET\nTea 3.00\nSubtotal 3.00\nGarbled footer 3.00\nTotal 3.00');
+  assert.equal(r.restaurantName,'TEST MARKET');assert.equal(r.items.length,1);
+  assert.equal(calculateReceipt(r).totalCents,300);
+});
