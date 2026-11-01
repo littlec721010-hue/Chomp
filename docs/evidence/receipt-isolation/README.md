@@ -24,4 +24,8 @@ Only prescribed synthetic test inputs and conclusions are recorded; original scr
 
 Following the requested A-to-B sequence on iPhone Safari, the user supplied one screenshot with the two prescribed synthetic bills restored and another showing an empty history after account switching. This supports the observed desktop-to-mobile history read-back and the UI-level isolation sequence. The screenshots themselves do not independently show login identities; account attribution follows the requested user-operated sequence. Original screenshots and personal account information are not uploaded. The mobile address bar shows the deployment hostname `chomp-mtnihzytt-chomp4.vercel.app`; its exact source commit has not yet been independently mapped.
 
-Receipt write/read failure recovery, duplicate-save checks, direct authenticated receipt API tests and real-photo browser recognition remain pending. Do not mark the whole receipt feature or Gate B passed from these results.
+## Repeat-save check
+
+Following the instruction to reopen the existing synthetic manual bill, save it without changes and refresh, the user supplied a history screenshot still containing exactly two records. The re-saved bill moved to the top, consistent with updated-time sorting. This supports the observed sequential repeat-save/idempotent update case; simultaneous requests and a lost-response retry remain separate scenarios.
+
+Receipt write/read failure recovery, direct authenticated receipt API tests and real-photo browser recognition remain pending. Do not mark the whole receipt feature or Gate B passed from these results.
