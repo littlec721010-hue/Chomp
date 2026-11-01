@@ -48,3 +48,7 @@ Generated Decide 5–16 views were checked against current frame node identities
 - Existing live authentication/receipt evidence is recorded in the account and receipt evidence documents. Real-photo OCR accuracy still has known failures; this visual update does not resolve them.
 - Real group lifecycle/synchronization, server-side tie finalization and dining-history persistence remain unfinished. No Gate A/B/C completion is implied.
 - Validate the updated Preview before merging PR #15. This work does not change main or the deployed 1.0 baseline.
+
+## Receipt back-navigation correction
+
+A user-operated history check found that opening a saved manual bill and using its Back arrow incorrectly entered the new manual-item form. The receipt source was being mistaken for its navigation entry point. History and OCR entries now explicitly return to Split; only a new manual draft's review entry returns to the manual-item editor. A receipt opened directly without entry parameters also returns to Split. Returning to Split uses stack pop-to rather than adding another home route. This fix passes type checking and the existing regression suite; deployed back-navigation acceptance remains pending.
