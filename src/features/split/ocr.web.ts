@@ -18,7 +18,9 @@ export async function recognizeReceipt(uri:string,signal:AbortSignal,progress:(v
       if(stopped||signal.aborted){await worker.terminate();throw new Error('Recognition cancelled.');}
       const {data}=await worker.recognize(blob);
       if(stopped||signal.aborted)throw new Error('Recognition cancelled.');
-      return parseReceiptText(data.text);
+      const hex=async(bytes:BufferSource)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
+      const [scanImageHash,scanTextHash]=await Promise.all([hex(await blob.arrayBuffer()),hex(new TextEncoder().encode(data.text.toLowerCase().replace(/\s+/g,' ').trim()))]);
+      return {...parseReceiptText(data.text),scanImageHash,scanTextHash};
     })()]);
   } finally {clearTimeout(timer);signal.removeEventListener('abort',stop);await worker?.terminate();}
 }

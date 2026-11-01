@@ -3,7 +3,7 @@ export interface SplitReceipt {
   id: string; restaurantName: string; date: string; guestCount: number | null
   items: ReceiptItem[]; taxRate: number; tipRate: number
   importedTipCents?: number; importedTaxCents?: number; source: 'sample' | 'manual' | 'ocr'; edited?: boolean
-  tipMode?: 'fixed' | 'percent'; printedTotalCents?: number; reviewNotes?: string[]; time?: string
+  scanImageHash?:string; scanTextHash?:string; tipMode?: 'fixed' | 'percent'; printedTotalCents?: number; reviewNotes?: string[]; time?: string
 }
 export const sampleReceipt: SplitReceipt = {
   id:'oishii',restaurantName:'Oishii Ramen & Izakaya',date:'2026-09-26',guestCount:4,

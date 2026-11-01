@@ -1,5 +1,16 @@
 import { requireSupabase } from '../../lib/supabase';
 import { validateReceipt, type SplitReceipt } from './model';
+import { scanHashes } from './scan-duplicate';
+
+export async function findScannedReceipt(userId:string,receipt:SplitReceipt):Promise<SplitReceipt|null> {
+  const keys=scanHashes(receipt);if(!keys.length)return null;
+  const {data,error}=await requireSupabase().from('split_receipts').select('receipt_id,receipt').eq('user_id',userId).or(keys.map(key=>`receipt->>${key}.eq.${receipt[key]}`).join(',')).order('updated_at',{ascending:false}).limit(1);
+  if(error)throw error;
+  const row=data?.[0];if(!row)return null;
+  validateReceipt(row.receipt);
+  if(row.receipt.id!==row.receipt_id)throw new Error('Saved receipt ID mismatch.');
+  return row.receipt;
+}
 
 export async function loadReceipt(userId:string,receiptId:string):Promise<SplitReceipt|null> {
   const {data,error}=await requireSupabase().from('split_receipts').select('receipt_id,receipt').eq('user_id',userId).eq('receipt_id',receiptId).maybeSingle();
