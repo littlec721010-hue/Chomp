@@ -48,16 +48,17 @@ export function parseReceiptText(text:string):SplitReceipt {
   for(const [index,line] of lines.entries()) {
     const count=line.match(/^\s*(?:items|item\s+count|total\s+items)\s*[:=]?\s*(\d{1,3})\s*$/i);
     if(count){statedItems=Number(count[1]);continue;}
-    const match=line.match(/^(.*?)\s+\$?([\d,]+\.\d{2})\s*$/);
+    const itemLine=line.replace(/^(?:[AE]\s+)?\d{4,8}\s+(.+?)\s+(\d[\d,]*\.\d{2})\s+[AE]$/i,'$1 $2');
+    const match=itemLine.match(/^(.*?)\s+\$?([\d,]+\.\d{2})\s*$/);
     if(!match){if(/\d[.,]\d|\b(discount|refund)\b/i.test(line))unparsed++;continue;}
     const amount=parsePrice(match[2].replace(/,/g,''));if(amount===null){unparsed++;continue;}
     let name=match[1].trim();
     // Classify metadata before attempting item quantities or price arithmetic.
-    const label=name.replace(/[.:]/g,'').trim();
+    const label=name.replace(/[.*:]/g,'').trim();
     if(/^(?:eftpos|e\s*f\s*t\s*p\s*o\s*s|debit|credit|amount\s+paid|tendered|payment|card\s+payment)\b/i.test(label)){continue;}
     if(/^(?:gst|hst|vat|tax\s+included|includes?\s+tax)\b/i.test(label)){unparsed++;continue;}
     if(/subtotal|sub total/i.test(name)){subtotal=amount;itemsFinished=true;continue;}
-    if(/^(grand\s+total|total|amount\s+due|balance\s+due)\b/i.test(name)){receipt.printedTotalCents=amount;itemsFinished=true;continue;}
+    if(/^(grand\s+total|total|amount\s+due|balance\s+due)$/i.test(label)){receipt.printedTotalCents=amount;itemsFinished=true;continue;}
     if(/^(sales\s+tax|tax)\b/i.test(name)){receipt.importedTaxCents=(receipt.importedTaxCents??0)+amount;continue;}
     if(/^(tip|gratuity)\b/i.test(name)){receipt.importedTipCents=(receipt.importedTipCents??0)+amount;continue;}
     if(itemsFinished){unparsed++;continue;}

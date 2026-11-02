@@ -102,3 +102,9 @@ test('explicitly quantified promotional items can have zero prices',()=>{
 test('ambiguous all-zero OCR output produces an actionable error',()=>{
   assert.throws(()=>parseReceiptText('TEST CAFE\n(Ela 0.00\nSubtotal 0.00'),/ambiguous zero-price/);
 });
+
+test('warehouse tax markers and summary footers preserve receipt amounts',()=>{
+ const r=parseReceiptText('COSTCO\nE 1467233 GARLIC 11.89 E\n2218574 GOODS 19.49 A\nSUBTOTAL 31.38\nTAX 3.00\n**** TOTAL 34.38\nTOTAL TAX 3.00');
+ assert.equal(r.items.length,2);assert.equal(r.items[0].name,'GARLIC');
+ assert.equal(calculateReceipt(r).totalCents,3438);assert.equal(r.printedTotalCents,3438);
+});
