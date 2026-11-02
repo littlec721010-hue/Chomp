@@ -43,3 +43,8 @@ The default Version 3 scan screen keeps Photos, the central photo/recognition co
 ### Inline Web camera preview
 
 On Web, Take Photo requests camera permission and opens a live video inside the existing receipt frame (preferring the rear camera, with no audio). The next shutter press captures the full visible camera image locally; Tap to Scan then runs OCR. Photos remains the library fallback. Capturing, leaving the scan route, switching browser tabs, selecting Photos, and unmounting release the stream; a late permission grant after unmount also releases its tracks. Permission denial or missing camera shows a Photos recovery message. Native builds retain the platform camera picker. Type checking and Web export passed; real-device permission, preview and capture acceptance remain pending.
+
+
+### Portrait camera framing
+
+Inline Web camera preview now fills the portrait receipt frame using a centered cover crop. Capture applies the same 305:476 crop to the source video before OCR; landscape sources lose the outer left/right regions rather than showing letterboxing. Portrait aspect ratio is requested as a preference, with crop fallback when hardware supplies a different ratio. Type checking and crop geometry tests passed; phone visual acceptance remains pending.

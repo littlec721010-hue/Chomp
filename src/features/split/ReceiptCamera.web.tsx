@@ -1,5 +1,6 @@
 import {forwardRef,useEffect,useImperativeHandle,useRef} from 'react';
 import type {ReceiptCameraHandle,ReceiptCameraProps} from './ReceiptCamera';
+import {portraitCameraCrop} from './camera-crop';
 export const ReceiptCamera=forwardRef<ReceiptCameraHandle,ReceiptCameraProps>(function ReceiptCamera({onError,onReady},ref){
   const video=useRef<HTMLVideoElement>(null);
   const callbacks=useRef({onError,onReady});callbacks.current={onError,onReady};
@@ -7,10 +8,11 @@ export const ReceiptCamera=forwardRef<ReceiptCameraHandle,ReceiptCameraProps>(fu
     const element=video.current;
     if(!element||element.readyState<2||!element.videoWidth||!element.videoHeight)return;
     const canvas=document.createElement('canvas');
-    const scale=Math.min(1,2000/Math.max(element.videoWidth,element.videoHeight));
-    canvas.width=Math.round(element.videoWidth*scale);canvas.height=Math.round(element.videoHeight*scale);
+    const crop=portraitCameraCrop(element.videoWidth,element.videoHeight);
+    const scale=Math.min(1,2000/crop.height);
+    canvas.width=Math.round(crop.width*scale);canvas.height=Math.round(crop.height*scale);
     const context=canvas.getContext('2d');if(!context)return;
-    context.drawImage(element,0,0,canvas.width,canvas.height);
+    context.drawImage(element,crop.x,crop.y,crop.width,crop.height,0,0,canvas.width,canvas.height);
     return canvas.toDataURL('image/jpeg',.92);
   }}),[]);
   useEffect(()=>{
@@ -18,7 +20,7 @@ export const ReceiptCamera=forwardRef<ReceiptCameraHandle,ReceiptCameraProps>(fu
     async function start(){
       try{
         if(!navigator.mediaDevices?.getUserMedia)throw new Error('unsupported');
-        const next=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:2560}}});
+        const next=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},aspectRatio:{ideal:305/476},width:{ideal:1920},height:{ideal:2560}}});
         if(disposed){next.getTracks().forEach(track=>track.stop());return;}
         stream=next;
         if(video.current){video.current.srcObject=stream;await video.current.play();}
@@ -27,5 +29,5 @@ export const ReceiptCamera=forwardRef<ReceiptCameraHandle,ReceiptCameraProps>(fu
     void start();
     return()=>{disposed=true;stream?.getTracks().forEach(track=>track.stop());};
   },[]);
-  return <video ref={video} autoPlay playsInline muted aria-label="Live receipt camera preview" onLoadedData={()=>callbacks.current.onReady()} style={{position:'absolute',left:14,top:7,width:305,height:476,objectFit:'contain',backgroundColor:'#211a13'}}/>;
+  return <video ref={video} autoPlay playsInline muted aria-label="Live receipt camera preview" onLoadedData={()=>callbacks.current.onReady()} style={{position:'absolute',left:14,top:7,width:305,height:476,objectFit:'cover',objectPosition:'center',backgroundColor:'#211a13'}}/>;
 });
