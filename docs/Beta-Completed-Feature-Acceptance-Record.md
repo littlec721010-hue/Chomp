@@ -102,3 +102,7 @@
 | 聚餐时间 | 过去不可确认、未来可确认通过；滚轮/提示体验缺陷保留 |
 | OCR 真实照片准确率 | 整体未通过；部分样本通过，Beachwood 等缺陷仍开放 |
 | 完整 UI、无障碍/跨平台、真实用户研究 | 尚未完成整体验收；三次 Session 与分级/修订证据待补 |
+
+## P02 real usability session follow-up
+
+[One real moderated P02 session](Sprint3-P02-Live-Usability-Session.md) was recorded for November 1, 2026, room QEA-994, on the deployment linked in that record. This is newer evidence than the earlier technical regression passes and does not erase them. It identifies a Critical shared-candidate-list defect blocking T5, an Important match-bar defect, and an Important active-room recovery defect. T6 was separately confirmed completed. These findings reopen the affected acceptance scope; the earlier group-flow pass must not be interpreted as proof that this deployment is free of those defects. Fixes and retests remain pending. Three sessions and the complete revision evidence set are not established by this single record.
