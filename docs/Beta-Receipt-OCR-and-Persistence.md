@@ -48,3 +48,8 @@ On Web, Take Photo requests camera permission and opens a live video inside the 
 ### Portrait camera framing
 
 Inline Web camera preview now fills the portrait receipt frame using a centered cover crop. Capture applies the same 305:476 crop to the source video before OCR; landscape sources lose the outer left/right regions rather than showing letterboxing. Portrait aspect ratio is requested as a preference, with crop fallback when hardware supplies a different ratio. Type checking and crop geometry tests passed; phone visual acceptance remains pending.
+
+## Latest manual acceptance status
+
+The [completed feature acceptance record](Beta-Completed-Feature-Acceptance-Record.md) supersedes earlier pending labels for the user-confirmed cancellation, retry, camera lifecycle, draft recovery and duplicate-scan interactions. Real-photo OCR accuracy remains failed/deferred; these interaction passes do not establish recognition accuracy.
+

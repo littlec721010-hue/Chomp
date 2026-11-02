@@ -62,3 +62,8 @@ Use the latest merged document revision rather than historical PR snapshots. The
 - Current documentation pass: source/PR inspection and Markdown diff checks only; no application checks or live services were run/changed.
 
 Next checkpoint when development is authorized: identify/configure the actual backend and two test accounts; verify Gate A identities/isolation; implement Gate B dependencies; record candidate/deployment parity and execute the core/extended verification with Gate C evidence. Until then, continue documenting agreed scope and pending decisions without claiming implemented outcomes.
+
+## Latest user-operated acceptance update
+
+See [completed feature acceptance record](Beta-Completed-Feature-Acceptance-Record.md) for the November 1 session results. Earlier Not started/Not run statements above are historical planning snapshots. Account and receipt flows have since been implemented and user-tested; group synchronization is user-reported verified on feat/group-sync, with integration status unverified. Real-photo OCR accuracy remains failed/deferred. No overall Gate sign-off is asserted.
+
