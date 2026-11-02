@@ -54,8 +54,8 @@ function IntegratedScreen({ navigation, route }: Props) {
   return <View style={{ flex: 1 }}>
     {group&&route.name!=='Group'&&!account.preview&&<LiveRoomStatus navigation={navigation}/>}
     {route.name === 'Recommendations' && !matches.length && <View style={{ padding: 12, gap: 8, backgroundColor: '#FFF2C4' }}>
-      <T style={{ fontSize: 12 }}>No sample restaurants match all your preferences. The cards below are a HiFi preview; selection is unavailable.</T>
-      <Action title="Review meal preferences" variant="beige" onPress={() => navigation.navigate('DecidePreferences', { group })} />
+      <T style={{ fontSize: 12 }}>No restaurants match your current preferences. Try increasing your budget or travel distance, or choosing more cuisines. Keep allergies and required dietary restrictions unchanged. Preview cards below cannot be selected.</T>
+      <Action title="Review meal preferences" variant="beige" onPress={() => navigation.navigate('DecidePreferences', { group, customized: true })} />
     </View>}
     <ChompModule catalog={catalog} route={routes[route.name as keyof RootStackParamList]!} user={user} room={d.room ?? undefined} matches={matches}
     selectedId={route.name === 'Restaurant' ? params?.id : undefined} bookmarks={d.bookmarks} onBookmark={d.bookmark}
@@ -67,7 +67,7 @@ function IntegratedScreen({ navigation, route }: Props) {
     onSaveRoomDetails={async details=>{await d.live.act('details',details);}}
     onVote={async(restaurantId,method)=>{await d.live.act('vote',{restaurantId,method});}}
     onHome={() => navigation.navigate('Main', { screen: 'Decide' })} onNavigate={navigate}
-    onBackToPreferences={() => navigation.navigate('DecidePreferences', { group })}
+    onBackToPreferences={() => navigation.navigate('DecidePreferences', { group, customized: true })}
     onTie={()=>navigation.navigate('GroupTie')}
     onRestaurantSelected={restaurant => { selected.current = restaurant.id; d.select(restaurant); }}
     onPreferences={room => { if(account.preview)d.setRoom(room); navigation.navigate('DecidePreferences', { group: true }); }} />
@@ -94,3 +94,4 @@ export function HistoryScreen({ navigation }: NativeStackScreenProps<RootStackPa
     </Pressable>)}
   </Page>;
 }
+
