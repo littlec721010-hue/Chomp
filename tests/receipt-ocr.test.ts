@@ -118,3 +118,8 @@ test('inconsistent unit-price columns remain flagged for review',()=>{
  const r=parseReceiptText('CAFE\nTea 3.00\n2 Soup 4.00 10.00\nTotal 13.00');
  assert.equal(r.items.length,1);assert.ok(r.reviewNotes?.some(n=>n.includes('could not be interpreted')));
 });
+
+test('decorated payment amounts and tax-rate summaries never become products',()=>{
+ const r=parseReceiptText('SHOP\nTea 3.00\n~~ AMOUNT: 3.00\nA 7.00% TAX RATE 1.36\nE 3.00 % TAX RATE 1.64\nTOTAL TAX 3.00');
+ assert.equal(r.items.length,1);assert.equal(calculateReceipt(r).subtotalCents,300);
+});

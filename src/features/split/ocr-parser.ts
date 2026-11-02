@@ -66,7 +66,9 @@ export function parseReceiptText(text:string):SplitReceipt {
       name=columns[1];
     }
     // Classify metadata before attempting item quantities or price arithmetic.
-    const label=name.replace(/[.*:]/g,'').trim();
+    const label=name.replace(/^[^a-z0-9]+/i,'').replace(/[.*:]/g,'').trim();
+    if(/\btax\s+rate\b|^total\s+tax\b/i.test(label)){unparsed++;continue;}
+    if(/^amount$/i.test(label)){itemsFinished=true;continue;}
     if(/^(?:eftpos|e\s*f\s*t\s*p\s*o\s*s|debit|credit|amount\s+paid|tendered|payment|card\s+payment)\b/i.test(label)){continue;}
     if(/^(?:gst|hst|vat|tax\s+included|includes?\s+tax)\b/i.test(label)){unparsed++;continue;}
     if(/subtotal|sub total/i.test(name)){subtotal=amount;itemsFinished=true;continue;}
