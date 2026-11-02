@@ -14,6 +14,8 @@ export const linkConfig: NonNullable<LinkingOptions<RootStackParamList>['config'
     Restaurant: { path: 'restaurants/:id', parse: { group: parseGroup } },
     Group: segment(paths.group), GroupRoom: { path: 'group/room', parse: { joined: parseGroup } }, GroupConsensus: 'group/consensus',
     GroupVote: { path: 'group/vote/:method', parse: { method: value => value === 'random' ? 'random' : 'free' } },
+    GroupTie: 'group/tie', GroupTieSpin: 'group/tie/spin', GroupTieReveal: 'group/tie/reveal',
+    SplitManualSetup: 'split/manual', SplitManualItems: 'split/manual/items',
     History: 'history', SplitScan: segment(paths.splitScan), SplitReceipt: segment(paths.splitReceipt), NotFound: '*',
   },
 };

@@ -33,7 +33,7 @@ test('vote replacement, member validation and complete group result', () => {
   assert.equal(second.votes.length,1); assert.equal(second.votes[0].restaurantId,'pasta'); assert.equal(room.votes.length,0);
   assert.throws(()=>castVote(room,{userId:'outsider',restaurantId:'oishii',method:'free'}));
   assert.equal(winningRestaurant(second,restaurants),undefined);
-  const complete={...room,votes:demoMembers.map((m,i)=>({userId:m.id,restaurantId:i<2?'oishii':'pasta',method:'free' as const}))};
+  const complete={...room,votes:demoMembers.map((m,i)=>({userId:m.id,restaurantId:i<3?'oishii':'pasta',method:'free' as const}))};
   assert.equal(winningRestaurant(complete,restaurants)?.id,'oishii');
 });
 test('updating occasion preferences leaves other members and source preferences intact', () => {

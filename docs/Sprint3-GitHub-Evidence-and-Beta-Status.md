@@ -1,5 +1,7 @@
 # GitHub Evidence and Beta Technical Status
 
+> **Current status — November 1, 2026:** The October planning/source baseline below is historical. Use the [completed feature acceptance record](Beta-Completed-Feature-Acceptance-Record.md) for current user-operated outcomes. Auth/account isolation, preferences, bill persistence/arithmetic/drafts and scanner recovery interactions have user-confirmed passes. Group synchronization is implemented on `feat/group-sync` at `6ac34e0`, supported by the [archived contributor report](evidence/group-sync/Chomp_2026-11-01_Change_and_Test_Record.pdf); its 43-test result was reported by the contributor, not rerun here. It was integrated into this development branch at e21275c; the user confirmed the two-account Lucky Diner flow and stable results after both clients reloaded. Solo recommendation/history/price regressions also passed within the recorded scope. Dinner-time past/future constraints passed, but wheel alignment and flickering feedback remain open. Real-photo OCR accuracy remains unaccepted: the latest Beachwood sample incorrectly includes Order Total as an item, while the COSITAS RICAS sample passed per user feedback; see the [sample evidence](evidence/ocr-receipt-samples/README.md). overall Gate acceptance is not asserted.
+
 Prepared: October 21, 2026 (America/New_York).
 Observed main: 7903996. GitHub PR states below were read during preparation; they are a snapshot, not ongoing monitoring. This is the Task 9 status-document deliverable, not proof that Beta implementation/testing is complete.
 
@@ -62,3 +64,9 @@ Use the latest merged document revision rather than historical PR snapshots. The
 - Current documentation pass: source/PR inspection and Markdown diff checks only; no application checks or live services were run/changed.
 
 Next checkpoint when development is authorized: identify/configure the actual backend and two test accounts; verify Gate A identities/isolation; implement Gate B dependencies; record candidate/deployment parity and execute the core/extended verification with Gate C evidence. Until then, continue documenting agreed scope and pending decisions without claiming implemented outcomes.
+
+## Latest user-operated acceptance update
+
+See [completed feature acceptance record](Beta-Completed-Feature-Acceptance-Record.md) for the November 1 session results. Earlier Not started/Not run statements above are historical planning snapshots. Account and receipt flows have since been implemented and user-tested; group synchronization has an archived contributor report matching remote commit 6ac34e0 on feat/group-sync, with integration status unverified. Real-photo OCR accuracy remains failed/deferred. No overall Gate sign-off is asserted.
+
+

@@ -1,0 +1,178 @@
+{
+  "timestamp": "2026-11-01T20:16:08.957Z",
+  "commit": "4e77b3773a669172069d8ea456657420d129e39d",
+  "project": "lcqwwjkoiwgpejtowozy.supabase.co",
+  "scope": "Real authenticated HTTP API; DELETE tested separately in rollback-only SQL, not via HTTP.",
+  "results": [
+    {
+      "name": "A: real password login",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "B: real password login",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "Distinct account identities",
+      "result": "PASS"
+    },
+    {
+      "name": "A: read own profiles",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "B: read own profiles",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "A: cannot read other's profiles",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "A: cannot update other's profiles",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "A: cannot insert other's profiles",
+      "result": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "A: cannot upsert other's profiles",
+      "result": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "B: read own profiles",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "A: target profiles unchanged",
+      "result": "PASS"
+    },
+    {
+      "name": "B: cannot read other's profiles",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "B: cannot update other's profiles",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "B: cannot insert other's profiles",
+      "result": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "B: cannot upsert other's profiles",
+      "result": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "A: read own profiles",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "B: target profiles unchanged",
+      "result": "PASS"
+    },
+    {
+      "name": "Anonymous cannot read profiles",
+      "result": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "A: read own dining_preferences",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "B: read own dining_preferences",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "A: cannot read other's dining_preferences",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "A: cannot update other's dining_preferences",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "A: cannot insert other's dining_preferences",
+      "result": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "A: cannot upsert other's dining_preferences",
+      "result": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "B: read own dining_preferences",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "A: target dining_preferences unchanged",
+      "result": "PASS"
+    },
+    {
+      "name": "B: cannot read other's dining_preferences",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "B: cannot update other's dining_preferences",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "B: cannot insert other's dining_preferences",
+      "result": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "B: cannot upsert other's dining_preferences",
+      "result": "PASS",
+      "httpStatus": 403
+    },
+    {
+      "name": "A: read own dining_preferences",
+      "result": "PASS",
+      "httpStatus": 200
+    },
+    {
+      "name": "B: target dining_preferences unchanged",
+      "result": "PASS"
+    },
+    {
+      "name": "Anonymous cannot read dining_preferences",
+      "result": "PASS",
+      "httpStatus": 401
+    },
+    {
+      "name": "A: close test session",
+      "result": "PASS",
+      "httpStatus": 204
+    },
+    {
+      "name": "B: close test session",
+      "result": "PASS",
+      "httpStatus": 204
+    }
+  ]
+}

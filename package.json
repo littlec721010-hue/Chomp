@@ -29,9 +29,11 @@
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
     "react-native-url-polyfill": "4.0.0",
-    "react-native-web": "~0.21.0"
+    "react-native-web": "~0.21.0",
+    "tesseract.js": "7.0.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.14",
     "@react-navigation/core": "7.23.0",
     "@types/node": "^24.0.0",
     "@types/react": "~19.2.2",
@@ -45,7 +47,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/*.test.ts && node --test scripts/split-model.test.cjs",
+    "test": "tsx --test tests/*.test.ts && node --test scripts/split-model.test.cjs && node scripts/check-receipt-database.mjs",
     "export:web": "expo export --platform web"
   },
   "private": true,
