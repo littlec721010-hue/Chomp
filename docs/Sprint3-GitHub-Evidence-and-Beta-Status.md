@@ -1,5 +1,7 @@
 # GitHub Evidence and Beta Technical Status
 
+> **Current status — November 1, 2026:** The October planning/source baseline below is historical. Use the [completed feature acceptance record](Beta-Completed-Feature-Acceptance-Record.md) for current user-operated outcomes. Auth/account isolation, preferences, bill persistence/arithmetic/drafts and scanner recovery interactions have user-confirmed passes. Group synchronization is implemented on `feat/group-sync` at `6ac34e0`, supported by the [archived contributor report](evidence/group-sync/Chomp_2026-11-01_Change_and_Test_Record.pdf); its 43-test result was reported by the contributor, not rerun here. Integration with this candidate remains unverified. Real-photo OCR accuracy failed and is deferred; overall Gate acceptance is not asserted.
+
 Prepared: October 21, 2026 (America/New_York).
 Observed main: 7903996. GitHub PR states below were read during preparation; they are a snapshot, not ongoing monitoring. This is the Task 9 status-document deliverable, not proof that Beta implementation/testing is complete.
 
@@ -65,5 +67,6 @@ Next checkpoint when development is authorized: identify/configure the actual ba
 
 ## Latest user-operated acceptance update
 
-See [completed feature acceptance record](Beta-Completed-Feature-Acceptance-Record.md) for the November 1 session results. Earlier Not started/Not run statements above are historical planning snapshots. Account and receipt flows have since been implemented and user-tested; group synchronization is user-reported verified on feat/group-sync, with integration status unverified. Real-photo OCR accuracy remains failed/deferred. No overall Gate sign-off is asserted.
+See [completed feature acceptance record](Beta-Completed-Feature-Acceptance-Record.md) for the November 1 session results. Earlier Not started/Not run statements above are historical planning snapshots. Account and receipt flows have since been implemented and user-tested; group synchronization has an archived contributor report matching remote commit 6ac34e0 on feat/group-sync, with integration status unverified. Real-photo OCR accuracy remains failed/deferred. No overall Gate sign-off is asserted.
+
 

@@ -1,5 +1,7 @@
 # Core Flow Validation Record and Current Build Limitations
 
+> **Current status — November 1, 2026:** The October planning/source baseline below is historical. Use the [completed feature acceptance record](Beta-Completed-Feature-Acceptance-Record.md) for current user-operated outcomes. Auth/account isolation, preferences, bill persistence/arithmetic/drafts and scanner recovery interactions have user-confirmed passes. Group synchronization is implemented on `feat/group-sync` at `6ac34e0`, supported by the [archived contributor report](evidence/group-sync/Chomp_2026-11-01_Change_and_Test_Record.pdf); its 43-test result was reported by the contributor, not rerun here. Integration with this candidate remains unverified. Real-photo OCR accuracy failed and is deferred; overall Gate acceptance is not asserted.
+
 Prepared: October 21, 2026 (America/New_York).
 Source baseline: main @ 7903996, after PR #11. This document prepares the Task 8 record; it does not claim that execution of Task 8 is complete.
 References: [acceptance and DoD](Sprint3-Beta-Acceptance-Criteria.md), [functional cases](Sprint3-Decide-Split-Functional-Test-Cases.md), [defect reporting](Sprint3-Defect-Reporting-and-Reproduction.md).
@@ -55,3 +57,4 @@ Use the report/run format from the linked documents. Each actual run must name c
 Before using local or hosted previews, ensure they match the target commit rather than closed PR #10. After approved implementation resumes, execute core checks, affected expanded cases and full applicable release regression; retain Gate C accessibility and at least three documented sessions with triage and before/after fixes.
 
 **Task 8 status:** record and limitations prepared; current-candidate runtime verification not executed. No new issue is marked fixed, no gate passed and no release accepted by this document.
+
