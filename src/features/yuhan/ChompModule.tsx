@@ -242,6 +242,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
       .replace(/Mexican/g,restaurants[1].cuisine)
       .replace(/Street Food/g,restaurants[1].category)
       .replace(/1\.2 mi/g,`${restaurants[1].distanceMiles} mi`)
+      .replace(/\$15–30/g,'\$'+restaurants[0].price.join('–')).replace(/\$20–30/g,'\$'+restaurants[1].price.join('–')).replace(/\$25–40/g,'\$'+restaurants[2].price.join('–'))
       .replace(/1\.5 mi/g,`${restaurants[2].distanceMiles} mi`)
       .replace(/\$15–30/g,'$15–24').replace(/\$20–30/g,'$18–26').replace(/\$25–40/g,'$20–28');
     if(!node || typeof node!=='object' || !('props' in node))return node;
@@ -289,3 +290,5 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   </View>;
 }
 const nativeStyles=StyleSheet.create({toast:{position:'absolute',bottom:40,left:24,right:24,maxWidth:350,alignSelf:'center',backgroundColor:'#251e14',padding:16,borderRadius:20}});
+
+
