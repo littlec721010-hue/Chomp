@@ -1,3 +1,4 @@
+import { futureDinnerTime } from './dinner-time';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import type { DiningRoom } from '../contracts';
@@ -16,7 +17,7 @@ export function RoomDetailsCard({room,editable,busy,onSave}:{room:DiningRoom;edi
  const [picker,setPicker]=useState<'time'|'area'|null>(null);
  useEffect(()=>{if(!dirty)setDraft(normalize(room));},[room.name,room.dateTime,room.scope,dirty]);
  function change(update:Partial<RoomDetails>){setDraft(d=>({...d,...update}));setDirty(true);setSaved(false);setError('');}
- async function save(next=draft){try{await onSave({name:next.name.trim(),dateTime:next.dateTime.trim()||'Date, Time',scope:next.scope.trim()||'Location'});setDirty(false);setSaved(true);}catch(e){setError(e instanceof Error?e.message:'Unable to save. Try again.');}}
+ async function save(next=draft){try{if(next.dateTime&&!futureDinnerTime(next.dateTime))throw new Error('Choose a future dinner date and time.');await onSave({name:next.name.trim(),dateTime:next.dateTime.trim()||'Date, Time',scope:next.scope.trim()||'Location'});setDirty(false);setSaved(true);}catch(e){setError(e instanceof Error?e.message:'Unable to save. Try again.');}}
  const icon=(file:string)=><DesignImage src={asset(file)} style={{width:16,height:16}}/>;
  return <View style={{width:'100%',backgroundColor:'white',borderRadius:12,padding:16,gap:12}}>
   <View style={{flexDirection:'row',gap:4,alignItems:'center'}}>{icon('fec63.svg')}<Text style={[ui.body,{color:'#111C2D'}]}>Group Name</Text></View>
@@ -38,3 +39,4 @@ export function RoomDetailsCard({room,editable,busy,onSave}:{room:DiningRoom;edi
   </Sheet>
  </View>;
 }
+
