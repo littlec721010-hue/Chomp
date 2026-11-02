@@ -6,6 +6,9 @@ import { Button, ui } from './Controls';
 const rowHeight = 40;
 function Wheel({ values, value, onChange, label, unavailable }: { values: string[]; value: string; onChange: (value: string) => void; label: string; unavailable?: (value:string)=>boolean }) {
   const ref = useRef<ScrollView>(null);
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (settleTimer.current) clearTimeout(settleTimer.current); }, []);
+  const positioned = useRef(false);
   const initialOffset = useRef({ x: 0, y: Math.max(0, values.indexOf(value)) * rowHeight });
   const choose = (index: number, scroll = false) => {
     const i = Math.max(0, Math.min(values.length - 1, index));
@@ -13,12 +16,13 @@ function Wheel({ values, value, onChange, label, unavailable }: { values: string
     if (values[i] !== value) onChange(values[i]);
     if (scroll) ref.current?.scrollTo({ y: i * rowHeight, animated: true });
   };
-  return <View style={{ flex: 1, height: 120, overflow: 'hidden', borderRadius: 16, backgroundColor: '#FAECDF' }}>
+  return <View style={{ flex: 1, height: 120, minHeight: 120, flexShrink: 0, overflow: 'hidden', borderRadius: 16, backgroundColor: '#FAECDF' }}>
     <View pointerEvents="none" style={{ position: 'absolute', top: 40, left: 0, right: 0, height: 40, backgroundColor: '#FFDF6D' }} />
     <ScrollView ref={ref} accessibilityLabel={label} showsVerticalScrollIndicator={false} nestedScrollEnabled snapToInterval={rowHeight} decelerationRate="fast"
-      contentOffset={initialOffset.current} contentContainerStyle={{ paddingVertical: 40 }}
-      onMomentumScrollEnd={event => choose(Math.round(event.nativeEvent.contentOffset.y / rowHeight))}
-      onScrollEndDrag={event => { if (!event.nativeEvent.velocity?.y) choose(Math.round(event.nativeEvent.contentOffset.y / rowHeight)); }}>
+      onLayout={() => { if (!positioned.current) { positioned.current = true; ref.current?.scrollTo({ ...initialOffset.current, animated: false }); } }} contentContainerStyle={{ paddingVertical: 40 }}
+      scrollEventThrottle={16} onScroll={event => { const offset = event.nativeEvent.contentOffset.y; if (settleTimer.current) clearTimeout(settleTimer.current); settleTimer.current = setTimeout(() => choose(Math.round(offset / rowHeight)), 150); }}
+
+      >
       {values.map((v, index) => <Pressable key={v} accessibilityRole="button" accessibilityLabel={`${label}: ${v}`} disabled={unavailable?.(v)} accessibilityState={{ selected: v === value, disabled:unavailable?.(v) }} onPress={() => choose(index, true)} style={{ height: rowHeight, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ fontFamily: v === value ? 'JakartaBold' : 'Jakarta', fontSize: 19, color: unavailable?.(v)?'#C9C0B8':v === value ? '#251E14' : '#8C7E71' }}>{v}</Text>
       </Pressable>)}
@@ -42,6 +46,10 @@ export function DinnerTimePicker({ initial, onConfirm, onChange }: { initial: st
   const formatted = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${hour}:${minute} ${period}`;
   useEffect(()=>{onChange?.(futureDinnerTime(formatted)?formatted:'');},[formatted,onChange]);
   return <View style={{ gap: 14 }}>
+    <View style={{ minHeight: 66, padding: 10, borderRadius: 12, backgroundColor: '#FFF2C4' }}>
+      <Text style={ui.body}>{formatted}</Text>
+      <Text accessibilityLiveRegion="polite" style={[ui.body, { color: futureDinnerTime(formatted) ? '#326A40' : '#A53B22' }]}>{futureDinnerTime(formatted) ? 'Future time selected. Confirm below.' : 'This time has passed. Choose a future date and time.'}</Text>
+    </View>
     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
       <Pressable accessibilityRole="button" accessibilityLabel="Previous month" onPress={() => setMonth(new Date(y, m - 1, 1))} style={{ padding: 10 }}><Text style={ui.title}>‹</Text></Pressable>
       <Text style={[ui.buttonText, { fontSize: 16 }]}>{month.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</Text>
@@ -56,8 +64,8 @@ export function DinnerTimePicker({ initial, onConfirm, onChange }: { initial: st
     })}</View>
     <Text style={ui.buttonText}>Time</Text>
     <View style={{ flexDirection: 'row', gap: 8 }}><Wheel label="Hour" values={Array.from({length:12},(_,i)=>String(i+1))} value={hour} onChange={setHour}/><Wheel label="Minute" values={Array.from({length:60},(_,i)=>String(i).padStart(2,'0'))} value={minute} onChange={setMinute}/><Wheel label="AM or PM" values={['AM','PM']} value={period} onChange={setPeriod}/></View>
-    <Text style={[ui.body, { textAlign: 'center' }]}>{formatted}</Text>
-    {!futureDinnerTime(formatted)&&<Text accessibilityRole="alert" style={{color:'#A53B22'}}>Choose a future date and time.</Text>}<Button onPress={() => {if(!futureDinnerTime(formatted)){return;}onConfirm(formatted)}}>Confirm date & time</Button>
+
+    <Button onPress={() => {if(!futureDinnerTime(formatted)){return;}onConfirm(formatted)}}>Confirm date & time</Button>
   </View>;
 }
 
