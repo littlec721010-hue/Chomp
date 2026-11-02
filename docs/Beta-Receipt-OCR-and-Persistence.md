@@ -38,3 +38,8 @@ New OCR scans store SHA-256 fingerprints of the source image and normalized reco
 ### Scan screen entry simplification
 
 The default Version 3 scan screen keeps Photos, the central photo/recognition control and Auto. Bottom helper copy, Take another photo, manual creation and Demo sample shortcuts were removed from this screen. Manual entry is offered only after recognition fails; cancellation is informational and does not trigger that fallback. Recognition progress and cancellation remain available during processing. Manual creation on the Split home screen remains available. Type checking passed; visual acceptance of this change is pending.
+
+
+### Inline Web camera preview
+
+On Web, Take Photo requests camera permission and opens a live video inside the existing receipt frame (preferring the rear camera, with no audio). The next shutter press captures the full visible camera image locally; Tap to Scan then runs OCR. Photos remains the library fallback. Capturing, leaving the scan route, switching browser tabs, selecting Photos, and unmounting release the stream; a late permission grant after unmount also releases its tracks. Permission denial or missing camera shows a Photos recovery message. Native builds retain the platform camera picker. Type checking and Web export passed; real-device permission, preview and capture acceptance remain pending.
