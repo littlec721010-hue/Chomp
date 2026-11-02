@@ -6,7 +6,7 @@ export interface Preferences {
   budget: [number, number];
   distanceMiles: number;
 }
-export interface User { id: string; name: string; preferences: Preferences }
+export interface User { id: string; name: string; preferences: Preferences; ready?: boolean }
 export interface Restaurant {
   isMock?: boolean; ingredients?: string[];
   id: string; name: string; cuisine: string; category: string;
@@ -18,7 +18,9 @@ export interface Vote { userId: string; restaurantId: string; method: 'free' | '
 export interface DiningRoom {
   id: string; code: string; name: string; dateTime: string; scope: string;
   members: User[]; votes: Vote[]; invited: string[];
-  /** Local preview outcome only; a production room must finalize this on its server. */
+  remote?: boolean; hostId?: string; status?: 'lobby' | 'voting' | 'tie' | 'complete';
+  optionIds?: string[]; winnerId?: string | null; revision?: number;
+  /** Live rooms obtain this persisted outcome exclusively from the server. */
   luckyDiner?: { userId: string; restaurantId: string; voteSignature: string };
 }
 export interface Receipt { id: string; restaurantId: string; roomId?: string }

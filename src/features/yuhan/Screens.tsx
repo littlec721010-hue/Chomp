@@ -9,6 +9,7 @@ import { castVote, groupOutcome, pickRandom, rankRestaurants, winningRestaurant 
 import { ChompModule, type Route } from './ChompModule';
 import { Page, Action, s } from '../decide/ui';
 import { T } from '../../components/ui';
+import { LiveRoomStatus, StartVotingPanel } from '../group/LiveRoomStatus';
 import { photos } from '../decide/assets';
 import { useAccount } from '../../state/AccountProvider';
 
@@ -21,15 +22,19 @@ function IntegratedScreen({ navigation, route }: Props) {
   const selected = useRef(params?.id ?? d.history[0]?.id ?? restaurants[0].id);
   selected.current = params?.id ?? selected.current;
   const user = { ...d.user, preferences: diningPreferences(d.meal) };
-  const matches = rankRestaurants(restaurants, group ? d.room?.members ?? [] : [user]);
+  const catalog=group?d.groupRestaurants:restaurants;
+  const ranked = rankRestaurants(catalog, group ? d.room?.members ?? [] : [user]);
+  const matches = group&&d.room?.remote&&d.room.status!=='lobby' ? catalog.filter(r=>d.room!.optionIds?.includes(r.id)) : ranked;
   const routes: Partial<Record<keyof RootStackParamList, Route>> = {
     Recommendations: group ? '/group/recommendations' : '/recommendations',
     Restaurant: group ? '/group/result' : '/recommendations/result',
     Group: '/group', GroupRoom: params?.joined ? '/group/join' : '/group/create',
     GroupConsensus: '/group/consensus', GroupVote: params?.method === 'random' ? '/group/random-vote' : '/group/vote',
   };
+  if(group&&!account.preview&&d.live.loading)return <Page title="Restoring your room…"/>;
+  if(route.name==='GroupVote'&&d.room?.remote&&!d.room.votes.some(v=>v.userId===d.user.id))return <Page title="Choose your restaurant"><LiveRoomStatus navigation={navigation}/><Action title="View restaurants" onPress={()=>navigation.replace('Recommendations',{group:true})}/></Page>;
   if (group && route.name !== 'Group' && !d.room) return <Page title="No active room"><Action title="Create or join a room" onPress={() => navigation.replace('Group')} /></Page>;
-  if(route.name==='Restaurant'&&!restaurants.some(r=>r.id===params?.id))return <Page title="This restaurant is unavailable"><T>This restaurant no longer exists or is currently unavailable.</T><T>Try a wider budget, distance or cuisine preference while keeping your allergy and dietary restrictions.</T><Action title="Back to recommendations" onPress={()=>navigation.replace('Recommendations',{group})}/></Page>;
+  if(route.name==='Restaurant'&&!catalog.some(r=>r.id===params?.id))return <Page title="This restaurant is unavailable"><T>This restaurant no longer exists or is currently unavailable.</T><T>Try a wider budget, distance or cuisine preference while keeping your allergy and dietary restrictions.</T><Action title="Back to recommendations" onPress={()=>navigation.replace('Recommendations',{group})}/></Page>;
   if(route.name==='Restaurant'&&group&&d.room&&!winningRestaurant(d.room,matches))return <Page title="No final restaurant yet"><T>Complete the room’s votes and resolve any tie first.</T><Action title="Back to group vote" onPress={()=>navigation.replace('GroupVote',{method:'free'})}/></Page>;
   function navigate(next: Route) {
     switch (next) {
@@ -47,19 +52,26 @@ function IntegratedScreen({ navigation, route }: Props) {
   }
   const pending = route.name === 'GroupVote' && d.room && groupOutcome(d.room,matches).status==='pending';
   return <View style={{ flex: 1 }}>
+    {group&&route.name!=='Group'&&!account.preview&&<LiveRoomStatus navigation={navigation}/>}
     {route.name === 'Recommendations' && !matches.length && <View style={{ padding: 12, gap: 8, backgroundColor: '#FFF2C4' }}>
       <T style={{ fontSize: 12 }}>No sample restaurants match all your preferences. The cards below are a HiFi preview; selection is unavailable.</T>
       <Action title="Review meal preferences" variant="beige" onPress={() => navigation.navigate('DecidePreferences', { group })} />
     </View>}
-    <ChompModule route={routes[route.name as keyof RootStackParamList]!} user={user} room={d.room ?? undefined} matches={matches}
+    <ChompModule catalog={catalog} route={routes[route.name as keyof RootStackParamList]!} user={user} room={d.room ?? undefined} matches={matches}
     selectedId={route.name === 'Restaurant' ? params?.id : undefined} bookmarks={d.bookmarks} onBookmark={d.bookmark}
-    onRoomChange={d.setRoom} onCreateRoom={() => d.startRoom(false)} onJoinRoom={() => d.startRoom(true)}
+    onRoomChange={account.preview?d.setRoom:undefined} live={!account.preview} busy={d.live.busy}
+    onCreateRoom={async()=>{if(account.preview)d.startRoom(false);else await d.live.act('create',{displayName:d.user.name});}}
+    onJoinRoom={async(code)=>{if(account.preview)d.startRoom(true);else await d.live.act('join',{code,displayName:d.user.name});}}
+    hostVoting={group&&!account.preview&&d.room?.hostId===d.user.id&&d.room?.status==='lobby'}
+    votingContent={group&&!account.preview&&(route.name==='GroupConsensus'||route.name==='Recommendations')?<StartVotingPanel navigation={navigation}/>:undefined}
+    onSaveRoomDetails={async details=>{await d.live.act('details',details);}}
+    onVote={async(restaurantId,method)=>{await d.live.act('vote',{restaurantId,method});}}
     onHome={() => navigation.navigate('Main', { screen: 'Decide' })} onNavigate={navigate}
     onBackToPreferences={() => navigation.navigate('DecidePreferences', { group })}
     onTie={()=>navigation.navigate('GroupTie')}
     onRestaurantSelected={restaurant => { selected.current = restaurant.id; d.select(restaurant); }}
-    onPreferences={room => { d.setRoom(room); navigation.navigate('DecidePreferences', { group: true }); }} />
-    {pending && <View style={{ padding: 12, paddingBottom: 24 }}><Action title="Simulate sample members’ votes" variant="beige" disabled={!matches.length} onPress={() => {
+    onPreferences={room => { if(account.preview)d.setRoom(room); navigation.navigate('DecidePreferences', { group: true }); }} />
+    {pending && account.preview && <View style={{ padding: 12, paddingBottom: 24 }}><Action title="Simulate sample members’ votes" variant="beige" disabled={!matches.length} onPress={() => {
       let room = d.room!;
       for (const member of room.members.filter(m => m.id !== d.user.id)) room = castVote(room, { userId: member.id, restaurantId: pickRandom(matches).id, method: 'random' });
       d.setRoom(room);
