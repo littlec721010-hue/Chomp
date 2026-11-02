@@ -6,17 +6,20 @@ import { Button, ui } from './Controls';
 const rowHeight = 40;
 function Wheel({ values, value, onChange, label, unavailable }: { values: string[]; value: string; onChange: (value: string) => void; label: string; unavailable?: (value:string)=>boolean }) {
   const ref = useRef<ScrollView>(null);
-  const choose = (index: number) => {
+  const initialOffset = useRef({ x: 0, y: Math.max(0, values.indexOf(value)) * rowHeight });
+  const choose = (index: number, scroll = false) => {
     const i = Math.max(0, Math.min(values.length - 1, index));
-    if(unavailable?.(values[i]))return; onChange(values[i]); ref.current?.scrollTo({ y: i * rowHeight, animated: true });
+    if(unavailable?.(values[i]))return;
+    if (values[i] !== value) onChange(values[i]);
+    if (scroll) ref.current?.scrollTo({ y: i * rowHeight, animated: true });
   };
   return <View style={{ flex: 1, height: 120, overflow: 'hidden', borderRadius: 16, backgroundColor: '#FAECDF' }}>
     <View pointerEvents="none" style={{ position: 'absolute', top: 40, left: 0, right: 0, height: 40, backgroundColor: '#FFDF6D' }} />
     <ScrollView ref={ref} accessibilityLabel={label} showsVerticalScrollIndicator={false} nestedScrollEnabled snapToInterval={rowHeight} decelerationRate="fast"
-      contentOffset={{ x: 0, y: Math.max(0, values.indexOf(value)) * rowHeight }} contentContainerStyle={{ paddingVertical: 40 }}
+      contentOffset={initialOffset.current} contentContainerStyle={{ paddingVertical: 40 }}
       onMomentumScrollEnd={event => choose(Math.round(event.nativeEvent.contentOffset.y / rowHeight))}
       onScrollEndDrag={event => { if (!event.nativeEvent.velocity?.y) choose(Math.round(event.nativeEvent.contentOffset.y / rowHeight)); }}>
-      {values.map((v, index) => <Pressable key={v} accessibilityRole="button" accessibilityLabel={`${label}: ${v}`} disabled={unavailable?.(v)} accessibilityState={{ selected: v === value, disabled:unavailable?.(v) }} onPress={() => choose(index)} style={{ height: rowHeight, alignItems: 'center', justifyContent: 'center' }}>
+      {values.map((v, index) => <Pressable key={v} accessibilityRole="button" accessibilityLabel={`${label}: ${v}`} disabled={unavailable?.(v)} accessibilityState={{ selected: v === value, disabled:unavailable?.(v) }} onPress={() => choose(index, true)} style={{ height: rowHeight, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ fontFamily: v === value ? 'JakartaBold' : 'Jakarta', fontSize: 19, color: unavailable?.(v)?'#C9C0B8':v === value ? '#251E14' : '#8C7E71' }}>{v}</Text>
       </Pressable>)}
     </ScrollView>
@@ -30,7 +33,7 @@ function parseTime(value: string) {
   return { date, hour: time?.[1] ?? '7', minute: time?.[2] ?? '30', period: time?.[3].toUpperCase() ?? 'PM' };
 }
 export function DinnerTimePicker({ initial, onConfirm, onChange }: { initial: string; onConfirm: (value: string) => void; onChange?: (value:string)=>void }) {
-  const [error,setError]=useState('');
+
   const [start] = useState(() => parseTime(initial));
   const [date, setDate] = useState(start.date), [month, setMonth] = useState(new Date(start.date.getFullYear(), start.date.getMonth(), 1));
   const [hour, setHour] = useState(start.hour), [minute, setMinute] = useState(start.minute), [period, setPeriod] = useState(start.period);
@@ -52,9 +55,9 @@ export function DinnerTimePicker({ initial, onConfirm, onChange }: { initial: st
       </Pressable>;
     })}</View>
     <Text style={ui.buttonText}>Time</Text>
-    <View style={{ flexDirection: 'row', gap: 8 }}><Wheel label="Hour" values={Array.from({length:12},(_,i)=>String(i+1))} value={hour} onChange={setHour}/><Wheel label="Minute" values={Array.from({length:60},(_,i)=>String(i).padStart(2,'0'))} value={minute} unavailable={v=>!futureDinnerTime(formatted.replace(':'+minute+' ',':'+v+' '))} onChange={setMinute}/><Wheel label="AM or PM" values={['AM','PM']} value={period} onChange={setPeriod}/></View>
+    <View style={{ flexDirection: 'row', gap: 8 }}><Wheel label="Hour" values={Array.from({length:12},(_,i)=>String(i+1))} value={hour} onChange={setHour}/><Wheel label="Minute" values={Array.from({length:60},(_,i)=>String(i).padStart(2,'0'))} value={minute} onChange={setMinute}/><Wheel label="AM or PM" values={['AM','PM']} value={period} onChange={setPeriod}/></View>
     <Text style={[ui.body, { textAlign: 'center' }]}>{formatted}</Text>
-    {!futureDinnerTime(formatted)&&<Text accessibilityRole="alert" style={{color:'#A53B22'}}>Choose a future date and time.</Text>}{!!error&&<Text accessibilityRole="alert">{error}</Text>}<Button onPress={() => {if(!futureDinnerTime(formatted)){setError('This time has passed. Choose a future time.');return;}onConfirm(formatted)}}>Confirm date & time</Button>
+    {!futureDinnerTime(formatted)&&<Text accessibilityRole="alert" style={{color:'#A53B22'}}>Choose a future date and time.</Text>}<Button onPress={() => {if(!futureDinnerTime(formatted)){return;}onConfirm(formatted)}}>Confirm date & time</Button>
   </View>;
 }
 
