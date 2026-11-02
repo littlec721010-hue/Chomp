@@ -150,3 +150,12 @@ This format is ready for team use. Example records remain illustrative/unverifie
 - Expected: wheel settles with the selected value centered; past-time notice remains readable until a valid future time is selected.
 - Workaround: explicitly select an entry and use a future date/time. Future-time selection and confirmation passed; wheel interaction is not accepted as fixed.
 - Closure: verify centered selection, agreement between displayed and submitted time, stable past-time feedback, and successful future-time confirmation. No further code change requested at this stage.
+
+## Observed defect: OCR Order Total classified as a bill item
+
+- Status: open, documented only; no code change in this update. Triage: Critical for accepting OCR-derived amounts, because it duplicates charges. Manual bill creation remains an available tested path.
+- Reproduction/evidence: recognize the [Beachwood Cafe receipt](evidence/ocr-receipt-samples/README.md); compare the source and resulting item list.
+- Actual: Order Total $29.46 becomes a fourth item in addition to $26.90 of products. Subtotal becomes $56.36 and total $58.92 after $2.56 tax. The mismatch notice appears.
+- Expected: summary/payment rows are excluded from products; subtotal $26.90, tax $2.56, total $29.46, no tip inferred from suggested tips.
+- Recovery to verify: remove the incorrect item and review against the original before saving. This particular correction/save was not confirmed in this run.
+- Closure: repeat this image and varied summary labels without duplicated totals; retain the COSITAS RICAS $30.45 sample as a regression check. One sample passing does not close general OCR accuracy defects.

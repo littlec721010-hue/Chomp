@@ -1,5 +1,7 @@
 # Web Beta: real receipt OCR and account-owned bill history
 
+> Latest user-operated acceptance: see the [consolidated record](Beta-Completed-Feature-Acceptance-Record.md) for bill persistence, arithmetic, drafts and scanner recovery passes. OCR accuracy remains unaccepted. The [latest two samples](evidence/ocr-receipt-samples/README.md) record Beachwood Cafe failing because Order Total becomes a product ($58.92 instead of $29.46), and COSITAS RICAS passing this sample per user feedback ($30.45). This does not establish general OCR accuracy or close earlier failed samples.
+
 ## Implementation
 
 Photo/gallery selection → explicit Recognize Receipt → Tesseract.js 7 English text recognition → conservative USD item parsing → editable review → explicit confirmation → integer-cent equal split → Supabase save. Independent manual creation uses the same bill model and store. OCR never substitutes a fixture when recognition fails. A labelled sample remains available only through Demo preview.
