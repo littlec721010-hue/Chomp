@@ -108,3 +108,13 @@ test('warehouse tax markers and summary footers preserve receipt amounts',()=>{
  assert.equal(r.items.length,2);assert.equal(r.items[0].name,'GARLIC');
  assert.equal(calculateReceipt(r).totalCents,3438);assert.equal(r.printedTotalCents,3438);
 });
+
+test('generic separate price rows and quantity unit-price columns are supported',()=>{
+ const r=parseReceiptText('NEIGHBORHOOD CAFE\n2 Noodles 10.00 20.00\nGreen Tea\n3.00 T\nSubtotal\n23.00\nTax 2.00\nTotal 25.00');
+ assert.equal(r.items.length,2);assert.equal(r.items[0].quantity,2);
+ assert.equal(r.items[1].name,'Green Tea');assert.equal(calculateReceipt(r).totalCents,2500);
+});
+test('inconsistent unit-price columns remain flagged for review',()=>{
+ const r=parseReceiptText('CAFE\nTea 3.00\n2 Soup 4.00 10.00\nTotal 13.00');
+ assert.equal(r.items.length,1);assert.ok(r.reviewNotes?.some(n=>n.includes('could not be interpreted')));
+});

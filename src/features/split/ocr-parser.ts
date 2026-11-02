@@ -36,7 +36,13 @@ function receiptTime(text:string):string|undefined {
 
 /** Conservative English/USD parser. Text without a clear price is never invented. */
 export function parseReceiptText(text:string):SplitReceipt {
-  const lines=text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  const rawLines=text.split(/\r?\n/).map(s=>s.replace(/\u00a0/g,' ').trim()).filter(Boolean);
+  // Join a separate price row only to its immediately preceding textual label.
+  const lines:string[]=[];
+  for(const line of rawLines){
+    if(/^\$?\d[\d,]*\.\d{2}(?:\s+[A-Z]{1,2})?$/.test(line)&&lines.length&&/[a-z]/i.test(lines[lines.length-1])&&!/\d\.\d{2}/.test(lines[lines.length-1]))lines[lines.length-1]+=` ${line}`;
+    else lines.push(line);
+  }
   if(!lines.length)throw new Error('No readable text found. Try a clearer photo or create the bill manually.');
   const receipt:SplitReceipt={...emptyReceipt(),source:'ocr',date:receiptDate(text)??'',time:receiptTime(text),guestCount:receiptGuests(text),taxRate:0,tipRate:0,items:[],reviewNotes:[
     'OCR is a draft. Check every item, quantity, price, date and diner count before confirming.',
@@ -48,11 +54,17 @@ export function parseReceiptText(text:string):SplitReceipt {
   for(const [index,line] of lines.entries()) {
     const count=line.match(/^\s*(?:items|item\s+count|total\s+items)\s*[:=]?\s*(\d{1,3})\s*$/i);
     if(count){statedItems=Number(count[1]);continue;}
-    const itemLine=line.replace(/^(?:[AE]\s+)?\d{4,8}\s+(.+?)\s+(\d[\d,]*\.\d{2})\s+[AE]$/i,'$1 $2');
+    const itemLine=line.replace(/\s+([A-Z]{1,2})$/,'').replace(/^(?:[A-Z]\s+)?\d{4,12}\s+(?=[a-z])/i,'');
     const match=itemLine.match(/^(.*?)\s+\$?([\d,]+\.\d{2})\s*$/);
     if(!match){if(/\d[.,]\d|\b(discount|refund)\b/i.test(line))unparsed++;continue;}
     const amount=parsePrice(match[2].replace(/,/g,''));if(amount===null){unparsed++;continue;}
     let name=match[1].trim();
+    const columns=name.match(/^(.*?)\s+\$?(\d+\.\d{2})$/);
+    if(columns&&!/\s@\s/.test(name)){
+      const quantity=Number(columns[1].match(/^(\d{1,3})\s+/)?.[1]??1);
+      if(parsePrice(columns[2])!*quantity!==amount){unparsed++;continue;}
+      name=columns[1];
+    }
     // Classify metadata before attempting item quantities or price arithmetic.
     const label=name.replace(/[.*:]/g,'').trim();
     if(/^(?:eftpos|e\s*f\s*t\s*p\s*o\s*s|debit|credit|amount\s+paid|tendered|payment|card\s+payment)\b/i.test(label)){continue;}
