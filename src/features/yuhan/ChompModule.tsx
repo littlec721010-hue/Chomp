@@ -197,6 +197,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   text(['258:22233'],matches.length?`Top ${matches.length} ${matches.length===1?'match':'matches'} based on your preferences`:'Sample restaurants · No verified matches for your preferences');
   restaurants.forEach((r,i)=>{
     const index=displayed.findIndex(match=>match.id===r.id);
+    text([['258:22266','258:22317','258:22367'][i]],`${r.cuisine} • ${r.category} • $${r.price.join('–')}`);
     bindings[soloCards[i]]={props:{style:index<0?{display:'none'}:{top:soloTops[index]}}};
     bindings[groupCards[i]]={props:{style:index<0?{display:'none'}:{top:groupTops[index]}}};
     action(soloCtas[i],`Chomp at ${r.name}`,()=>{setSaved(s=>({...s,selectedId:r.id}));onRestaurantSelected?.(r);go('/recommendations/result');});
@@ -290,5 +291,6 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   </View>;
 }
 const nativeStyles=StyleSheet.create({toast:{position:'absolute',bottom:40,left:24,right:24,maxWidth:350,alignSelf:'center',backgroundColor:'#251e14',padding:16,borderRadius:20}});
+
 
 
