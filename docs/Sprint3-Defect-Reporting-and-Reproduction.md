@@ -140,3 +140,13 @@ For V3 tie reports record room/round and candidate diner IDs, valid votes, selec
 Link the actual report/issue to its test run, findings matrix, original D ID if verified, related risk and fix PR. Keep before/after evidence tied to a specific build and repeatable task. Gate C still requires at least three documented sessions and targeted accessibility/experience revisions; defect reports alone are not usability-session evidence.
 
 This format is ready for team use. Example records remain illustrative/unverified as stated; no new GitHub issues have been filed or findings marked fixed by this deliverable.
+
+## Observed defect: dinner time wheel alignment and flickering notice
+
+- Status: open; user explicitly deferred further fixes. Triage: Important usability issue, deferred for now.
+- Context: group room → Date, Time picker; latest attempted fix `ab7c84d`. User's deployed SHA was not independently verified.
+- Reproduction: scroll the hour/minute/AM–PM wheels, stop between adjacent entries, and select past and future times.
+- Actual: wheel can remain between two entries although an entry can be selected; the past-time notice still flashes and disappears. Past time cannot be confirmed; future time can be selected and confirmed, per user report.
+- Expected: wheel settles with the selected value centered; past-time notice remains readable until a valid future time is selected.
+- Workaround: explicitly select an entry and use a future date/time. Future-time selection and confirmation passed; wheel interaction is not accepted as fixed.
+- Closure: verify centered selection, agreement between displayed and submitted time, stable past-time feedback, and successful future-time confirmation. No further code change requested at this stage.
