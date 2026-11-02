@@ -33,3 +33,8 @@ Exact candidate identity still needs mapping for final sign-off. Cancelled photo
 ### Duplicate scan confirmation
 
 New OCR scans store SHA-256 fingerprints of the source image and normalized recognized text; raw OCR text is not stored for duplicate detection. A match in the current draft or current account history offers Overwrite Previous Scan or Cancel. Overwrite reuses the existing bill ID, returns to review, and only updates saved history after explicit confirmation and save. Cancel leaves the existing draft and saved bill unchanged. New receipts open review directly. Account-scoped history lookup is not restricted to the recent 100 records. Legacy bills without fingerprints and rephotographed receipts with changed OCR text may not match; merchant/date/total alone never trigger replacement. Unit checks cover matching fingerprints, edited bills, and avoiding metadata-only matches; deployed UI verification remains pending.
+
+
+### Scan screen entry simplification
+
+The default Version 3 scan screen keeps Photos, the central photo/recognition control and Auto. Bottom helper copy, Take another photo, manual creation and Demo sample shortcuts were removed from this screen. Manual entry is offered only after recognition fails; cancellation is informational and does not trigger that fallback. Recognition progress and cancellation remain available during processing. Manual creation on the Split home screen remains available. Type checking passed; visual acceptance of this change is pending.

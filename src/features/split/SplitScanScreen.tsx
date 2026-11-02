@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import type { RootStackParamList } from '../../navigation/types'
 import { SplitFrame, SplitAction } from './components'
-import { cloneReceipt, emptyReceipt, sampleReceipt } from './model'
+import { emptyReceipt } from './model'
 import { useSplit } from './store'
 import { recognizeReceipt } from './ocr'
 import { sameScan } from './scan-duplicate'
@@ -20,7 +20,7 @@ import Shutter from '../../assets/split/84297.svg'
 import Photos from '../../assets/split/fbcbb.svg'
 import AutoFlash from '../../assets/split/b29f7.svg'
 export function SplitScanScreen({route,navigation}:NativeStackScreenProps<RootStackParamList,'SplitScan'>) {
-  const {setDraft,setPhotoUri,draft,recent,setForms}=useSplit(),account=useAccount(),[uri,setUri]=useState(route.params?.imageUri),[phase,setPhase]=useState(0),[previewWidth,setPreviewWidth]=useState(334),[running,setRunning]=useState(false),[message,setMessage]=useState(''),[progress,setProgress]=useState(0),[duplicate,setDuplicate]=useState<{receipt:SplitReceipt;previous:SplitReceipt}|null>(null)
+  const {setDraft,setPhotoUri,draft,recent,setForms}=useSplit(),account=useAccount(),[uri,setUri]=useState(route.params?.imageUri),[phase,setPhase]=useState(0),[previewWidth,setPreviewWidth]=useState(334),[running,setRunning]=useState(false),[message,setMessage]=useState(''),[failed,setFailed]=useState(false),[progress,setProgress]=useState(0),[duplicate,setDuplicate]=useState<{receipt:SplitReceipt;previous:SplitReceipt}|null>(null)
   const controller=useRef<AbortController|null>(null),mounted=useRef(true)
   useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;controller.current?.abort()}},[])
   function accept(receipt:SplitReceipt){setForms({});setDraft(receipt);setPhotoUri(receipt.source==='ocr'?uri:undefined);navigation.replace('SplitReceipt',{returnTo:'Split'})}
@@ -32,18 +32,18 @@ export function SplitScanScreen({route,navigation}:NativeStackScreenProps<RootSt
   }
   async function scan(){
     if(!uri||running)return
-    const request=new AbortController();controller.current=request;setRunning(true);setMessage('');setProgress(0)
+    const request=new AbortController();controller.current=request;setRunning(true);setMessage('');setFailed(false);setProgress(0)
     try{const receipt=await recognizeReceipt(uri,request.signal,p=>{if(mounted.current&&!request.signal.aborted){setProgress(p);setPhase(Math.min(2,Math.floor(p*3)))}});if(mounted.current&&!request.signal.aborted)await checkDuplicate(receipt,request.signal)}
-    catch(e){if(mounted.current&&!request.signal.aborted)setMessage(e instanceof Error?e.message:'Unable to recognize this receipt. Retry or enter it manually.')}
+    catch(e){if(mounted.current&&!request.signal.aborted){setFailed(true);setMessage(e instanceof Error?e.message:'Unable to recognize this receipt. Retry or enter it manually.')}}
     finally{if(mounted.current&&controller.current===request){setRunning(false);controller.current=null}}
   }
-  async function takePhoto(){setMessage('');try{if(Platform.OS!=='web'){const p=await ImagePicker.requestCameraPermissionsAsync();if(!p.granted){setMessage('Camera permission was denied. Choose a photo or create a bill manually.');return}}const result=await ImagePicker.launchCameraAsync({mediaTypes:['images'],quality:1});if(!result.canceled){setUri(result.assets[0].uri);setPhase(0)}}catch{setMessage('Camera is unavailable here. Choose another photo or create a bill manually.')}}
-  async function choosePhoto(){try{const r=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],quality:1});if(!r.canceled){setUri(r.assets[0].uri);setMessage('');setPhase(0)}}catch{setMessage('Unable to open photo library. Please retry.')}}
+  async function takePhoto(){setMessage('');setFailed(false);try{if(Platform.OS!=='web'){const p=await ImagePicker.requestCameraPermissionsAsync();if(!p.granted){setMessage('Camera permission was denied. Choose a receipt using Photos.');return}}const result=await ImagePicker.launchCameraAsync({mediaTypes:['images'],quality:1});if(!result.canceled){setUri(result.assets[0].uri);setPhase(0)}}catch{setMessage('Camera is unavailable here. Choose a receipt using Photos.')}}
+  async function choosePhoto(){try{const r=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],quality:1});if(!r.canceled){setUri(r.assets[0].uri);setMessage('');setFailed(false);setPhase(0)}}catch{setMessage('Unable to open photo library. Please retry.')}}
   const Scan=[ScanStart,ScanMiddle,ScanEnd][phase]
   function enterManually(){const receipt=emptyReceipt();setDraft(receipt);navigation.replace('SplitManualSetup')}
   return <SplitFrame onBack={()=>navigation.canGoBack()?navigation.goBack():navigation.navigate('Main',{screen:'Split'})}>
     <Text style={s.title}>Scan Paper Receipt</Text><View style={s.tip}><View style={s.tipIcon}><OCR/></View><View style={{flex:1}}><View style={s.tipHeader}><Text style={s.tipTitle}>Position receipt in frame</Text><Text style={s.badge}>English · USD</Text></View><Text style={s.tipText}>Use a clear printed receipt. Recognition runs on this browser; review every amount before saving.</Text></View></View>
-    {!!message&&<View style={{marginTop:12,padding:12,borderRadius:12,backgroundColor:'#fff0ec',gap:8}}><Text accessibilityRole="alert" style={s.error}>{message}</Text><Pressable accessibilityRole="button" disabled={running} onPress={enterManually}><Text style={s.cameraText}>Use manual entry instead</Text></Pressable></View>}
+    {!!message&&<View style={{marginTop:12,padding:12,borderRadius:12,backgroundColor:'#fff0ec',gap:8}}><Text accessibilityRole="alert" style={s.error}>{message}</Text>{failed&&<Pressable accessibilityRole="button" disabled={running} onPress={enterManually}><Text style={s.cameraText}>Use manual entry instead</Text></Pressable>}</View>}
     {running&&<Text accessibilityLiveRegion="polite" style={[s.demo,{marginTop:12}]}>{progress===0?'Preparing recognition. The first model download may take longer…':'Reading receipt… '+Math.round(progress*100)+'%'}</Text>}
     <View onLayout={event=>setPreviewWidth(event.nativeEvent.layout.width)} style={[s.preview,{height:490*previewWidth/334}]}><View style={{width:334,height:490,transform:[{scale:previewWidth/334}],transformOrigin:'top left'}}><View accessibilityLabel="Receipt preview frame" style={StyleSheet.absoluteFill}>{uri&&<Image source={{uri}} resizeMode="contain" style={s.receipt} accessibilityLabel="Your selected receipt"/>}</View><View pointerEvents="none" style={s.scanOverlay}><Scan/></View></View></View>
     <View style={s.scanActions}>
@@ -51,9 +51,7 @@ export function SplitScanScreen({route,navigation}:NativeStackScreenProps<RootSt
       <Pressable accessibilityRole="button" accessibilityLabel={uri?'Recognize Receipt':'Take receipt photo'} accessibilityState={{disabled:running,busy:running}} disabled={running} onPress={()=>uri?void scan():void takePhoto()} style={s.scanControl}><View style={[s.shutter,running&&{opacity:.5}]}><View style={s.shutterInside}><Shutter/></View></View><Text style={s.controlLabel}>{running?'Reading…':uri?'Tap to Scan':'Take Photo'}</Text></Pressable>
       <View accessibilityLabel="Flash controlled by your device camera" style={s.scanControl}><View style={s.controlCircle}><AutoFlash/></View><Text style={s.controlLabel}>Auto</Text></View>
     </View>
-    <View style={s.controls}><Text accessibilityLiveRegion="polite" style={s.demo}>{running?`Loading/recognizing… ${Math.round(progress*100)}%`:uri?'First use downloads the OCR model. The image stays in this browser; only the confirmed bill is saved.':'Choose Photos or take a photo to recognize your receipt. The frame is a preview.'}</Text>
-      {running?<SplitAction label="Cancel recognition" secondary onPress={()=>{controller.current?.abort();setRunning(false);setMessage('Recognition cancelled. Your existing bill was kept.')}}/>:<Pressable accessibilityRole="button" onPress={()=>void takePhoto()} style={s.camera}><Text style={s.cameraText}>Take another photo</Text></Pressable>}
-      <SplitAction label="Create Bill Manually" disabled={running} secondary onPress={enterManually}/>{account.preview&&!running&&<SplitAction label="Use labelled sample (Demo only)" onPress={()=>accept(cloneReceipt(sampleReceipt))}/>}</View>
+    {running&&<View style={s.controls}><SplitAction label="Cancel recognition" secondary onPress={()=>{controller.current?.abort();setRunning(false);setFailed(false);setMessage('Recognition cancelled. Your existing bill was kept.')}}/></View>}
     <Modal visible={!!duplicate} transparent animationType="fade" onRequestClose={()=>setDuplicate(null)}><View style={{flex:1,backgroundColor:'#0006',justifyContent:'center',alignItems:'center',padding:24}}><View accessibilityViewIsModal style={{width:'100%',maxWidth:342,backgroundColor:theme.colors.background,padding:24,borderRadius:24,gap:16}}><Text style={s.tipTitle}>Receipt already scanned</Text><Text style={s.tipText}>Replace the previous scan with this result? Review it before saving. Cancel keeps the previous bill unchanged.</Text><SplitAction label="Overwrite Previous Scan" onPress={()=>{if(!duplicate)return;const next={...duplicate.receipt,id:duplicate.previous.id};setDuplicate(null);accept(next)}}/><SplitAction label="Cancel" secondary onPress={()=>setDuplicate(null)}/></View></View></Modal>
   </SplitFrame>
 }
