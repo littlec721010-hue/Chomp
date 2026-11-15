@@ -123,3 +123,12 @@ test('decorated payment amounts and tax-rate summaries never become products',()
  const r=parseReceiptText('SHOP\nTea 3.00\n~~ AMOUNT: 3.00\nA 7.00% TAX RATE 1.36\nE 3.00 % TAX RATE 1.64\nTOTAL TAX 3.00');
  assert.equal(r.items.length,1);assert.equal(calculateReceipt(r).subtotalCents,300);
 });
+
+test('OCR treats Order Total as a summary, including when its amount is on the next line',()=>{
+  for(const footer of ['Order Total: $29.46','ORDER TOTAL\n29.46']){
+    const receipt=parseReceiptText(`BEACHWOOD CAFE\nClassic Waffle 15.95\nBreakfast Sandwich 13.51\n${footer}`);
+    assert.equal(receipt.printedTotalCents,2946);
+    assert.equal(receipt.items.length,2);
+    assert.equal(calculateReceipt(receipt).totalCents,2946);
+  }
+});
