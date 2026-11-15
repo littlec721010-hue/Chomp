@@ -1,0 +1,49 @@
+actor,table_name,operation,result,detail
+Account 1 -> other,dining_preferences,DELETE,PASS,affected/visible rows: 0
+Account 1 -> other,dining_preferences,INSERT,PASS,"Denied (42501): new row violates row-level security policy for table ""dining_preferences"""
+Account 1 -> other,dining_preferences,SELECT,PASS,affected/visible rows: 0
+Account 1 -> other,dining_preferences,UPDATE,PASS,affected/visible rows: 0
+Account 1 -> other,dining_preferences,UPSERT,PASS,"Denied (42501): new row violates row-level security policy for table ""dining_preferences"""
+Account 1 -> other,profiles,DELETE,PASS,affected/visible rows: 0
+Account 1 -> other,profiles,INSERT,PASS,"Denied (42501): new row violates row-level security policy for table ""profiles"""
+Account 1 -> other,profiles,SELECT,PASS,affected/visible rows: 0
+Account 1 -> other,profiles,UPDATE,PASS,affected/visible rows: 0
+Account 1 -> other,profiles,UPSERT,PASS,"Denied (42501): new row violates row-level security policy for table ""profiles"""
+Account 1 -> own,dining_preferences,DELETE,PASS,affected/visible rows: 1
+Account 1 -> own,dining_preferences,INSERT,PASS,affected/visible rows: 1
+Account 1 -> own,dining_preferences,SELECT,PASS,affected/visible rows: 1
+Account 1 -> own,dining_preferences,UPDATE,PASS,affected/visible rows: 1
+Account 1 -> own,dining_preferences,UPSERT,PASS,affected/visible rows: 1
+Account 1 -> own,profiles,DELETE,PASS,affected/visible rows: 1
+Account 1 -> own,profiles,INSERT,PASS,affected/visible rows: 1
+Account 1 -> own,profiles,SELECT,PASS,affected/visible rows: 1
+Account 1 -> own,profiles,UPDATE,PASS,affected/visible rows: 1
+Account 1 -> own,profiles,UPSERT,PASS,affected/visible rows: 1
+Account 2 -> other,dining_preferences,DELETE,PASS,affected/visible rows: 0
+Account 2 -> other,dining_preferences,INSERT,PASS,"Denied (42501): new row violates row-level security policy for table ""dining_preferences"""
+Account 2 -> other,dining_preferences,SELECT,PASS,affected/visible rows: 0
+Account 2 -> other,dining_preferences,UPDATE,PASS,affected/visible rows: 0
+Account 2 -> other,dining_preferences,UPSERT,PASS,"Denied (42501): new row violates row-level security policy for table ""dining_preferences"""
+Account 2 -> other,profiles,DELETE,PASS,affected/visible rows: 0
+Account 2 -> other,profiles,INSERT,PASS,"Denied (42501): new row violates row-level security policy for table ""profiles"""
+Account 2 -> other,profiles,SELECT,PASS,affected/visible rows: 0
+Account 2 -> other,profiles,UPDATE,PASS,affected/visible rows: 0
+Account 2 -> other,profiles,UPSERT,PASS,"Denied (42501): new row violates row-level security policy for table ""profiles"""
+Account 2 -> own,dining_preferences,DELETE,PASS,affected/visible rows: 1
+Account 2 -> own,dining_preferences,INSERT,PASS,affected/visible rows: 1
+Account 2 -> own,dining_preferences,SELECT,PASS,affected/visible rows: 1
+Account 2 -> own,dining_preferences,UPDATE,PASS,affected/visible rows: 1
+Account 2 -> own,dining_preferences,UPSERT,PASS,affected/visible rows: 1
+Account 2 -> own,profiles,DELETE,PASS,affected/visible rows: 1
+Account 2 -> own,profiles,INSERT,PASS,affected/visible rows: 1
+Account 2 -> own,profiles,SELECT,PASS,affected/visible rows: 1
+Account 2 -> own,profiles,UPDATE,PASS,affected/visible rows: 1
+Account 2 -> own,profiles,UPSERT,PASS,affected/visible rows: 1
+Anonymous,dining_preferences,DELETE,PASS,Denied (42501)
+Anonymous,dining_preferences,INSERT,PASS,Denied (42501)
+Anonymous,dining_preferences,SELECT,PASS,Denied (42501)
+Anonymous,dining_preferences,UPDATE,PASS,Denied (42501)
+Anonymous,profiles,DELETE,PASS,Denied (42501)
+Anonymous,profiles,INSERT,PASS,Denied (42501)
+Anonymous,profiles,SELECT,PASS,Denied (42501)
+Anonymous,profiles,UPDATE,PASS,Denied (42501)

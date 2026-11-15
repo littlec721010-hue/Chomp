@@ -8,3 +8,4 @@ web-build/
 *.tsbuildinfo
 .DS_Store
 coverage/
+test-results/

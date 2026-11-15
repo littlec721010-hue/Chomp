@@ -1,0 +1,25 @@
+actor,operation,result,detail
+Account 1 -> other,DELETE,PASS,affected/visible rows: 0
+Account 1 -> other,INSERT,PASS,Denied (42501)
+Account 1 -> other,SELECT,PASS,affected/visible rows: 0
+Account 1 -> other,UPDATE,PASS,affected/visible rows: 0
+Account 1 -> other,UPSERT,PASS,Denied (42501)
+Account 1 -> own,DELETE,PASS,affected/visible rows: 1
+Account 1 -> own,INSERT,PASS,affected/visible rows: 1
+Account 1 -> own,SELECT,PASS,affected/visible rows: 1
+Account 1 -> own,UPDATE,PASS,affected/visible rows: 1
+Account 1 -> own,UPSERT,PASS,affected/visible rows: 1
+Account 2 -> other,DELETE,PASS,affected/visible rows: 0
+Account 2 -> other,INSERT,PASS,Denied (42501)
+Account 2 -> other,SELECT,PASS,affected/visible rows: 0
+Account 2 -> other,UPDATE,PASS,affected/visible rows: 0
+Account 2 -> other,UPSERT,PASS,Denied (42501)
+Account 2 -> own,DELETE,PASS,affected/visible rows: 1
+Account 2 -> own,INSERT,PASS,affected/visible rows: 1
+Account 2 -> own,SELECT,PASS,affected/visible rows: 1
+Account 2 -> own,UPDATE,PASS,affected/visible rows: 1
+Account 2 -> own,UPSERT,PASS,affected/visible rows: 1
+Anonymous,DELETE,PASS,Denied (42501)
+Anonymous,INSERT,PASS,Denied (42501)
+Anonymous,SELECT,PASS,Denied (42501)
+Anonymous,UPDATE,PASS,Denied (42501)

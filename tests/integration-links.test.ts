@@ -23,12 +23,48 @@ test('restaurant ids and group flags survive links', () => {
   assert.equal(confirmation.routes.at(-1)?.name, 'DecidePreferences');
   assert.deepEqual(confirmation.routes.at(-1)?.params, { customized: true, group: false });
 });
+
+test('saved bill links retain receipt identity and entry point across reopen',()=>{
+  const url='/split/receipt?receiptId=receipt-test-a&returnTo=Split';
+  const state=getStateFromPath(url,linkConfig)!;
+  assert.equal(state.routes.at(-1)?.name,'SplitReceipt');
+  assert.deepEqual(state.routes.at(-1)?.params,{receiptId:'receipt-test-a',returnTo:'Split'});
+  const reopened=getStateFromPath(getPathFromState(state,linkConfig),linkConfig)!;
+  assert.deepEqual(reopened.routes.at(-1)?.params,state.routes.at(-1)?.params);
+  // A legacy bare detail URL cannot identify a bill; never guess the newest one.
+  assert.equal((getStateFromPath('/split/receipt',linkConfig)!.routes.at(-1)?.params as {receiptId?:string}|undefined)?.receiptId,undefined);
+});
 test('links respect signed-out, onboarding and signed-in navigation', () => {
   assert.equal(linkFallback('SplitScan', false, false, false),'Welcome');
   assert.equal(linkFallback('Main', true, false, false),'Preferences');
   assert.equal(linkFallback('SignIn', true, true, false),'Main');
   assert.equal(linkFallback('SignIn', true, true, true),undefined);
   assert.equal(linkFallback('SplitScan', true, true, false),undefined);
+});
+
+test('protected deep links, including V3 screens, reject guests and unfinished onboarding', () => {
+  const urls = ['/decide', '/profile', '/profile/preferences', '/history', '/recommendations',
+    '/restaurants/oishii', '/group', '/group/room', '/group/consensus', '/group/vote/free',
+    '/group/tie', '/group/tie/spin', '/group/tie/reveal', '/split', '/split/scan',
+    '/split/receipt', '/split/manual', '/split/manual/items'];
+  for (const url of urls) {
+    const state = getStateFromPath(url, linkConfig)!;
+    const name = state.routes.at(-1)!.name;
+    assert.notEqual(name, 'NotFound', url);
+    assert.equal(linkFallback(name, false, false, false), 'Welcome', `guest: ${url}`);
+    assert.equal(linkFallback(name, true, false, false), 'Preferences', `onboarding: ${url}`);
+    assert.equal(linkFallback(name, true, true, false), undefined, `account: ${url}`);
+  }
+});
+
+test('V3 tie and manual-bill URLs retain their distinct screens when refreshed', () => {
+  for (const [url, name] of [['/group/tie', 'GroupTie'], ['/group/tie/spin', 'GroupTieSpin'],
+    ['/group/tie/reveal', 'GroupTieReveal'], ['/split/manual', 'SplitManualSetup'],
+    ['/split/manual/items', 'SplitManualItems']] as const) {
+    const state = getStateFromPath(url, linkConfig)!;
+    assert.equal(state.routes.at(-1)?.name, name);
+    assert.equal(getPathFromState(state, linkConfig), url);
+  }
 });
 test('homepage and history use the same unique list with selected restaurants first', () => {
   const samples=[restaurants[0],restaurants[2],restaurants[1]];

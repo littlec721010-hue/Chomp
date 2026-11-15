@@ -140,3 +140,72 @@ For V3 tie reports record room/round and candidate diner IDs, valid votes, selec
 Link the actual report/issue to its test run, findings matrix, original D ID if verified, related risk and fix PR. Keep before/after evidence tied to a specific build and repeatable task. Gate C still requires at least three documented sessions and targeted accessibility/experience revisions; defect reports alone are not usability-session evidence.
 
 This format is ready for team use. Example records remain illustrative/unverified as stated; no new GitHub issues have been filed or findings marked fixed by this deliverable.
+
+## Observed defect: dinner time wheel alignment and flickering notice
+
+- Status: open; user explicitly deferred further fixes. Triage: Important usability issue, deferred for now.
+- Context: group room → Date, Time picker; latest attempted fix `ab7c84d`. User's deployed SHA was not independently verified.
+- Reproduction: scroll the hour/minute/AM–PM wheels, stop between adjacent entries, and select past and future times.
+- Actual: wheel can remain between two entries although an entry can be selected; the past-time notice still flashes and disappears. Past time cannot be confirmed; future time can be selected and confirmed, per user report.
+- Expected: wheel settles with the selected value centered; past-time notice remains readable until a valid future time is selected.
+- Workaround: explicitly select an entry and use a future date/time. Future-time selection and confirmation passed; wheel interaction is not accepted as fixed.
+- Closure: verify centered selection, agreement between displayed and submitted time, stable past-time feedback, and successful future-time confirmation. No further code change requested at this stage.
+
+## Observed defect: OCR Order Total classified as a bill item
+
+- Status: open, documented only; no code change in this update. Triage: Critical for accepting OCR-derived amounts, because it duplicates charges. Manual bill creation remains an available tested path.
+- Reproduction/evidence: recognize the [Beachwood Cafe receipt](evidence/ocr-receipt-samples/README.md); compare the source and resulting item list.
+- Actual: Order Total $29.46 becomes a fourth item in addition to $26.90 of products. Subtotal becomes $56.36 and total $58.92 after $2.56 tax. The mismatch notice appears.
+- Expected: summary/payment rows are excluded from products; subtotal $26.90, tax $2.56, total $29.46, no tip inferred from suggested tips.
+- Recovery to verify: remove the incorrect item and review against the original before saving. This particular correction/save was not confirmed in this run.
+- Closure: repeat this image and varied summary labels without duplicated totals; retain the COSITAS RICAS $30.45 sample as a regression check. One sample passing does not close general OCR accuracy defects.
+
+## P02 live session findings recorded November 1 2026
+
+Context: moderator Tongrong, participant P02; live deployment https://chomp-pk3oe3k96-chomp4.vercel.app/; room QEA-994. Moderator used iOS Safari; participant used Windows Chrome. Findings below are observed or reported during this session. Status: open, recorded for development follow-up; fixes and retests pending.
+
+### P02 DEV 01 Match bars disagree with displayed percentages
+
+- Triage: Important.
+- Reproduction: two members submit preferences and open the group cuisine consensus summary.
+- Actual: Chinese and Thai both show 2/2 matched and 100%, but their yellow bars have different lengths. No selection shows 0/2 and 0% with a partially filled bar.
+- Expected: bars reflect the displayed percentage consistently: 100% full and 0% empty. Any separate ranking indicator must be clearly explained.
+- Impact: participant could not understand the relationship between match scores, bar lengths and restaurant recommendations. This observation does not establish that the underlying match calculation is incorrect.
+- Evidence: user-provided consensus screenshot; 3.txt closing interview.
+- Retest: compare 0%, partial and 100% labels with bar fill on both clients.
+
+### P02 DEV 02 Group members receive different restaurant candidate lists
+
+- Triage: Critical for the shared restaurant voting task.
+- Reproduction: both accounts join QEA-994, submit preferences and open restaurant voting choices.
+- Actual: user reports the two clients displayed different restaurant lists with no restaurant in common; both members could not choose the same restaurant. The vote-confirmation screenshot shows votes were received but does not independently establish list contents on both clients.
+- Expected: members voting in the same room and round receive the same shared candidate set and can select the same restaurant.
+- Impact: T5 could not be completed as intended. T6 was separately confirmed successful; that result does not close this candidate-list defect.
+- Evidence: moderator clarification during P02 session; user-provided vote-confirmation screenshot.
+- Retest: compare restaurant IDs and names across both clients before voting, after reload and after reconnect; confirm both can vote for the same candidate.
+
+### P02 DEV 03 Active room page is not restored after leaving and returning
+
+- Triage: Important; raise to Critical if rejoining the existing room is impossible.
+- Reproduction: create a room, switch to another webpage, then return to the app link.
+- Actual: user reports the page automatically refreshes and loses the previous room page; supplied screenshot shows No active room and Create or join a room.
+- Expected: restore the signed-in user's active room and appropriate workflow step after the page reloads, or provide a clear resume option.
+- Impact: interrupts the group flow and requires recovery. Server-side room or vote deletion has not been established.
+- Evidence: user report and No active room screenshot.
+- Retest: repeat page switching and reload on iOS Safari and Windows Chrome; confirm room membership, submitted preferences and votes remain recoverable.
+
+### P02 findings and triage matrix
+
+Classification recorded November 2, 2026. These are findings from one real moderated session, not three independent sessions. No fix or successful retest is implied.
+
+| Finding | Classification | Release treatment | Closure evidence |
+| --- | --- | --- | --- |
+| P02 DEV 01: match bar fill disagrees with displayed percentages | Important | Open; may be deferred for a controlled test candidate with the limitation disclosed | Verify 0%, partial and 100% fill against numeric labels on both clients |
+| P02 DEV 02: different restaurant candidate lists in the same room/round | Critical | Blocks acceptance of shared candidate voting; fix before declaring that flow complete | Both accounts receive identical candidate IDs and can choose the same restaurant, including after reload/reconnect |
+| P02 DEV 03: active room page lost after switching webpages and returning | Important | Open; controlled testing requires a verified recovery path; escalate to Critical if the room cannot be resumed | Recover the existing room and workflow step without losing submitted preferences or votes |
+
+Deferred is a scheduling decision, not evidence that a defect is resolved. No P02 finding above is Out of Scope. The previously deferred time-wheel usability issue and failed/deferred general real-photo OCR accuracy remain recorded separately.
+
+### Version 3 integration recommendation
+
+The current branch can be reviewed for integration as a Beta test candidate with known defects. This is not final Beta acceptance. P02 DEV 02 remains Critical; P02 DEV 01 and 03 remain Important. Keep source-branch acceptance results distinct from acceptance of the integrated deployment. Record the merge commit and deployment URL, check CI, and verify the shared candidate list and room recovery before announcing these flows as accepted. A main-branch merge may deploy to Production depending on Vercel configuration, which must be checked before merging. No merge, tag or deployment was performed by this documentation update.
