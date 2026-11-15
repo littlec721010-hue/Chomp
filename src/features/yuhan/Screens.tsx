@@ -24,7 +24,7 @@ function IntegratedScreen({ navigation, route }: Props) {
   const user = { ...d.user, preferences: diningPreferences(d.meal) };
   const catalog=group?d.groupRestaurants:restaurants;
   const ranked = rankRestaurants(catalog, group ? d.room?.members ?? [] : [user]);
-  const matches = group&&d.room?.remote&&d.room.status!=='lobby' ? catalog.filter(r=>d.room!.optionIds?.includes(r.id)) : ranked;
+  const matches = group&&d.room?.remote&&d.room.status!=='lobby' ? (d.room.optionIds??[]).flatMap(id=>catalog.filter(restaurant=>restaurant.id===id)) : ranked;
   const routes: Partial<Record<keyof RootStackParamList, Route>> = {
     Recommendations: group ? '/group/recommendations' : '/recommendations',
     Restaurant: group ? '/group/result' : '/recommendations/result',

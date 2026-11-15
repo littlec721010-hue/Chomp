@@ -157,13 +157,15 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   text(['298:25555'],shared.budgetOverlap?'Shared budget range':'Review group budgets');
   text(['298:25565'],shared.distanceMiles>=100000||!Number.isFinite(shared.distanceMiles)?'No distance limit':`≤ ${shared.distanceMiles} mi`);text(['298:25567'],room.scope);
   text(['281:24785'],matches.length?`${matches.length} test matches for ${count} diners`:`No matches for ${count} diners`);
+  const groupOptions=route==='/group/recommendations'?recommendationPresentation(matches,catalog).cards:[];
+  groupOptions.forEach((restaurant,index)=>{
+    text([['281:24812','281:24857','281:24902'][index]],restaurant.name);
+    text([['281:24814','281:24859','281:24904'][index]],`${restaurant.cuisine} • $${restaurant.price.join('–')} • Test restaurant`);
+    text([['281:24800','281:24845','281:24890'][index]],`${restaurant.distanceMiles} mi`);
+  });
   text(['281:24951'],matches.length?'Fictional menu matches recorded restrictions':'Test fixture · Not a matching option');
-  text(['281:24954'],'Test data only · Photos are illustrative');
-  text(['281:24962'],'Fictional vegetarian menu · No fish or seafood');
-  text(['281:24959'],'No dragon fruit in the test menu');
-  text(['281:24967'],'Fictional plant-based test menu');
-  text(['281:24971'],'Test data only · Photos are illustrative');
-  [['281:24814',restaurants[0]],['281:24859',restaurants[1]],['281:24904',restaurants[2]]].forEach(([id,r])=>{const restaurant=r as Restaurant;text([id as string],`${restaurant.cuisine} • $${restaurant.price.join('–')} • Test restaurant`);});
+  text(['281:24962','281:24967'],'Fictional menu · Test data only');
+  text(['281:24954','281:24959','281:24971'],'Test data only · Photos are illustrative');
   text(['294:25234'],`Let Chomp pick from ${matches.length} matching test restaurants.`);
   text(['294:25240'],`Random test pick (${matches.length})`);
   text(['312:26960'],`${count} Feasters Attending`);text(['312:26962'],room.members.map(m=>m.name).join(', '));
@@ -199,16 +201,23 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
     const index=displayed.findIndex(match=>match.id===r.id);
     text([['258:22266','258:22317','258:22367'][i]],`${r.cuisine} • ${r.category} • $${r.price.join('–')}`);
     bindings[soloCards[i]]={props:{style:index<0?{display:'none'}:{top:soloTops[index]}}};
-    bindings[groupCards[i]]={props:{style:index<0?{display:'none'}:{top:groupTops[index]}}};
+    const groupOption=groupOptions[i];
+    bindings[groupCards[i]]={props:{style:groupOption?{top:groupTops[i]}:{display:'none'}}};
     action(soloCtas[i],`Chomp at ${r.name}`,()=>{setSaved(s=>({...s,selectedId:r.id}));onRestaurantSelected?.(r);go('/recommendations/result');});
-    action(groupCtas[i],`Vote for ${r.name}`,()=>vote(r,'free'));
+    if(groupOption)action(groupCtas[i],`Vote for ${groupOption.name}`,()=>vote(groupOption,'free'));
     text([['281:24790','281:24834','281:24879'][i]],'Test fixture');
     if(!matches.length){
       text([['258:22239','258:22290','258:22340'][i],['281:24790','281:24834','281:24879'][i]],'Sample');
       bindings[soloCtas[i]].props={disabled:true,style:{opacity:0.45}};
-      bindings[groupCtas[i]].props={disabled:true,style:{opacity:0.45}};
+      if(groupOption)bindings[groupCtas[i]].props={disabled:true,style:{opacity:0.45}};
     }
-    [hearts[i],hearts[i+3]].forEach(id=>{action(id,`${bookmarks.includes(r.id)?'Unsave':'Save'} ${r.name}`,()=>{if(onBookmark)onBookmark(r.id);else setSaved(s=>({...s,bookmarks:s.bookmarks.includes(r.id)?s.bookmarks.filter(x=>x!==r.id):[...s.bookmarks,r.id]}));});bindings[id].props={accessibilityState:{selected:bookmarks.includes(r.id)},style:bookmarks.includes(r.id)?{backgroundColor:'#ffd43b'}:undefined};});
+    function bindBookmark(id:string,restaurant:Restaurant){
+      const selected=bookmarks.includes(restaurant.id);
+      action(id,`${selected?'Unsave':'Save'} ${restaurant.name}`,()=>{if(onBookmark)onBookmark(restaurant.id);else setSaved(s=>({...s,bookmarks:s.bookmarks.includes(restaurant.id)?s.bookmarks.filter(x=>x!==restaurant.id):[...s.bookmarks,restaurant.id]}));});
+      bindings[id].props={accessibilityState:{selected},style:selected?{backgroundColor:'#ffd43b'}:undefined};
+    }
+    bindBookmark(hearts[i],r);
+    if(groupOption)bindBookmark(hearts[i+3],groupOption);
   });
   action('294:25235','Spin Between These 3',()=>{if(!matches.length){setNotice('No matching restaurants. Adjust your preferences.');return;}vote(pickRandom(matches),'random');});
   ['312:26550','312:26389'].forEach(id=>action(id,'View Result',()=>{const winner=winningRestaurant(room,matches);if(!winner){const outcome=groupOutcome(room,matches);if(outcome.status==='tie'){onTie?.();return;}setNotice(outcome.status==='unsupported'?'This tie format needs an agreed diner-pool rule.':'Waiting for everyone to vote.');return;}onRestaurantSelected?.(winner,room);go('/group/result');}));
@@ -236,6 +245,7 @@ export function ChompModule({user,room:providedRoom,onRoomChange,onHome,onPrefer
   }
   // Images supplied by restaurant data stay dynamic, with each design's crop retained.
   function dynamicImages(node:ReactNode):ReactNode{
+    if(typeof node==='string'&&(route==='/group/consensus'||route==='/group/recommendations'))return node;
     if(typeof node==='string')return node
       .replace(/Oishii Ramen & Izakaya/g,['/group/vote','/group/random-vote'].includes(route)?selected.name:(catalog[0]?.name??restaurants[0].name))
       .replace(/Taqueria El Sol Dorado/g,restaurants[1].name)
