@@ -74,7 +74,7 @@ export function AccountProvider({ children }: React.PropsWithChildren) {
     return () => sub.remove();
   }, []);
   async function startPreview() {
-    if (!__DEV__ && Platform.OS !== 'web') throw new Error('Demo preview is available on the web or in development.');
+    if (!__DEV__) throw new Error('Demo preview is available in development builds.');
     if (session) throw new Error('Sign out of your real account before entering local preview.');
     const saved = await AsyncStorage.getItem(previewKey);
     let data: { profile: Profile; preferences: Preferences; onboarded: boolean } | null = null;
