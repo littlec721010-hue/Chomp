@@ -132,3 +132,19 @@ test('OCR treats Order Total as a summary, including when its amount is on the n
     assert.equal(calculateReceipt(receipt).totalCents,2946);
   }
 });
+
+
+test('camera OCR keeps a damaged Order Total out of the Beachwood line items',()=>{
+  for(const footer of ['I] der otal 29.46','|] der otal\n29.46']){
+    const receipt=parseReceiptText(`BEACHWOOD CAFE\n& 1 Classic Waffle 15.95\nEk 1 Bacon 7.00\nEk. 1 Hot Teas 3.95\n${footer}`);
+    assert.equal(receipt.printedTotalCents,2946);
+    assert.equal(receipt.items.length,3);
+    assert.equal(calculateReceipt(receipt).totalCents,2690);
+  }
+});
+
+test('an item containing a similar word is still counted',()=>{
+  const receipt=parseReceiptText('CAFE\nCider 4.50\nTotal Cookie 3.50\nOrder Total 8.00');
+  assert.equal(receipt.items.length,2);
+  assert.equal(calculateReceipt(receipt).totalCents,800);
+});
