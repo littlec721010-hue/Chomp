@@ -72,7 +72,14 @@ export function parseReceiptText(text:string):SplitReceipt {
     if(/^(?:eftpos|e\s*f\s*t\s*p\s*o\s*s|debit|credit|amount\s+paid|tendered|payment|card\s+payment)\b/i.test(label)){continue;}
     if(/^(?:gst|hst|vat|tax\s+included|includes?\s+tax)\b/i.test(label)){unparsed++;continue;}
     if(/^sub\s*total$/i.test(label)){subtotal=amount;itemsFinished=true;continue;}
-    if(/^((?:grand|order)\s+total|total|amount\s+due|balance\s+due)$/i.test(label)){receipt.printedTotalCents=amount;itemsFinished=true;continue;}
+    // Camera OCR can drop letters from "Order Total" and read the leading border as I, l, or 1.
+    const compactLabel=label.replace(/[^a-z0-9]/gi,'');
+    const damagedOrderTotal=/^(?:[il1]?der|order)t?otal$/i.test(compactLabel);
+    if(damagedOrderTotal||/^(?:(?:grand|order)\s+total|total|amount\s+due|balance\s+due)$/i.test(label)){
+      receipt.printedTotalCents=amount;
+      itemsFinished=true;
+      continue;
+    }
     if(/^(sales\s+tax|tax)\b/i.test(name)){receipt.importedTaxCents=(receipt.importedTaxCents??0)+amount;continue;}
     if(/^(tip|gratuity)\b/i.test(name)){receipt.importedTipCents=(receipt.importedTipCents??0)+amount;continue;}
     if(itemsFinished){unparsed++;continue;}
