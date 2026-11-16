@@ -52,6 +52,11 @@ export function parseReceiptText(text:string):SplitReceipt {
   let subtotal:number|undefined,unparsed=0,statedItems:number|undefined,itemsFinished=false,zeroCandidates=0;
   const nonUsdHint=lines.some(line=>/\bABN\b|\bAUD\b|\bA\$|\bNZD\b|\bCAD\b/i.test(line));
   for(const [index,line] of lines.entries()) {
+    // Suggested percentages are receipt footer text, even when the heading is missed.
+    if(/^(?:tip amounts|(?:suggested|recommended) (?:tip|gratuity))\b/i.test(line)||/\d\s*%\s*(?:tip|gratuity)\b|^(?:[\W_]*)(?:tip|gratuity)\s+\d{1,2}(?:\.\d+)?\s*%\s*[=:]/i.test(line)){
+      itemsFinished=true;
+      continue;
+    }
     const count=line.match(/^\s*(?:items|item\s+count|total\s+items)\s*[:=]?\s*(\d{1,3})\s*$/i);
     if(count){statedItems=Number(count[1]);continue;}
     const itemLine=line.replace(/\s+([A-Z]{1,2})$/,'').replace(/^(?:[A-Z]\s+)?\d{4,12}\s+(?=[a-z])/i,'');
