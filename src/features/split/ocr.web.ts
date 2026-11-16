@@ -1,5 +1,6 @@
-import { createWorker } from 'tesseract.js';
+import { createWorker, PSM } from 'tesseract.js';
 import { parseReceiptText } from './ocr-parser';
+import { calculateReceipt } from './model';
 
 async function prepareImage(blob:Blob):Promise<HTMLCanvasElement>{
   const url=URL.createObjectURL(blob);
@@ -35,13 +36,32 @@ export async function recognizeReceipt(uri:string,signal:AbortSignal,progress:(v
       worker=await createWorker('eng',1,{logger:m=>{if(!stopped&&m.status==='recognizing text')progress(m.progress);},errorHandler:()=>{}});
       if(stopped||signal.aborted){await worker.terminate();throw new Error('Recognition cancelled.');}
       const image=await prepareImage(blob);
-      // Receipt columns need a uniform text block rather than automatic page segmentation.
-      await worker.setParameters({tessedit_pageseg_mode:'6' as import('tesseract.js').PSM,preserve_interword_spaces:'1'});
-      const {data}=await worker.recognize(image);
-      if(stopped||signal.aborted)throw new Error('Recognition cancelled.');
+      const read=async(mode:PSM)=>{
+        await worker!.setParameters({tessedit_pageseg_mode:mode,preserve_interword_spaces:'1'});
+        const {data}=await worker!.recognize(image);
+        if(stopped||signal.aborted)throw new Error('Recognition cancelled.');
+        return data.text;
+      };
+      const reconciles=(receipt:ReturnType<typeof parseReceiptText>)=>
+        receipt.printedTotalCents!==undefined&&calculateReceipt(receipt).totalCents===receipt.printedTotalCents;
+      let text=await read(PSM.SINGLE_BLOCK);
+      let receipt:ReturnType<typeof parseReceiptText>|undefined;
+      let parseError:unknown;
+      try{receipt=parseReceiptText(text);}catch(error){parseError=error;}
+      if(!receipt||!reconciles(receipt)){
+        const alternateText=await read(PSM.AUTO);
+        try{
+          const alternate=parseReceiptText(alternateText);
+          if(reconciles(alternate)||!receipt){
+            receipt=alternate;
+            text=alternateText;
+          }
+        }catch(error){parseError??=error;}
+      }
+      if(!receipt)throw parseError;
       const hex=async(bytes:BufferSource)=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))).map(b=>b.toString(16).padStart(2,'0')).join('');
-      const [scanImageHash,scanTextHash]=await Promise.all([hex(await blob.arrayBuffer()),hex(new TextEncoder().encode(data.text.toLowerCase().replace(/\s+/g,' ').trim()))]);
-      return {...parseReceiptText(data.text),scanImageHash,scanTextHash};
+      const [scanImageHash,scanTextHash]=await Promise.all([hex(await blob.arrayBuffer()),hex(new TextEncoder().encode(text.toLowerCase().replace(/\s+/g,' ').trim()))]);
+      return {...receipt,scanImageHash,scanTextHash};
     })()]);
   } finally {clearTimeout(timer);signal.removeEventListener('abort',stop);await worker?.terminate();}
 }

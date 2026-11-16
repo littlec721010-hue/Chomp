@@ -148,3 +148,12 @@ test('an item containing a similar word is still counted',()=>{
   assert.equal(receipt.items.length,2);
   assert.equal(calculateReceipt(receipt).totalCents,800);
 });
+
+
+test('receipt camera OCR never counts percentage tip suggestions as items or paid tips',()=>{
+  const receipt=parseReceiptText('CAFE\nWaffle 15.95\nBacon 7.00\nHot Teas 3.95\n[8% Tip = 4.84\n20% Tip = 5.38\nSales Tax 2.56\nBalance Due 29.46');
+  assert.equal(receipt.items.length,3);
+  assert.equal(receipt.importedTipCents,undefined);
+  assert.equal(receipt.printedTotalCents,2946);
+  assert.equal(calculateReceipt(receipt).totalCents,2946);
+});
