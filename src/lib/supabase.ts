@@ -14,6 +14,6 @@ if (supabase && Platform.OS !== 'web') {
   AppState.addEventListener('change', state => state === 'active' ? supabase.auth.startAutoRefresh() : supabase.auth.stopAutoRefresh());
 }
 export function requireSupabase() {
-  if (!supabase) throw new Error('Account services are not connected yet. Use Local preview to explore the design.');
+  if (!supabase) throw new Error(__DEV__ ? 'Account services are not connected yet. Use Local preview to explore the design.' : 'Account services are not connected yet.');
   return supabase;
 }

@@ -52,7 +52,7 @@ function IntegratedScreen({ navigation, route }: Props) {
   }
   const pending = route.name === 'GroupVote' && d.room && groupOutcome(d.room,matches).status==='pending';
   return <View style={{ flex: 1 }}>
-    {group&&route.name!=='Group'&&!account.preview&&<LiveRoomStatus navigation={navigation}/>}
+    {group&&route.name!=='Group'&&route.name!=='Restaurant'&&!account.preview&&<LiveRoomStatus navigation={navigation}/>}
     {route.name === 'Recommendations' && !matches.length && <View style={{ padding: 12, gap: 8, backgroundColor: '#FFF2C4' }}>
       <T style={{ fontSize: 12 }}>No restaurants match your current preferences. Try increasing your budget or travel distance, or choosing more cuisines. Keep allergies and required dietary restrictions unchanged. Preview cards below cannot be selected.</T>
       <Action title="Review meal preferences" variant="beige" onPress={() => navigation.navigate('DecidePreferences', { group, customized: true })} />
